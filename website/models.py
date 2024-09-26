@@ -11,11 +11,11 @@ from django.db import models
 # bio = TEXT NOT NULL
 #------------------------------------
 class UserProfile(models.Model):
-    username = models.CharField(max_length=50)
+    username = models.CharField(max_length=50, unique=True)
     dateOfBirth = models.CharField(max_length=50)
-    email = models.CharField(max_length=50)
+    email = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=50)
-    userPhoto = models.CharField(max_length=50)
+    userPhoto = models.TextField()
     bio = models.TextField()
     numberOfFollowers = models.IntegerField()
 
@@ -26,16 +26,16 @@ class UserProfile(models.Model):
 #------------------------------------
 class Sample(models.Model):
     sampleName = models.CharField(max_length = 50)
-    fileLocation = models.CharField(max_length= 100)
+    fileLocation = models.TextField()
     isPublic = models.BooleanField()
     # Many to Many with UserProfiles
-    userProfiles = models.ManyToManyField(UserProfile)
+    userProfiles = models.ManyToManyField(UserProfile, null=True)
 
 class Chat(models.Model):
     chatName = models.CharField(max_length = 50)
     chatTimeStamp = models.DateTimeField(auto_now_add=True)
     # Many to Many with UserProfiles
-    userProfiles = models.ManyToManyField(UserProfile)
+    userProfiles = models.ManyToManyField(UserProfile, null=True)
 
 class Message(models.Model):
     message = models.TextField()
@@ -54,9 +54,9 @@ class Post(models.Model):
     postText = models.TextField()
     postTimeStamp = models.DateTimeField(auto_now_add=True)
     # one to many with samples
-    samples = models.ForeignKey(Sample, on_delete=models.CASCADE)
+    samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True)
     # Many to Many with user-Profiles
-    userProfiles = models.ManyToManyField(UserProfile)
+    userProfiles = models.ManyToManyField(UserProfile, null=True)
 
 class Comment(models.Model):
     commentMessage = models.TextField()
@@ -64,4 +64,4 @@ class Comment(models.Model):
     # One to Many with Posts
     posts = models.ForeignKey(Post, on_delete=models.CASCADE)
     # One to Many with Samples
-    samples = models.ForeignKey(Sample, on_delete=models.CASCADE)
+    samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True)
