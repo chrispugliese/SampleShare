@@ -7,7 +7,7 @@ from django.db import models
 # dataOfBirth = VARCHAR(50) NOT NULL
 # email = VARCHAR(50) NOT NULL
 # password = VARCHAR(50) NOT NULL
-# userPhote = VARCHAR (50) NOT NULL
+# userPhote = TEXT NOT NULL
 # bio = TEXT NOT NULL
 #------------------------------------
 class UserProfile(models.Model):
@@ -24,7 +24,7 @@ class UserProfile(models.Model):
 
 # ------Samples------
 # samplename = VARCHAR(50) NOT NULL
-# fileLocation = VARCHAR(50) NOT NULL
+# fileLocation = TEXT NOT NULL
 # isPublic = BOOLEAN NOT NULL
 #------------------------------------
 class Sample(models.Model):
@@ -36,6 +36,11 @@ class Sample(models.Model):
     def __str__(self):
         return(f"{self.sampleName} {self.fileLocation} {self.isPublic}")
 
+# ------Chats------
+# chatName = VARCHAR(50) NOT NULL
+# chatTimeStamp = DATETIME NOT NULL
+#------------------------------------
+
 class Chat(models.Model):
     chatName = models.CharField(max_length = 50)
     chatTimeStamp = models.DateTimeField(auto_now_add=True)
@@ -44,6 +49,10 @@ class Chat(models.Model):
     def __str__(self):
         return(f"{self.chatName} {self.chatTimeStamp}")
 
+# ------Messages------
+# message = TEXT NOT NULL
+# messageTimeStamp = DATETIME NOT NULL
+#------------------------------------
 class Message(models.Model):
     message = models.TextField()
     messageTimeStamp = models.DateTimeField(auto_now_add=True)
@@ -54,6 +63,9 @@ class Message(models.Model):
     def __str__(self):
         return(f"{self.message} {self.messageTimeStamp}")
 
+# ------Genres------
+# genrename = VARCHAR(50) NOT NULL
+#------------------------------------
 class Genre(models.Model):
     genreName = models.CharField(max_length = 50)
     # one to many with samples
@@ -61,6 +73,10 @@ class Genre(models.Model):
     def __str__(self):
         return(f"{self.genreName}")
 
+# ------Post------
+# postText = VARCHAR(50) NOT NULL
+# postTimeStamp = VARCHAR(50) NOT NULL
+#------------------------------------
 class Post(models.Model):
     postText = models.TextField()
     postTimeStamp = models.DateTimeField(auto_now_add=True)
@@ -72,6 +88,10 @@ class Post(models.Model):
     def __str__(self):
         return(f"{self.postText} {self.postTimeStamp}")
 
+# ------Comments------
+# commentMessage = TEXT NOT NULL
+# commentTimeStamp = DATETIME NOT NULL
+#------------------------------------
 class Comment(models.Model):
     commentMessage = models.TextField()
     commentTimeStamp = models.DateTimeField(auto_now_add=True)
