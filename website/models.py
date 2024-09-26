@@ -33,8 +33,35 @@ class Sample(models.Model):
 
 class Chat(models.Model):
     chatName = models.CharField(max_length = 50)
-    chatTimeStamp = models.DateTimeField(auto_new_add =True)
+    chatTimeStamp = models.DateTimeField(auto_now_add=True)
+    # Many to Many with UserProfiles
+    userProfiles = models.ManyToManyField(UserProfile)
 
 class Message(models.Model):
     message = models.TextField()
-    messageTimeStamp = models.TextField()
+    messageTimeStamp = models.DateTimeField(auto_now_add=True)
+    # one to many with Chats
+    chats = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    # one to many with samples
+    samples = models.ManyToManyField(Sample)
+
+class Genre(models.Model):
+    genreName = models.CharField(max_length = 50)
+    # one to many with samples
+    samples = models.ManyToManyField(Sample, null=True)
+
+class Post(models.Model):
+    postText = models.TextField()
+    postTimeStamp = models.DateTimeField(auto_now_add=True)
+    # one to many with samples
+    samples = models.ForeignKey(Sample, on_delete=models.CASCADE)
+    # Many to Many with user-Profiles
+    userProfiles = models.ManyToManyField(UserProfile)
+
+class Comment(models.Model):
+    commentMessage = models.TextField()
+    commentTimeStamp = models.DateTimeField(auto_now_add=True)
+    # One to Many with Posts
+    posts = models.ForeignKey(Post, on_delete=models.CASCADE)
+    # One to Many with Samples
+    samples = models.ForeignKey(Sample, on_delete=models.CASCADE)
