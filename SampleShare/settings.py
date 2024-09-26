@@ -76,8 +76,13 @@ WSGI_APPLICATION = 'SampleShare.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "mydatabase",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "sampleshare",
+        "USER": 'root',
+        "PASSWORD": 'YourMom!73',
+        "HOST": 'localhost',
+        "PORT": '3306',
+
     }
 }
 
