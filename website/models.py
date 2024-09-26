@@ -19,6 +19,9 @@ class UserProfile(models.Model):
     bio = models.TextField()
     numberOfFollowers = models.IntegerField()
 
+    def __str__(self):
+        return(f"{self.username} {self.dateOfBirth} {self.email} {self.password} {self.userPhoto} {self.bio} {self.numberOfFollowers}")
+
 # ------Samples------
 # samplename = VARCHAR(50) NOT NULL
 # fileLocation = VARCHAR(50) NOT NULL
@@ -30,12 +33,16 @@ class Sample(models.Model):
     isPublic = models.BooleanField()
     # Many to Many with UserProfiles
     userProfiles = models.ManyToManyField(UserProfile, null=True)
+    def __str__(self):
+        return(f"{self.sampleName} {self.fileLocation} {self.isPublic}")
 
 class Chat(models.Model):
     chatName = models.CharField(max_length = 50)
     chatTimeStamp = models.DateTimeField(auto_now_add=True)
     # Many to Many with UserProfiles
     userProfiles = models.ManyToManyField(UserProfile, null=True)
+    def __str__(self):
+        return(f"{self.chatName} {self.chatTimeStamp}")
 
 class Message(models.Model):
     message = models.TextField()
@@ -44,11 +51,15 @@ class Message(models.Model):
     chats = models.ForeignKey(Chat, on_delete=models.CASCADE)
     # one to many with samples
     samples = models.ManyToManyField(Sample)
+    def __str__(self):
+        return(f"{self.message} {self.messageTimeStamp}")
 
 class Genre(models.Model):
     genreName = models.CharField(max_length = 50)
     # one to many with samples
     samples = models.ManyToManyField(Sample, null=True)
+    def __str__(self):
+        return(f"{self.genreName}")
 
 class Post(models.Model):
     postText = models.TextField()
@@ -58,6 +69,9 @@ class Post(models.Model):
     # Many to Many with user-Profiles
     userProfiles = models.ManyToManyField(UserProfile, null=True)
 
+    def __str__(self):
+        return(f"{self.postText} {self.postTimeStamp}")
+
 class Comment(models.Model):
     commentMessage = models.TextField()
     commentTimeStamp = models.DateTimeField(auto_now_add=True)
@@ -65,3 +79,5 @@ class Comment(models.Model):
     posts = models.ForeignKey(Post, on_delete=models.CASCADE)
     # One to Many with Samples
     samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True)
+    def __str__(self):
+        return(f"{self.commentMessage} {self.commentTimeStamp}")
