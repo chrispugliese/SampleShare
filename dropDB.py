@@ -8,7 +8,7 @@ dataBase = mysql.connector.connect(
     # your username maybe different so enter the user name that you entered when you configured mysql
     user = 'root',
     # you password maybe different so enter the password you setup on mysql
-    password = 'YourMom!73'
+    password = 'password123'
 )
 
 cursorObject = dataBase.cursor()

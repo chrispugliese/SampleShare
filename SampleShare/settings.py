@@ -79,7 +79,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "sampleshare",
         "USER": 'root',
-        "PASSWORD": 'YourMom!73',
+        "PASSWORD": 'password123',
         "HOST": 'localhost',
         "PORT": '3306',
 
@@ -122,6 +122,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Needed to handle static files
+# https://docs.djangoproject.com/en/5.1/howto/static-files/
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # Assuming you have a static folder in your root directory
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
