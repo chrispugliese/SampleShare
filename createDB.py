@@ -4,11 +4,11 @@
 import mysql.connector
 
 dataBase = mysql.connector.connect(
-    host = 'localhost',
+    host="localhost",
     # your username maybe different so enter the user name that you entered when you configured mysql
-    user = 'root',
+    user="root",
     # your password maybe different so enter the password you setup on mysql
-    password = 'YourMom!73'
+    password="YourMom!73",
 )
 
 cursorObject = dataBase.cursor()
@@ -17,3 +17,4 @@ cursorObject.execute("CREATE DATABASE sampleshare")
 
 print("Database Successfully Created!!")
 print("Please run the command 'python manage.py migrate' ")
+
