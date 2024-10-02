@@ -2,17 +2,15 @@
 # Run this code by typing the command "python dropDB.py"
 
 import mysql.connector
-
+from decouple import config
 dataBase = mysql.connector.connect(
-    host = 'localhost',
-    # your username maybe different so enter the user name that you entered when you configured mysql
-    user = 'root',
-    # you password maybe different so enter the password you setup on mysql
-    password = 'password123'
+    host = config("DB_HOST", "db"),
+    # your password maybe different so enter the password you setup on mysql
+    password = config("MYSQL_PASSWORD")
 )
 
 cursorObject = dataBase.cursor()
 
-cursorObject.execute("DROP DATABASE sampleshare")
+cursorObject.execute("DROP DATABASE sampleshare_db")
 
 print("Database Successfully Dropped !!")
