@@ -9,5 +9,10 @@ urlpatterns = [
     path('login/', views.login_user, name='login'),
     path('logout/', views.logout_user, name='logout'),
     path('register/', views.register_user, name='register'),
-
+    #-------Posts Links------------#
+    path('posts/', views.posts, name ='posts'),
+    path('user_post/' , views.user_post, name = 'user_post'),
+    path('create_post/', views.create_post, name ='create_post'),
+    path('update_post/<int:pk>', views.update_post, name ='update_post'),
+    path('delete_post/<int:pk>', views.create_post, name = 'update_post'),
 ]

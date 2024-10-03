@@ -4,6 +4,7 @@ from .models import UserProfile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm
+from .forms import PostForm
 
 # Create your views here.
 def home(request):
@@ -54,3 +55,29 @@ def register_user(request):
         form = SignUpForm()
         return render(request, 'register.html', {'form':form})
     return render(request, 'register.html', {'form':form})
+#--------------------------------------------------------------------#
+
+def posts(request):
+    pass
+
+def user_post(request):
+    pass
+
+def create_post(request):
+    form = PostForm(request.POST or None)
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            if form.is_valid():
+                add_post = form.save()
+                messages.success(request, "Post Created...")
+                return redirect('home')
+        return render(request, 'create_post.html', {'form':form})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect('home')
+
+def update_post(request, pk):
+    pass
+
+def delete_post(request, pk):
+    pass
