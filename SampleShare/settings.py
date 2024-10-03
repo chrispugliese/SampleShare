@@ -126,7 +126,7 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Assuming you have a static folder in your root directory
+      # Assuming you have a static folder in your root directory
 ]
 
 # Default primary key field type
