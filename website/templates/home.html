@@ -1,18 +1,11 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Sample Share</title>
-        <style> 
-            img {
-                width : 500px;
-                border-radius: 50px;
-                float: left;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>WELCOME TO SHAMPLE SHARE</h1>
-        <img src="{% static 'images/Sample.png' %}" alt="Sample" style="width:3328px;height:4992;">
-    </body>
-</html>
+{% block content %}
+<body>
+    <div class="col-md-6 offset-md-3">      
+    <h1>WELCOME TO SHAMPLE SHARE</h1>
+    </div>
+    <img src="{% static 'images/Sample.png' %}" alt="Sample" style="width:2000px;height:3000;">
+
+</body>
+    {% endblock %}
