@@ -13,6 +13,7 @@ class SignUpForm(UserCreationForm):
 	email = forms.EmailField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
 	username = forms.CharField(max_length=25, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Username'}))
 	date_of_birth = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'placeholder': 'YYYY-MM-DD',}))
+	user_Photo = 'images/profile_picture_default.jpg'
 
 	class Meta:
 		model = User
@@ -47,6 +48,7 @@ class SignUpForm(UserCreationForm):
 			UserProfile.objects.create(
 				user=user,
 				dateOfBirth=date_of_birth,
+				userPhoto = self.user_Photo,
 				numberOfFollowers=0  # default to 0
 			)
 		return user
