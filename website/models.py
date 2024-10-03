@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+
 
 # Create your models here.
 
@@ -12,15 +14,16 @@ from django.db import models
 #------------------------------------
 class UserProfile(models.Model):
     username = models.CharField(max_length=50, unique=True)
-    dateOfBirth = models.CharField(max_length=50)
-    email = models.CharField(max_length=50, unique=True)
+    dateOfBirth = models.DateField()
+    email = models.EmailField(max_length=50, unique=True)
     password = models.CharField(max_length=50)
     userPhoto = models.TextField()
-    bio = models.TextField()
+    bio = models.TextField(max_length=1000)
     numberOfFollowers = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return(f"{self.username} {self.dateOfBirth} {self.email} {self.password} {self.userPhoto} {self.bio} {self.numberOfFollowers}")
+        return(f"{self.username}")
 
 # ------Samples------
 # samplename = VARCHAR(50) NOT NULL
