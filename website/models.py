@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils import timezone
 
 
@@ -13,17 +14,15 @@ from django.utils import timezone
 # bio = TEXT NOT NULL
 #------------------------------------
 class UserProfile(models.Model):
-    username = models.CharField(max_length=50, unique=True)
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     dateOfBirth = models.DateField()
-    email = models.EmailField(max_length=50, unique=True)
-    password = models.CharField(max_length=50)
-    userPhoto = models.TextField()
+    userPhoto = models.CharField(max_length=100)
     bio = models.TextField(max_length=1000)
     numberOfFollowers = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
-        return(f"{self.username}")
+        return str(self.user)
 
 # ------Samples------
 # samplename = VARCHAR(50) NOT NULL

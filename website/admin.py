@@ -1,8 +1,8 @@
-from .models import UserProfile
 from django.contrib import admin
+from .models import UserProfile
+
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ['username',]
 
 # Register your models here.
-class UserProfileAdmin(admin.ModelAdmin):
-	list_display = ('email', 'username', 'created_at')
-
-admin.site.register(UserProfile, UserProfileAdmin)
+admin.site.register(UserProfile)
