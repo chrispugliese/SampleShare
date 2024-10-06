@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm
 from .forms import PostForm
+from .models import Post
+
 
 # Create your views here.
 def home(request):
@@ -55,10 +57,16 @@ def register_user(request):
         form = SignUpForm()
         return render(request, 'register.html', {'form':form})
     return render(request, 'register.html', {'form':form})
-#--------------------------------------------------------------------#
 
+#----------------------------Post Code -------------------------------#
 def posts(request):
-    pass
+    if request.user.is_authenticated:
+        # Look Up Posts
+        userPosts = Post.objects.all()
+        return render(request, 'posts.html', {'userPosts':userPosts})
+    else:
+        messages.success(request, "You Must Be Logged In To Do That...")
+        return redirect('home')
 
 def user_post(request):
     pass
@@ -80,4 +88,12 @@ def update_post(request, pk):
     pass
 
 def delete_post(request, pk):
-    pass
+    if request.user.is_authenticated:
+        deletePost = Post.objects.get(id=pk)
+        deletePost.delete()
+        messages.success(request, "Post Was Deleted...")
+        return redirect('home')
+    else:
+        messages.success(request, "You Must Be Logged In To Do That...")
+        return redirect('home')  
+#--------------------------------------------------------------------#

@@ -39,8 +39,8 @@ class SignUpForm(UserCreationForm):
 
 
 
-class PostForm(forms.Form):
-	post_text = forms.CharField(label = "Text")
+class PostForm(forms.ModelForm):
+	#post_text = forms.CharField(label = "Text")
 	sample = forms.CharField(label = "Sample")
 
 	class Meta:

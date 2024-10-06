@@ -11,9 +11,14 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'logout' %}">Log out</a>
         </li>
+        <!-------------------- Post Code  ----------------->
         <li class="nav-item"></li>
           <a class="nav-link" href="{% url 'create_post' %}">Create Post</a>
         </li>
+        <li class="nav-item"></li>
+          <a class="nav-link" href="{% url 'posts' %}">Posts</a>
+        </li>
+        <!-------------------------------------------------->
         {% else %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'register' %}">Register</a>
