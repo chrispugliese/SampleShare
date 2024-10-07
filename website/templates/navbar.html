@@ -21,8 +21,7 @@
         {% endif %}
       </ul>
       <div class="search">
-        <form>
-          <input type="text" placeholder="Search...">
+          <input type="text" placeholder="Search by title" value="{{request.GET.title}}">
           <button type="submit">Go</button>
         </form>
     </div>
