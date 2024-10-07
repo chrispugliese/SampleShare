@@ -101,3 +101,4 @@ class Comment(models.Model):
     samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True)
     def __str__(self):
         return(f"{self.commentMessage} {self.commentTimeStamp}")
+    
