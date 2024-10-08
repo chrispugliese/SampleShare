@@ -10,6 +10,9 @@ from .models import Post
 
 # Create your views here.
 def home(request):
+
+    profiles = UserProfile.objects.all()
+
     return render(request, 'home.html', {})
 
 def user_detail(request, user_id):
@@ -19,6 +22,20 @@ def user_detail(request, user_id):
 def page_not_found(request):
     raise Http404("Page not here tho")
 
+
+def profile_page(request, pk):
+    if request.user.is_authenticated:
+        #Look up profiles
+        user_profile = UserProfile.objects.get(id=pk)
+        return render(request, 'profile_page.html', {'user_profile':user_profile})
+    else:
+        messages.success(request, "You must be logged in to view profiles")
+        return redirect('home')
+
+
+
+
+#Login/Logout/Register Users
 def login_user(request):
     if request.method == 'POST':
             username = request.POST['username']
