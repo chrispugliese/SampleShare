@@ -21,15 +21,9 @@
         {% endif %}
       </ul>
 
-      <form class='d-flex' method=POST 
-      action="{% url 'search-venues' %}">
-
-        {% csrf_token %}
-
-        <input class= "form-control me-2" type="search" placeholder= "Search Sample" aria-label="Search"
-        name="searched">
-        <button class="btn btn-outline-primary" 
-        type="submit">Search</button>
+      <form method="get" action="{% url 'search_user' %}">
+        <input type="text" name="q" placeholder="Search for a username">
+        <button type="submit" class="btn btn-outline-primary">Search</button>
       </form> 
     </div>
   </div>

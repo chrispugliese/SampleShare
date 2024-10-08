@@ -4,6 +4,7 @@ from .models import Sample, UserProfile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm 
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -73,12 +74,14 @@ def register_user(request):
         return render(request, 'register.html', {'form':form})
     return render(request, 'register.html', {'form':form})
 
-def search_venues(request):
-    if request.method == "POST":
-        searched = request.POST.get('searched')
-        venues = Sample.objects.filter(sampleName__contains=searched)
-        return render(request, 'search_venues.html',
-                  {'searched':searched, 'venues':venues})
-    else:
-        return render(request, 'search_venues.html',
-                  {})
+def search_user(request):
+    if request.method == "GET":
+        query = request.GET.get('q')  # 'q' is the name attribute in your search input field
+        if query:
+            matching_users = User.objects.filter(username__icontains=query)  # Case-insensitive search
+            return render(request, 'search_results.html', {'users': matching_users, 'query': query})
+        else:
+            return render(request, 'search_results.html', {'users': None, 'query': query})
+        
+        
+        
