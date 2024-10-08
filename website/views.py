@@ -85,8 +85,13 @@ def posts(request):
         messages.success(request, "You Must Be Logged In To Do That...")
         return redirect('home')
 
-def user_post(request):
-    pass
+def user_post(request, pk):
+    if request.user.is_authenticated:
+        user_post = Post.objects.get(id=pk)
+        return render(request, 'userPost.html', {'user_post':user_post})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect('home')
 
 def create_post(request):
     form = PostForm(request.POST or None)
@@ -102,7 +107,20 @@ def create_post(request):
         return redirect('home')
 
 def update_post(request, pk):
-    pass
+    
+    if request.user.is_authenticated:
+        current_post = Post.objects.get(id=pk)
+        form = PostForm(request.POST or None, instance=current_post)
+        if request.method == "POST":
+            if form.is_valid():
+                add_post = form.save()
+                messages.success(request, "Post Updated...")
+                return redirect('home')
+        return render(request, 'update_post.html', {'form':form})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect('home')
+
 
 def delete_post(request, pk):
     if request.user.is_authenticated:

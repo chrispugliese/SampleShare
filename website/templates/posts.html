@@ -9,7 +9,10 @@
     {% for post in userPosts %}
     <ul class="list-group">
         <li class="list-group-item">{{ post.postText }}</li>
+        
     </ul>
+    <a href="{%url 'user_post' post.id%}" class="btn btn-secondary"> Edit</a>
+    <br/>
     {% endfor %}
 {% endif %}
 <br/>
