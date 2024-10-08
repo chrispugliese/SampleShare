@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from .models import UserProfile
+from .models import Sample, UserProfile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SignUpForm
+from .forms import SignUpForm 
+
 
 # Create your views here.
 def home(request):
@@ -54,3 +55,13 @@ def register_user(request):
         form = SignUpForm()
         return render(request, 'register.html', {'form':form})
     return render(request, 'register.html', {'form':form})
+
+def search_venues(request):
+    if request.method == "POST":
+        searched = request.POST.get('searched')
+        venues = Sample.objects.filter(sampleName__contains=searched)
+        return render(request, 'search_venues.html',
+                  {'searched':searched, 'venues':venues})
+    else:
+        return render(request, 'search_venues.html',
+                  {})
