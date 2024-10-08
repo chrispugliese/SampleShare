@@ -4,6 +4,7 @@ from .models import UserProfile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm
+from django.contrib.auth.models import User
 from .forms import PostForm
 from .models import Post
 
@@ -23,15 +24,26 @@ def page_not_found(request):
     raise Http404("Page not here tho")
 
 
-def profile_page(request, pk):
-    if request.user.is_authenticated:
-        #Look up profiles
-        user_profile = UserProfile.objects.get(id=pk)
-        return render(request, 'profile_page.html', {'user_profile':user_profile})
-    else:
-        messages.success(request, "You must be logged in to view profiles")
-        return redirect('home')
+# def profile_page(request, pk):
+#     if request.user.is_authenticated:
+#         #Look up profiles
+#         user_profile = UserProfile.objects.get(id=pk)
+#         return render(request, 'profile_page.html', {'user_profile':user_profile})
+#     else:
+#         messages.success(request, "You must be logged in to view profiles")
+#         return redirect('home')
 
+def profile_page(request, username):
+    profile_user = get_object_or_404(User, username=username)
+
+    is_owner = request.user == profile_user
+
+    context = {
+        'profile_user': profile_user,
+        'is_owner': is_owner
+    }
+
+    return render(request, 'profile_page.html', context)
 
 
 
