@@ -11,5 +11,4 @@ class UserProfileAdmin(admin.ModelAdmin):
 admin.site.register(Post)
 admin.site.register(UserProfile)
 admin.site.register(Sample)
-admin.site.register(UserProfile)
 

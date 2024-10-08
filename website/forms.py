@@ -37,16 +37,6 @@ class SignUpForm(UserCreationForm):
 		self.fields['password2'].widget.attrs['placeholder'] = 'Confirm Password'
 		self.fields['password2'].label = ''
 		self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
-
-
-
-class PostForm(forms.ModelForm):
-	#post_text = forms.CharField(label = "Text")
-	sample = forms.CharField(label = "Sample")
-
-	class Meta:
-		model = Post
-		fields = ('postText', 'sample')
 		self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'	
 
 	def save(self, commit=True):
@@ -64,3 +54,16 @@ class PostForm(forms.ModelForm):
 				numberOfFollowers=0  # default to 0
 			)
 		return user
+
+
+
+
+
+
+class PostForm(forms.ModelForm):
+	#post_text = forms.CharField(label = "Text")
+	sample = forms.CharField(label = "Sample")
+
+	class Meta:
+		model = Post
+		fields = ('postText', 'sample')
