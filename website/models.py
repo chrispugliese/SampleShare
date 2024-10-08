@@ -85,7 +85,7 @@ class Post(models.Model):
     # one to many with samples
     samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True)
     # Many to Many with user-Profiles
-    userProfiles = models.ManyToManyField(UserProfile, null=True)
+    userProfiles = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return(f"{self.postText} {self.postTimeStamp}")
