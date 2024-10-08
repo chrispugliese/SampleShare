@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-
+from .models import UserProfile 
 
 
 
@@ -13,6 +13,7 @@ class SignUpForm(UserCreationForm):
 	email = forms.EmailField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
 	username = forms.CharField(max_length=25, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Username'}))
 	date_of_birth = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'placeholder': 'YYYY-MM-DD',}))
+	user_Photo = 'images/profile_picture_default.jpg'
 
 	class Meta:
 		model = User
@@ -35,3 +36,19 @@ class SignUpForm(UserCreationForm):
 		self.fields['password2'].widget.attrs['placeholder'] = 'Confirm Password'
 		self.fields['password2'].label = ''
 		self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'	
+
+	def save(self, commit=True):
+		user = super(SignUpForm, self).save(commit=False)
+		user.email = self.cleaned_data['email']
+		if commit:
+			user.save()
+			# Save the UserProfile details
+			date_of_birth = self.cleaned_data['date_of_birth']
+			# Create the associated UserProfile instance
+			UserProfile.objects.create(
+				user=user,
+				dateOfBirth=date_of_birth,
+				userPhoto = self.user_Photo,
+				numberOfFollowers=0  # default to 0
+			)
+		return user
