@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-
+current user: {{user.id}}
+<br/>
+post author: {{user_post.userProfiles.id}}
 
 <div class="card">
     <div class="card-header"><strong>
@@ -16,9 +18,9 @@
 
 </div>
 </div>
-
+{% if user.id == user_post.userProfiles.id %}
 <br/><br/>
 <a href="{% url 'delete_post' user_post.id %}" class="btn btn-danger">Delete</a>
 <a href="{% url 'update_post' user_post.id %}" class="btn btn-secondary">Update</a>
-
+{% endif %}
 {% endblock %}

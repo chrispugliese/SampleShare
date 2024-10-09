@@ -59,11 +59,16 @@ class SignUpForm(UserCreationForm):
 
 
 
-
+#-----------------Post Form-----------------
 class PostForm(forms.ModelForm):
-	#post_text = forms.CharField(label = "Text")
-	sample = forms.CharField(label = "Sample")
-
 	class Meta:
 		model = Post
-		fields = ('postText', 'sample')
+		fields = ('postText','userProfiles', 'samples')
+
+		widgets = {
+			'postText': forms.TextInput(attrs={'class': 'form-control'}),
+			'userProfiles': forms.Select(attrs={'class': 'form-control'}),
+			#'userProfiles': forms.TextInput(attrs={'class': 'form-control'}),
+			'sample': forms.Select(attrs={'class': 'form-control'}),
+		}
+#---------------------------------------------------

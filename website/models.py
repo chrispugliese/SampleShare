@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-
+from django.urls import reverse
 
 # Create your models here.
 
@@ -89,6 +89,9 @@ class Post(models.Model):
 
     def __str__(self):
         return(f"{self.postText} {self.postTimeStamp}")
+    
+    def get_absolute_url(self):
+        return reverse('user_post', args=(str(self.id)))
 
 # ------Comments------
 # commentMessage = TEXT NOT NULL

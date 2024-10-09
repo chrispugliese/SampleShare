@@ -8,7 +8,7 @@ from .forms import SignUpForm
 from django.contrib.auth.models import User
 from .forms import PostForm
 from .models import Post
-
+from django.views.generic import CreateView
 
 # Create your views here.
 def home(request):
@@ -115,18 +115,25 @@ def user_post(request, pk):
         messages.success(request, "Your Must Be Logged In...")
         return redirect('home')
 
-def create_post(request):
-    form = PostForm(request.POST or None)
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            if form.is_valid():
-                add_post = form.save()
-                messages.success(request, "Post Created...")
-                return redirect('home')
-        return render(request, 'create_post.html', {'form':form})
-    else:
-        messages.success(request, "Your Must Be Logged In...")
-        return redirect('home')
+#def create_post(request):
+    #form = PostForm(request.POST or None)
+    #if request.user.is_authenticated:
+        #if request.method == "POST":
+            #if form.is_valid():
+                #add_post = form.save()
+                #messages.success(request, "Post Created...")
+                #return redirect('home')
+        #return render(request, 'create_post.html', {'form':form})
+    #else:
+        #messages.success(request, "Your Must Be Logged In...")
+        #return redirect('home')
+
+class CreatePostView(CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'create_post.html'
+    #fields = '__all__'
+
 
 def update_post(request, pk):
     
