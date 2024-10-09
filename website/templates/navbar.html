@@ -31,11 +31,11 @@
         </li>
         {% endif %}
       </ul>
-      <div class="search">
-        <form>
-          <input type="text" placeholder="Search...">
-          <button type="submit">Go</button>
-        </form>
+
+      <form method="get" action="{% url 'search_user' %}">
+        <input type="text" name="q" placeholder="Search for a username">
+        <button type="submit" class="btn btn-outline-primary">Search</button>
+      </form> 
     </div>
   </div>
 </nav>
