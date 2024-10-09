@@ -24,9 +24,11 @@ def page_not_found(request):
 
 def profile_page(request, pk):
     if request.user.is_authenticated:
-        #Look up profiles
-        user_profile = UserProfile.objects.get(id=pk)
-        return render(request, 'profile_page.html', {'user_profile':user_profile})
+        # Look up the User first
+        user = get_object_or_404(User, pk=pk)
+        # Then look up the UserProfile associated with that User
+        user_profile = get_object_or_404(UserProfile, user=user)
+        return render(request, 'profile_page.html', {'user_profile': user_profile})
     else:
         messages.success(request, "You must be logged in to view profiles")
         return redirect('home')
