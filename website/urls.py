@@ -13,4 +13,3 @@ urlpatterns = [
     path("register/", views.register_user, name="register"),
     path("sample/<int:sample_id>/", views.sample_player, name="sample_player"),
 ]
-
