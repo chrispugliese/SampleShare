@@ -1,16 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import Http404, HttpResponse
-from .models import UserProfile, Sample
+from django.http import Http404
+from .models import Sample, UserProfile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm
-
-# from playsound import playsound, PlaysoundException  # dont want this
+from django.contrib.auth.models import User
 import os
 
 
 # Create your views here.
 def home(request):
+    profiles = UserProfile.objects.all()
     return render(request, "home.html", {})
 
 
@@ -23,6 +23,17 @@ def page_not_found(request):
     raise Http404("Page not here tho")
 
 
+def profile_page(request, username):
+    profile_user = get_object_or_404(User, username=username)
+
+    is_owner = request.user == profile_user
+
+    context = {"profile_user": profile_user, "is_owner": is_owner}
+
+    return render(request, "profile_page.html", context)
+
+
+# Login/Logout/Register Users
 def login_user(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -83,3 +94,23 @@ def sample_player(request, sample_id):
         message = f"An unexpected error has occurred: {e}"
 
     return render(request, "sample_player.html", {"sample": sample, "message": message})
+
+
+def search_user(request):
+    if request.method == "GET":
+        query = request.GET.get(
+            "q"
+        )  # 'q' is the name attribute in your search input field
+        if query:
+            matching_users = User.objects.filter(
+                username__icontains=query
+            )  # Case-insensitive search
+            return render(
+                request,
+                "search_results.html",
+                {"users": matching_users, "query": query},
+            )
+        else:
+            return render(
+                request, "search_results.html", {"users": None, "query": query}
+            )
