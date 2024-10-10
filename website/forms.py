@@ -67,8 +67,8 @@ class PostForm(forms.ModelForm):
 
 		widgets = {
 			'postText': forms.TextInput(attrs={'class': 'form-control'}),
-			'userProfiles': forms.Select(attrs={'class': 'form-control'}),
-			#'userProfiles': forms.TextInput(attrs={'class': 'form-control'}),
+			#'userProfiles': forms.Select(attrs={'class': 'form-control'}),
+			'userProfiles': forms.TextInput(attrs={'class': 'form-control', 'value':'', 'id':'user', 'type':'hidden'}),
 			'sample': forms.Select(attrs={'class': 'form-control'}),
 		}
 #---------------------------------------------------

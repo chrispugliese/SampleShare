@@ -12,7 +12,11 @@
         <a href ="{% url 'home'%}" class="btn btn-secondary">back</a>
     
 
-        
+        <script>
+            var name = "{{ user.userprofile.id }}";
+            document.getElementById("user").value=
+                name;
+        </script>
     </form>
 </div>
 {% endblock %}
