@@ -156,10 +156,10 @@ def delete_post(request, pk):
         deletePost = Post.objects.get(id=pk)
         deletePost.delete()
         messages.success(request, "Post Was Deleted...")
-        return redirect('home')
+        return redirect('posts')
     else:
         messages.success(request, "You Must Be Logged In To Do That...")
-        return redirect('home')  
+        return redirect('posts')  
 #--------------------------------------------------------------------#
 
         
