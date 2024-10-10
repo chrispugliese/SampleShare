@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+
 
 # Create your models here.
 
@@ -11,16 +14,15 @@ from django.db import models
 # bio = TEXT NOT NULL
 #------------------------------------
 class UserProfile(models.Model):
-    username = models.CharField(max_length=50, unique=True)
-    dateOfBirth = models.CharField(max_length=50)
-    email = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=50)
-    userPhoto = models.TextField()
-    bio = models.TextField()
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    dateOfBirth = models.DateField()
+    userPhoto = models.CharField(max_length=100)
+    bio = models.TextField(max_length=1000)
     numberOfFollowers = models.IntegerField()
 
+
     def __str__(self):
-        return(f"{self.username} {self.dateOfBirth} {self.email} {self.password} {self.userPhoto} {self.bio} {self.numberOfFollowers}")
+        return str(self.user)
 
 # ------Samples------
 # samplename = VARCHAR(50) NOT NULL
@@ -101,3 +103,4 @@ class Comment(models.Model):
     samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True)
     def __str__(self):
         return(f"{self.commentMessage} {self.commentTimeStamp}")
+    
