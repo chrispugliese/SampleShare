@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Sample, UserProfile
+from .models import Sample, UserProfile, Post
 
 
 class SampleForm(forms.ModelForm):
@@ -75,3 +75,27 @@ class SignUpForm(UserCreationForm):
                 numberOfFollowers=0,  # default to 0
             )
         return user
+
+
+# -----------------Post Form-----------------
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ("postText", "userProfiles", "samples")
+
+        widgets = {
+            "postText": forms.TextInput(attrs={"class": "form-control"}),
+            #'userProfiles': forms.Select(attrs={'class': 'form-control'}),
+            "userProfiles": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "value": "",
+                    "id": "user",
+                    "type": "hidden",
+                }
+            ),
+            "sample": forms.Select(attrs={"class": "form-control"}),
+        }
+
+
+# ---------------------------------------------------
