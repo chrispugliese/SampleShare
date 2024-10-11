@@ -1,11 +1,14 @@
+from django.conf import django
+from django.http.response import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from .models import Sample, UserProfile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SignUpForm
+from .forms import SampleForm, SignUpForm
 from django.contrib.auth.models import User
 import os
+from django.views.generic import CreateView
 
 
 # Create your views here.
@@ -76,7 +79,20 @@ def register_user(request):
     return render(request, "register.html", {"form": form})
 
 
-# i dont like the playsound package, i will refactor this to use the html audio widget, maybe use js to make it cool.
+# TODO: need to add a 6 second restriction for audio files.
+def upload(request):
+    if request.method == "POST":
+        form = SampleForm(request.POST, request.FILES or None)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+    else:
+        form = SampleForm()
+    return render(request, "upload.html", {"form": form})
+
+
+# NOTE: i dont like the playsound package, i will refactor this to use the html audio widget, maybe use js to make it cool.
+# regardless this a whole function needs to be rewritten
 def sample_player(request, sample_id):
     sample = get_object_or_404(Sample, id=sample_id)
 

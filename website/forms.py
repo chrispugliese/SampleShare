@@ -1,7 +1,13 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import UserProfile
+from .models import Sample, UserProfile
+
+
+class SampleForm(forms.ModelForm):
+    class Meta:
+        model = Sample
+        fields = ["sampleName", "audioFile", "isPublic", "userProfiles"]
 
 
 class SignUpForm(UserCreationForm):

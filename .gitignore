@@ -5,6 +5,7 @@
 __pycache__
 db.postgresql
 media
+media/
 # Environments 
 .env 
 .venv 
