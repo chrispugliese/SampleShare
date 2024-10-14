@@ -18,7 +18,7 @@ urlpatterns = [
     path("profile/<str:username>/", views.profile_page, name="profile"),
     # -------Samples/Uploads Links------------#
     path("upload/", views.upload, name="upload"),
-    path("sample/<int:sample_id>/", views.sample_player, name="sample_player"),
+    # path("sample/<int:sample_id>/", views.sample_player, name="sample_player"),
     # -------Posts Links------------#
     path("posts/", views.posts, name="posts"),
     path("user_post/<int:pk>", views.user_post, name="user_post"),
