@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 from decouple import config
 
@@ -74,7 +75,6 @@ WSGI_APPLICATION = "SampleShare.wsgi.application"
 ASGI_APPLICATION = "SampleShare.asgi.application"
 
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -88,14 +88,7 @@ DATABASES = {
     }
 }
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
-        },
-    },
-}
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -131,12 +124,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Needed to handle static files
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATICFILES_DIRS = [
-      # Assuming you have a static folder in your root directory
+    # Assuming you have a static folder in your root directory
+    os.path.join(BASE_DIR, "static")
 ]
 
 # Default primary key field type
