@@ -26,4 +26,9 @@ urlpatterns = [
     path("create_post/", CreatePostView.as_view(), name="create_post"),
     path("update_post/<int:pk>", views.update_post, name="update_post"),
     path("delete_post/<int:pk>", views.delete_post, name="delete_post"),
+    
+    #Chat stuff here
+
+    path('chat/<str:room_name>/', chat_room, name='chat_room'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

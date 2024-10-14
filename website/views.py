@@ -172,3 +172,16 @@ def delete_post(request, pk):
 
 
 # --------------------------------------------------------------------#
+
+
+
+#--------------------Start Chat code---------------------------
+def chat_room(request, room_name):
+    return render(request, 'chat.html', {
+        'room_name': room_name
+    })
+
+
+
+
+#---------------------End chat Code------------------------------

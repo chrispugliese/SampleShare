@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room - {{ room_name }}</title>
+</head>
+<body>
+    <h1>Chat Room: {{ room_name }}</h1>
+    <textarea id="chat-log" cols="30" rows="10" readonly></textarea>
+    <input id="chat-message-input" type="text" placeholder="Type your message here...">
+    <button id="chat-message-submit">Send</button>
+
+    <script>
+        const chatName = "{{ room_name }}"; // Pass the room name from your template context
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + chatName + '/'
+        );
+
+        chatSocket.onopen = function(e) {
+            console.log("WebSocket connection established!");
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const message = data.message;
+
+            // Append the received message to the chat window
+            const chatLog = document.getElementById('chat-log');
+            chatLog.value += (message + '\n');
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        // Function to send message
+        function sendMessage() {
+            const messageInputDom = document.getElementById('chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';  // Clear the input after sending
+        }
+
+        // Add event listener to send the message on button click or Enter key
+        document.getElementById('chat-message-input').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        document.getElementById('chat-message-submit').onclick = function(e) {
+            sendMessage();
+        };
+    </script>
+</body>
+</html>
