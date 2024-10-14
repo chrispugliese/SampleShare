@@ -97,27 +97,6 @@ def upload(request):
         return redirect("login")
 
 
-# NOTE: i dont like the playsound package, i will refactor this to use the html audio widget, maybe use js to make it cool.
-# regardless this a whole function needs to be rewritten
-def sample_player(request, sample_id):
-    sample = get_object_or_404(Sample, id=sample_id)
-
-    file_path_to_sample = sample.fileLocation
-    try:
-        if not os.path.exists(file_path_to_sample):
-            raise FileNotFoundError(
-                f"The sample file at {file_path_to_sample} does not exist."
-            )
-
-    except FileNotFoundError as fnf_error:
-        message = f"File error: {fnf_error}"
-
-    except Exception as e:
-        message = f"An unexpected error has occurred: {e}"
-
-    return render(request, "sample_player.html", {"sample": sample, "message": message})
-
-
 def search_user(request):
     if request.method == "GET":
         query = request.GET.get(
@@ -156,20 +135,6 @@ def user_post(request, pk):
     else:
         messages.success(request, "Your Must Be Logged In...")
         return redirect("home")
-
-
-# def create_post(request):
-# form = PostForm(request.POST or None)
-# if request.user.is_authenticated:
-# if request.method == "POST":
-# if form.is_valid():
-# add_post = form.save()
-# messages.success(request, "Post Created...")
-# return redirect('home')
-# return render(request, 'create_post.html', {'form':form})
-# else:
-# messages.success(request, "Your Must Be Logged In...")
-# return redirect('home')
 
 
 class CreatePostView(CreateView):
