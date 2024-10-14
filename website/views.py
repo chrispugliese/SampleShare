@@ -80,15 +80,21 @@ def register_user(request):
 
 
 # TODO: need to add a 6 second restriction for audio files.
+# and some exception handling for if user is logged or not.
 def upload(request):
-    if request.method == "POST":
-        form = SampleForm(request.POST, request.FILES or None)
-        if form.is_valid():
-            form.save()
-            return redirect("home")
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            form = SampleForm(request.POST, request.FILES or None)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Your sample was uploaded successfully!")
+                return redirect("home")
+        else:
+            form = SampleForm()
+        return render(request, "upload.html", {"form": form})
     else:
-        form = SampleForm()
-    return render(request, "upload.html", {"form": form})
+        messages.error(request, "You must be logged in to upload a sample file!")
+        return redirect("login")
 
 
 # NOTE: i dont like the playsound package, i will refactor this to use the html audio widget, maybe use js to make it cool.
