@@ -2,10 +2,10 @@ from django.conf import django
 from django.http.response import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from .models import Sample, UserProfile, Post
+from .models import Sample, UserProfile, Post, Comment
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SampleForm, SignUpForm, PostForm
+from .forms import SampleForm, SignUpForm, PostForm, CommentForm
 from django.contrib.auth.models import User
 from django.views.generic import CreateView
 import os
@@ -170,5 +170,31 @@ def delete_post(request, pk):
         messages.success(request, "You Must Be Logged In To Do That...")
         return redirect("posts")
 
-
 # --------------------------------------------------------------------#
+
+#-----------------------Comment Code-----------------------#
+
+class CreateCommentView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "create_comment.html"
+
+def comments(request):
+    if request.user.is_authenticated:
+        # Look Up Posts
+        userComments = Comment.objects.all()
+        return render(request, "comments.html", {"userComments": userComments})
+    else:
+        messages.success(request, "You Must Be Logged In To Do That...")
+        return redirect("home")
+
+def comment_detail():
+    pass
+
+def update_comment():
+    pass
+
+def delete_comment():
+    pass
+
+#-----------------------------------------------------------#

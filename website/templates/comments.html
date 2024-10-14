@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content%}
+
+<h1>Comments</h1>
+<br/>
+<a href ="{% url 'create_comment' %}" class="btn btn-secondary">Make a Comment</a>
+{% if userComments %}
+    {% for comment in userComments %}
+    <ul class="list-group">
+        <li class="list-group-item">{{ comment.commentMessage }}</li>
+        
+    </ul>
+    <br/>
+    {% endfor %}
+{% endif %}
+<br/>
+<a href ="{% url 'home'%}" class="btn btn-secondary">back</a>
+
+{% endblock %}

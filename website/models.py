@@ -142,3 +142,6 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.commentMessage} {self.commentTimeStamp}"
+    
+    def get_absolute_url(self):
+        return reverse("comments")
