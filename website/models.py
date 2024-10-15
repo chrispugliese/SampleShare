@@ -20,7 +20,7 @@ from mutagen import mp3, wave
 class UserProfile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     dateOfBirth = models.DateField()
-    userPhoto = models.CharField(max_length=100, blank=True, null=True)
+    userPhoto = models.ImageField(blank=True, null=True, upload_to="images/")
     bio = models.TextField(max_length=1000)
     numberOfFollowers = models.IntegerField()
 
