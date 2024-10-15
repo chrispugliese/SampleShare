@@ -113,12 +113,20 @@ class ProfileForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ("commentMessage", "posts", "samples")
-
+        fields = ("commentMessage", "posts", "samples", "userProfile")
+    
         widgets = {
             "commentMessage": forms.TextInput(attrs={"class": "form-control"}),
             "posts": forms.Select(attrs={"class": "form-control"}),
             "samples": forms.Select(attrs={"class": "form-control"}),
+            "userProfile": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "value": "",
+                    "id": "user",
+                    "type": "hidden",
+                }
+            ),
         }
 
 #----------------------------------------------------#
