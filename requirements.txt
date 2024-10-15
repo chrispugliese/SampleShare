@@ -8,3 +8,5 @@ python-decouple==3.8
 sqlparse==0.5.1
 cryptography==43.0.1 
 mutagen==1.47.0
+channels==4.1.0
+daphne==4.1.2

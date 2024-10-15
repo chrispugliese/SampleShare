@@ -1,4 +1,4 @@
-from .views import CreatePostView
+from .views import CreatePostView, chat_room
 from django.urls import path
 from . import views
 from django.http import Http404
@@ -29,6 +29,6 @@ urlpatterns = [
     
     #Chat stuff here
 
-    path('chat/<str:room_name>/', chat_room, name='chat_room'),
+    path("chat/<str:room_name>/", chat_room, name="chat_room"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
