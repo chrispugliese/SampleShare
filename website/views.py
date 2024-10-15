@@ -18,10 +18,14 @@ def home(request):
 	profiles = UserProfile.objects.all()
 	return render(request, "home.html", {})
 
+def page_not_found(request):
+	raise Http404("Page not here tho")
 
-def user_detail(request, username):
+@login_required
+def profile_page(request, username):
 	user = get_object_or_404(User, username=username)
-	user_profile = get_object_or_404(UserProfile, user=user)  # Query UserProfile by ID
+	is_owner = request.user == user
+	profile = get_object_or_404(UserProfile, user=user)  # Query UserProfile by ID
 	# Check if the logged-in user is a friend
 	is_friend =  (
 		request.user.userprofile.friends.filter(id=profile.id).exists() 
@@ -41,28 +45,14 @@ def user_detail(request, username):
 		else False
 	)
 	context = {
-		'profile': user_profile,
+		'profile': profile,
+		'is_owner': is_owner,
 		'is_friend': is_friend,
 		'sent_request': sent_request,
 		'received_request': received_request,
 	}
 	print(f'Profile User ID: {profile.user.id if profile.user else "No user"}')
 	return render(request, 'profile.html', context)
-
-
-def page_not_found(request):
-	raise Http404("Page not here tho")
-
-
-def profile_page(request, username):
-	profile_user = get_object_or_404(User, username=username)
-
-	is_owner = request.user == profile_user
-
-	context = {"profile_user": profile_user, "is_owner": is_owner}
-
-	return render(request, "profile_page.html", context)
-
 
 # Login/Logout/Register Users
 def login_user(request):

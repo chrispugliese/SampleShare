@@ -66,8 +66,7 @@
         
         <!-- User Photo -->
 
-{% if user.is_authenticated %}
-  {% if profile.user.id != request.user.id %}
+{% if !is_owner %}
     {% if is_friend %}
         <!-- User is a friend -->
         <form action="{% url 'remove_friend' profile.user.id %}" method="POST">
@@ -96,7 +95,6 @@
         </form>
     {% endif %}
   {% endif %}
-{% endif %}
         <!-- Stats -->
         <div class="stats">
             <div><strong>Followers:</strong> 123</div>
