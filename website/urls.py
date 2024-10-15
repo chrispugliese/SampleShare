@@ -28,7 +28,7 @@ urlpatterns = [
     path("delete_post/<int:pk>", views.delete_post, name="delete_post"),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
     #--------Comment Links--------------#
-    path("create_comment/", CreateCommentView.as_view(), name="create_comment"),
+    path("create_comment/<int:pk>", views.create_comment, name="create_comment"),
     path("comments/<int:pk>", views.comments, name="comments"),
     path("comment_detail/<int:pk>", views.comment_detail, name="comment_detail"),
     path("update_comment/<int:pk>", views.update_comment, name="update_comment"),

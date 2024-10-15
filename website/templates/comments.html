@@ -24,7 +24,7 @@
     {% endfor %}
 {% endif %}
 <br/>
-<a href ="{% url 'create_comment' %}" class="btn btn-primary">Make a Comment</a>
+<a href ="{% url 'create_comment' user_post.id %}" class="btn btn-primary">Make a Comment</a>
 <a href ="{% url 'posts'%}" class="btn btn-secondary">back</a>
 
 {% endblock %}

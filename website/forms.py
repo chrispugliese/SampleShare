@@ -117,7 +117,7 @@ class CommentForm(forms.ModelForm):
     
         widgets = {
             "commentMessage": forms.TextInput(attrs={"class": "form-control"}),
-            "posts": forms.Select(attrs={"class": "form-control"}),
+            "posts": forms.TextInput(attrs={"class": "form-control", "value": "", "id":"post","type": "hidden"}),
             "samples": forms.Select(attrs={"class": "form-control"}),
             "userProfile": forms.TextInput(
                 attrs={
