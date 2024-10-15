@@ -188,13 +188,36 @@ def comments(request):
         messages.success(request, "You Must Be Logged In To Do That...")
         return redirect("home")
 
-def comment_detail():
-    pass
+def comment_detail(request, pk):
+    if request.user.is_authenticated:
+        user_comment = Comment.objects.get(id=pk)
+        return render(request, "comment_detail.html", {"user_comment": user_comment})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
 
-def update_comment():
-    pass
+def update_comment(request, pk):
+    if request.user.is_authenticated:
+        current_post = Comment.objects.get(id=pk)
+        form = CommentForm(request.POST or None, instance=current_post)
+        if request.method == "POST":
+            if form.is_valid():
+                add_comment = form.save()
+                messages.success(request, "Post Updated...")
+                return redirect("home")
+        return render(request, "update_comment.html", {"form": form})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
 
-def delete_comment():
-    pass
+def delete_comment(request, pk):
+    if request.user.is_authenticated:
+        deleteComment = Comment.objects.get(id=pk)
+        deleteComment.delete()
+        messages.success(request, "Post Was Deleted...")
+        return redirect("posts")
+    else:
+        messages.success(request, "You Must Be Logged In To Do That...")
+        return redirect("posts")
 
 #-----------------------------------------------------------#

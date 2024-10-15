@@ -29,8 +29,8 @@ urlpatterns = [
     #--------Comment Links--------------#
     path("create_comment/", CreateCommentView.as_view(), name="create_comment"),
     path("comments/", views.comments, name="comments"),
-    path("comment_detail/", views.comment_detail, name="comment_detail"),
-    path("update_comment", views.update_comment, name="update_comment"),
-    path("delete_comment", views.delete_comment, name="delete_comment"),
+    path("comment_detail/<int:pk>", views.comment_detail, name="comment_detail"),
+    path("update_comment/<int:pk>", views.update_comment, name="update_comment"),
+    path("delete_comment/<int:pk>", views.delete_comment, name="delete_comment"),
     #--------------------------------------#
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

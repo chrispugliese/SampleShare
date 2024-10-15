@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<br/>
+
+<div class="card">
+    <div class="card-header"><strong>
+          Post
+          </strong>
+    </div>
+    <div class="card-body">
+
+    <p class="card-text">
+    <strong>Text: </strong>{{ user_comment.commentMessage }}</p> 
+
+    <a href="{% url 'update_comment' user_comment.id %}" class="btn btn-secondary">Update Comment</a>
+    <a href="{% url 'comments' %}" class="btn btn-secondary">Back</a>
+
+{% endblock %}
