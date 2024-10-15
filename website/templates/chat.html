@@ -1,61 +1,64 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Chat Room</title>
-    <div id="room-name" style="display: none;">{{ room_name }}</div>
-</head>
-<body>
-    <h2>Welcome to the Chat Room: {{ room_name }}</h2>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
+<div class="container">
+<div class="content container-fluid bootstrap snippets bootdey">
+      <div class="row row-broken">
+        <div class="col-sm-3 col-xs-12">
+          <div class="col-inside-lg decor-default chat" style="overflow: hidden; outline: none;" tabindex="5000">
+            <div class="chat-users">
+              <h6>Chats</h6>
+                {% for chat in chats %}
+                <div class="user">
+                    <div class="avatar">
+                        {% for user_profile in chat.userProfiles.all %}
+                            {% if user_profile.user != request.user %}
+                                <img src="{{ user_profile.user.userPhoto }}" alt="{{ user_profile.user.username }}">
+                                <div class="name">{{ user_profile.user.username }}</div> <!-- Displaying the other user's name -->
+                            {% break %}
+                            {% endif %}
+                        {% endfor %}
+                        <div class="status {% if chat.message_set.last.is_read %}on{% else %}off{% endif %}"></div>
+                    <div class="mood">{{ chat.message_set.last.content }}</div>  <!-- Most recent message -->
+                </div>
+                {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-9 col-xs-12 chat" style="overflow: hidden; outline: none;" tabindex="5001">
+          <div class="col-inside-lg decor-default">
+            <div class="chat-body">
+              <h6>Mini Chat</h6>
+              {% for message in messages %}
+                {% if message.user == request.user %}
+                    <div class="answer right"> <!-- User's messages on the right -->
+                        <div class="avatar">
+                            <img src="{{ request.user.userprofile.userPhoto }}" alt="{{ request.user.username }}">
+                        </div>
+                        <div class="name">{{ request.user.username }}</div>
+                        <div class="text">{{ message.content }}</div>
+                        <div class="time">{{ message.created_at|timesince }} ago</div> <!-- Format the time appropriately -->
+                    </div>
+                {% else %}
+                    <div class="answer left"> <!-- Other user's messages on the left -->
+                        <div class="avatar">
+                            <img src="{{ message.user.userprofile.userPhoto }}" alt="{{ message.user.username }}">
+                        </div>
+                        <div class="name">{{ message.user.username }}</div>
+                        <div class="text">{{ message.content }}</div>
+                        <div class="time">{{ message.created_at|timesince }} ago</div> <!-- Format the time appropriately -->
+                    </div>
+                {% endif %}
+              {% endfor %}
 
-
-    <div id="chat-log" style="height: 400px; overflow-y: scroll; border: 1px solid #ccc;"></div>
-    <textarea id="chat-message-input" rows="3" placeholder="Type your message here..."></textarea><br>
-    <button id="chat-message-submit">Send</button>
-
-    <script>
-        const roomName = document.getElementById('room-name').textContent;  // No JSON.parse needed
-        const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
-
-
-
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').innerHTML += `<div><strong>${data.user}:</strong> ${data.message}</div>`;
-            // Scroll to the bottom of the chat log
-            const chatLog = document.querySelector('#chat-log');
-            chatLog.scrollTop = chatLog.scrollHeight;
-        };
-
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // Enter key
-                document.querySelector('#chat-message-submit').click();
-            }
-        };
-
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
-        };
-
-
-        //Test output
-        console.log('Room Name:', roomName);
-        console.log('Host:', window.location.host);
-        const websocketUrl = 'ws://' + window.location.host + '/ws/chat/' + roomName + '/';
-        console.log('WebSocket URL:', websocketUrl);
-
-
-    </script>
-</body>
-</html>
-
+                <form method="POST" class="answer-add"> <!-- Use a form to submit the message -->
+                    {% csrf_token %} <!-- Include CSRF token for security -->
+                    {{ form.content }} <!-- Render the form field for the message content -->
+                    <span class="answer-btn answer-btn-1" onclick="this.closest('form').submit();">Send</span> <!-- Button to submit the form -->
+                    <span class="answer-btn answer-btn-2"></span>
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+ </div>

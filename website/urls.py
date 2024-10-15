@@ -1,4 +1,4 @@
-from .views import CreatePostView, chat_room
+from .views import CreatePostView, chat, send_friend_request, accept_friend_request, decline_friend_request, remove_friend
 from django.urls import path
 from . import views
 from django.http import Http404
@@ -7,10 +7,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("", views.home, name="home"),
-    path(
-        "user/<int:user_id>/", views.user_detail, name="user_detail"
-    ),  # Dynamic user page
-    path("user/", views.page_not_found),
     path("login/", views.login_user, name="login"),
     path("logout/", views.logout_user, name="logout"),
     path("register/", views.register_user, name="register"),
@@ -27,8 +23,14 @@ urlpatterns = [
     path("update_post/<int:pk>", views.update_post, name="update_post"),
     path("delete_post/<int:pk>", views.delete_post, name="delete_post"),
     
-    #Chat stuff here
+    #Friend Requests:
+    path('send-friend-request/<int:user_id>/', send_friend_request, name='send_friend_request'),
+    path('accept-friend-request/<int:request_id>/', accept_friend_request, name='accept_friend_request'),
+    path('decline-friend-request/<int:request_id>/', decline_friend_request, name='decline_friend_request'),
+    path('remove-friend/<int:user_id>/', remove_friend, name='remove_friend'),  # URL for removing a friend
 
-    path("chat/<str:room_name>/", chat_room, name="chat_room"),
+
+    #Chat stuff here
+    path("chat/<int:chat_id>/", views.chat, name="chat"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

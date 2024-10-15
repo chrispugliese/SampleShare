@@ -8,7 +8,6 @@ from mutagen import mp3, wave
 
 # Create your models here.
 
-
 # ------User-Profiles---------------
 # username = VARCHAR(50) NOT NULL
 # dataOfBirth = VARCHAR(50) NOT NULL
@@ -23,9 +22,16 @@ class UserProfile(models.Model):
 	userPhoto = models.CharField(max_length=100)
 	bio = models.TextField(max_length=1000)
 	numberOfFollowers = models.IntegerField()
-
+	friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 	def __str__(self):
 		return str(self.user)
+
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(UserProfile, related_name='sent_requests', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(UserProfile, related_name='received_requests', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user}"
 
 
 # ------Samples------
@@ -88,8 +94,8 @@ class Chat(models.Model):
 class Message(models.Model):
 	chat = models.ForeignKey(Chat, on_delete=models.CASCADE)  # Linking to the Chat model
 	user = models.ForeignKey(User, on_delete=models.CASCADE)  # Linking to the User model
-	message = models.TextField()
-	timestamp = models.DateTimeField(auto_now_add=True)
+	content = models.TextField()
+	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		return f"{self.user.username}: {self.message[:20]} at {self.timestamp}"

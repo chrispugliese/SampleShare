@@ -1,6 +1,40 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+{% if user.is_authenticated %}
+  {% if profile.user.id != request.user.id %}
+    {% if is_friend %}
+        <!-- User is a friend -->
+        <form action="{% url 'remove_friend' profile.user.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">Remove Friend</button>
+        </form>
+    {% elif sent_request %}
+        <!-- Friend request is already sent -->
+        <p>Friend request sent.</p>
+    {% elif received_request %}
+        <!-- Friend request can be accepted or declined -->
+        <form action="{% url 'accept_friend_request' request.id %}" method="POST" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Accept Friend Request</button>
+        </form>
+        <form action="{% url 'decline_friend_request' request.id %}" method="POST" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Decline Friend Request</button>
+        </form>
+    {% else %}
+        <!-- Send a friend request -->
+        <h6>UGH</h6>
+        <form action="{% url 'send_friend_request' profile.user.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">Send Friend Request</button>
+        </form>
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+
   <h2>Profile of {{ profile_user.username }}</h2>
   <p>Email: {{ profile_user.email }}</p>
   <p>First Name: {{ profile_user.first_name }}</p>

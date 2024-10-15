@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ["0.0.0.0", "localhost"]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -122,6 +123,8 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 
 USE_I18N = True
+
+USE_L10N = True
 
 USE_TZ = True
 
