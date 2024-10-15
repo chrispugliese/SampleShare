@@ -26,6 +26,7 @@ urlpatterns = [
     path("create_post/", CreatePostView.as_view(), name="create_post"),
     path("update_post/<int:pk>", views.update_post, name="update_post"),
     path("delete_post/<int:pk>", views.delete_post, name="delete_post"),
+    path('edit-profile/', views.edit_profile, name='edit_profile'),
     #--------Comment Links--------------#
     path("create_comment/", CreateCommentView.as_view(), name="create_comment"),
     path("comments/", views.comments, name="comments"),

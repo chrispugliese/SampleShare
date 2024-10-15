@@ -98,7 +98,15 @@ class PostForm(forms.ModelForm):
         }
 
 
+# -------------------Profile Form--------------------------------
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ["bio", "userPhoto"] 
+
+
 # ---------------------------------------------------
+
 
 #----------------------Comment Code------------------#\
 
@@ -113,6 +121,5 @@ class CommentForm(forms.ModelForm):
             "samples": forms.Select(attrs={"class": "form-control"}),
         }
 
-
-
 #----------------------------------------------------#
+
