@@ -15,14 +15,20 @@ import asyncio, os, json
 
 # Create your views here.
 def home(request):
+<<<<<<< Updated upstream
 	profiles = UserProfile.objects.all()
 	return render(request, "home.html", {})
+=======
+    profiles = UserProfile.objects.all()
+    return render(request, "home.html", {})
+>>>>>>> Stashed changes
 
 def page_not_found(request):
 	raise Http404("Page not here tho")
 
 @login_required
 def profile_page(request, username):
+<<<<<<< Updated upstream
 	user = get_object_or_404(User, username=username)
 	is_owner = request.user == user
 	profile = get_object_or_404(UserProfile, user=user)  # Query UserProfile by ID
@@ -53,6 +59,15 @@ def profile_page(request, username):
 	}
 	print(f'Profile User ID: {profile.user.id if profile.user else "No user"}')
 	return render(request, 'profile.html', context)
+=======
+    user = get_object_or_404(User, username=username)
+    is_owner = request.user == user
+
+    context = {"user": user, "is_owner": is_owner}
+
+    return render(request, "profile_page.html", context)
+
+>>>>>>> Stashed changes
 
 # Login/Logout/Register Users
 def login_user(request):
