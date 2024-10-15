@@ -29,7 +29,7 @@ urlpatterns = [
     path('edit-profile/', views.edit_profile, name='edit_profile'),
     #--------Comment Links--------------#
     path("create_comment/", CreateCommentView.as_view(), name="create_comment"),
-    path("comments/", views.comments, name="comments"),
+    path("comments/<int:pk>", views.comments, name="comments"),
     path("comment_detail/<int:pk>", views.comment_detail, name="comment_detail"),
     path("update_comment/<int:pk>", views.update_comment, name="update_comment"),
     path("delete_comment/<int:pk>", views.delete_comment, name="delete_comment"),

@@ -208,10 +208,10 @@ class CreateCommentView(CreateView):
     form_class = CommentForm
     template_name = "create_comment.html"
 
-def comments(request):
+def comments(request, pk):
     if request.user.is_authenticated:
         # Look Up Posts
-        userComments = Comment.objects.all()
+        userComments = Comment.objects.filter(posts=pk)
         return render(request, "comments.html", {"userComments": userComments})
     else:
         messages.success(request, "You Must Be Logged In To Do That...")
@@ -227,13 +227,13 @@ def comment_detail(request, pk):
 
 def update_comment(request, pk):
     if request.user.is_authenticated:
-        current_post = Comment.objects.get(id=pk)
-        form = CommentForm(request.POST or None, instance=current_post)
+        current_comment = Comment.objects.get(id=pk)
+        form = CommentForm(request.POST or None, instance=current_comment)
         if request.method == "POST":
             if form.is_valid():
                 add_comment = form.save()
                 messages.success(request, "Post Updated...")
-                return redirect("home")
+                return redirect("posts")
         return render(request, "update_comment.html", {"form": form})
     else:
         messages.success(request, "Your Must Be Logged In...")

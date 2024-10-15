@@ -17,6 +17,6 @@
     <a href="{% url 'delete_comment' user_comment.id %}" class="btn btn-danger">Delete Comment</a>
     
     {% endif %}
-    <a href="{% url 'comments' %}" class="btn btn-secondary">Back</a>
+    <a href="{% url 'comments' user_comment.posts.id%}" class="btn btn-secondary">Back</a>
 
 {% endblock %}
