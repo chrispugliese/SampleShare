@@ -22,7 +22,7 @@ urlpatterns = [
     path("create_post/", CreatePostView.as_view(), name="create_post"),
     path("update_post/<int:pk>", views.update_post, name="update_post"),
     path("delete_post/<int:pk>", views.delete_post, name="delete_post"),
-    
+    path("edit_profile/", views.edit_profile, name="edit_profile"),
     #Friend Requests:
     path('send-friend-request/<int:user_id>/', send_friend_request, name='send_friend_request'),
     path('accept-friend-request/<int:request_id>/', accept_friend_request, name='accept_friend_request'),
