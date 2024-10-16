@@ -18,7 +18,7 @@ urlpatterns = [
     path("profile/<str:username>/", views.profile_page, name="profile"),
     # -------Samples/Uploads Links------------#
     path("upload/", views.upload, name="upload"),
-    # path("sample/<int:sample_id>/", views.sample_player, name="sample_player"),
+    path("sample/", views.sample_player, name="sample_player"),
     # -------Posts Links------------#
     path("posts/", views.posts, name="posts"),
     path("user_post/<int:pk>", views.user_post, name="user_post"),
@@ -28,5 +28,3 @@ urlpatterns = [
     path("delete_post/<int:pk>", views.delete_post, name="delete_post"),
     path("edit_profile/", views.edit_profile, name="edit_profile"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-

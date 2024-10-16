@@ -100,8 +100,11 @@ def upload(request):
 
 def sample_player(request, sample_id):
     if request.user.is_authenticated:
-        if request.method == "GET":
-            query_sample = get_object_or_404()
+        query_sample = get_object_or_404(Sample, pk=sample_id)
+        return render(request, "sample_player.html", {"query_sample": query_sample})
+    else:
+        messages.error(request, "You must be logged in to listen to samples.")
+        return redirect("login")
 
 
 def search_user(request):
