@@ -84,18 +84,12 @@ class Chat(models.Model):
 	userProfiles = models.ManyToManyField(UserProfile, null=True)
 	is_group_chat = models.BooleanField(default=False)
 
-	def __str__(self):
-		if self.is_group_chat:
-			return self.chatName
-		else:
-			# For private chats, return the name of the other user
-			return f"Chat with {self.get_other_user()}"
+	def get_other_user(self, current_user):
+		return self.userProfiles.exclude(user=current_user).first()
 
-	def get_other_user(self):
-		# Assumes this is a private chat between 2 people
-		if self.userProfiles.count() == 2:
-			return self.userProfiles.exclude(user=self.request.user).first()
-		return None
+	def __str__(self):
+		return f"Chat with {', '.join(self.userProfiles.all().values_list('user__username', flat=True))}"
+
 
 # ------Messages------
 # message = TEXT NOT NULL
@@ -108,7 +102,7 @@ class Message(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
-		return f"{self.user.username}: {self.message[:20]} at {self.timestamp}"
+		return f"{self.user.username}: {self.content[:20]} at {self.created_at}"
 
 
 # ------Genres------

@@ -33,5 +33,6 @@ urlpatterns = [
     #Chat stuff here
     path("chat/<int:chat_id>/", views.chat, name="chat"),
     path('chat/private/<int:user_id>/', views.private_chat_redirect, name='private_chat_redirect'),
+    path('send_message/<int:chat_id>/', views.add_message, name='send_message'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

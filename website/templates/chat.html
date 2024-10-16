@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block content %}
+{% load static %}
  <head>
 	<style>
 			body{
-			margin-top:20px;
 			background:#eee;
 		}
 		.row.row-broken {
@@ -245,10 +244,12 @@
 			border-radius: 0;
 		}
 	</style>
+    <title>Your Chat</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
 </head>
 <body>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
 <div class="container">
 <div class="content container-fluid bootstrap snippets bootdey">
 	<div class="row row-broken">
@@ -275,7 +276,7 @@
 		  	</div>
 		</div>
 		<!-- Middle section: Populated with current selected chat. -->
-		<div class="col-sm-9 col-xs-12 chat" style="overflow: hidden; outline: none;" tabindex="5001">
+		<div class="col-sm-9 col-xs-12 chat" id="chat-body" style="overflow: hidden; outline: none;" tabindex="5001">
 		  	<div class="col-inside-lg decor-default">
 				<div class="chat-body">
 			  		<h6>Mini Chat</h6>
@@ -300,11 +301,13 @@
 							</div>
 						{% endif %}
 			  		{% endfor %}
-					<form method="POST" class="answer-add"> <!-- Use a form to submit the message -->
-						{% csrf_token %} <!-- Include CSRF token for security -->
-						{{ form.content }} <!-- Render the form field for the message content -->
-						<span class="answer-btn answer-btn-1" onclick="this.closest('form').submit();">Send</span> <!-- Button to submit the form -->
-						<span class="answer-btn answer-btn-2"></span>
+					<form method="POST" class="answer-add" action="{% url 'send_message' chat.id %}">
+    					{% csrf_token %}
+    					<input type="hidden" name="chat_id" value="{{ chat.id }}">  <!-- Make sure you pass the chat ID -->
+    					<div class="form-group">
+        					<textarea name="content" placeholder="Type message..." class="form-control" rows="1">{{ form.content.value }}</textarea>
+    					</div>
+    					<span class="answer-btn answer-btn-1" onclick="this.closest('form').submit();">Send</span>
 					</form>
 				</div>
 		  	</div>
@@ -312,5 +315,25 @@
 	</div>
 </div>
 </div>
+<script>
+    $(function() {
+        $(".chat").niceScroll();
+    });
+
+    function scrollToBottom() {
+        var chatBody = $('#chat-body');
+        if (chatBody.length) { // Check if the element exists
+            chatBody.scrollTop(chatBody[0].scrollHeight);
+        }
+    }
+
+    $(document).ready(function() {
+        setTimeout(scrollToBottom, 100); // Wait a bit for the chat to render
+    });
+
+    $('form.answer-add').on('submit', function() {
+        setTimeout(scrollToBottom, 100); // Wait for new message to render
+    });
+</script>
 </body>
  {% endblock %}

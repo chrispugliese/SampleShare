@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, HttpRequest, StreamingHttpResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.views.generic import CreateView
 from typing import AsyncGenerator
 from .forms import SampleForm, SignUpForm, PostForm, MessageForm
@@ -278,19 +279,19 @@ def chat(request, chat_id):
 	#Get the logged-in user from the session:
 	user_profile = get_object_or_404(UserProfile, user=request.user)
 	#Retrieves chat room by the room's ID
-	chat_room = get_object_or_404(Chat, id=chat_id)
+	chat = get_object_or_404(Chat, id=chat_id)
 
 	# Check if the user is part of the chat's userProfiles (Many-to-Many)
-	if user_profile not in chat_room.userProfiles.all():
+	if user_profile not in chat.userProfiles.all():
 		return redirect('home')  # Or show an error message
 
-	messages = Message.objects.filter(chat=chat_room).order_by('-created_at')  # Get messages for the chat
+	messages = chat.message_set.all().order_by('created_at')  # Get messages for the chat
 
 	# Fetch all chats that the user is a part of (ordered by timestamp)
 	user_chats = Chat.objects.filter(userProfiles=user_profile).order_by('-chatTimeStamp')
 
 	return render(request, 'chat.html', {
-		'chat_room': chat_room,        # Pass the chat room object
+		'chat': chat,        # Pass the chat room object
 		'user_profile': user_profile,   # Pass the user profile
 		'chats': user_chats,           # Pass the list of chats
 		'messages': messages,           #Pass the sorted messages 
@@ -340,9 +341,18 @@ def add_message(request, chat_id):
 			Message.objects.create(chat=chat, user=request.user, content=content)
 			chat.chatTimeStamp = timezone.now()
 			chat.save()
-			return redirect('chat', chat_id=chat.id)  # Redirect to the chat page after posting
+			return redirect('chat', chat_id=chat_id)  # Redirect to the chat page after posting
 	else:
-		form = MessageForm()  # Create an empty form
+            # Form is invalid, render the chat page with errors
+            messages.error(request, "There was an error with your submission.")  # Optional: Flash an error message
+            messages = chat.message_set.all().order_by('created_at')  # Fetch messages for the chat
+            return render(request, 'chat.html', {
+                'chat': chat,
+                'user_profile': request.user.userprofile,
+                'chats': Chat.objects.filter(userProfiles=request.user.userprofile).order_by('-chatTimeStamp'),
+                'messages': messages,
+                'form': form,  # Pass the form back with errors
+            })
 
-	return render(request, 'chat.html', {'form': form, 'chat': chat})
+	return redirect('chat', chat_id=chat_id)
 #---------------------End chat Code------------------------------
