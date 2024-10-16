@@ -174,29 +174,18 @@ def delete_post(request, pk):
 
 
 
+
+
+
 def edit_profile(request):
     profile = request.user.userprofile
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
-            # Handle file upload if a new file is uploaded
-            if 'userPhoto' in request.FILES:
-                # Save the file to a directory under 'media/profile_pics/'
-                uploaded_file = request.FILES['userPhoto']
-                file_path = os.path.join('profile_pics', uploaded_file.name)
-                
-                # Write the file to the media directory
-                with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as destination:
-                    for chunk in uploaded_file.chunks():
-                        destination.write(chunk)
-                
-                # Save the file path in the CharField
-                profile.userPhoto = file_path
-
-            # Save profile instance
-            profile.save()
+            form.save()  # Save directly without handling file manually
             return redirect('profile', username=request.user.username)
     else:
         form = ProfileForm(instance=profile)
     return render(request, 'edit_profile.html', {'form': form})
+
 # --------------------------------------------------------------------#
