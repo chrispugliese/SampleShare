@@ -35,3 +35,5 @@ urlpatterns = [
     path("delete_comment/<int:pk>", views.delete_comment, name="delete_comment"),
     #--------------------------------------#
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
