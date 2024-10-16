@@ -1,4 +1,5 @@
 from django.conf import django
+from django.http.request import is_same_domain
 from django.http.response import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
@@ -81,8 +82,6 @@ def register_user(request):
     return render(request, "register.html", {"form": form})
 
 
-# TODO: need to add a 6 second restriction for audio files.
-# and some exception handling for if user is logged or not.
 def upload(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -97,6 +96,12 @@ def upload(request):
     else:
         messages.error(request, "You must be logged in to upload a sample file!")
         return redirect("login")
+
+
+def sample_player(request, sample_id):
+    if request.user.is_authenticated:
+        if request.method == "GET":
+            query_sample = get_object_or_404()
 
 
 def search_user(request):
@@ -173,30 +178,33 @@ def delete_post(request, pk):
         return redirect("posts")
 
 
-
 def edit_profile(request):
     profile = request.user.userprofile
-    if request.method == 'POST':
+    if request.method == "POST":
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             # Handle file upload if a new file is uploaded
-            if 'userPhoto' in request.FILES:
+            if "userPhoto" in request.FILES:
                 # Save the file to a directory under 'media/profile_pics/'
-                uploaded_file = request.FILES['userPhoto']
-                file_path = os.path.join('profile_pics', uploaded_file.name)
-                
+                uploaded_file = request.FILES["userPhoto"]
+                file_path = os.path.join("profile_pics", uploaded_file.name)
+
                 # Write the file to the media directory
-                with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as destination:
+                with open(
+                    os.path.join(settings.MEDIA_ROOT, file_path), "wb+"
+                ) as destination:
                     for chunk in uploaded_file.chunks():
                         destination.write(chunk)
-                
+
                 # Save the file path in the CharField
                 profile.userPhoto = file_path
 
             # Save profile instance
             profile.save()
-            return redirect('profile', username=request.user.username)
+            return redirect("profile", username=request.user.username)
     else:
         form = ProfileForm(instance=profile)
-    return render(request, 'edit_profile.html', {'form': form})
+    return render(request, "edit_profile.html", {"form": form})
+
+
 # --------------------------------------------------------------------#
