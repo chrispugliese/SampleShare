@@ -235,7 +235,7 @@ def update_comment(request, pk):
         if request.method == "POST":
             if form.is_valid():
                 add_comment = form.save()
-                messages.success(request, "Post Updated...")
+                messages.success(request, "Comment Updated...")
                 return redirect("posts")
         return render(request, "update_comment.html", {"form": form})
     else:
@@ -246,7 +246,7 @@ def delete_comment(request, pk):
     if request.user.is_authenticated:
         deleteComment = Comment.objects.get(id=pk)
         deleteComment.delete()
-        messages.success(request, "Post Was Deleted...")
+        messages.success(request, "Comment Was Deleted...")
         return redirect("posts")
     else:
         messages.success(request, "You Must Be Logged In To Do That...")
