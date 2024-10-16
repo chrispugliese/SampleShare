@@ -28,3 +28,5 @@ urlpatterns = [
     path("delete_post/<int:pk>", views.delete_post, name="delete_post"),
     path("edit_profile/", views.edit_profile, name="edit_profile"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
