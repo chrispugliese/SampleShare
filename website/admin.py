@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile
+from .models import UserProfile, Chat
 from .models import *
 
 
@@ -13,3 +13,4 @@ class UserProfileAdmin(admin.ModelAdmin):
 admin.site.register(Post)
 admin.site.register(UserProfile)
 admin.site.register(Sample)
+admin.site.register(Chat)

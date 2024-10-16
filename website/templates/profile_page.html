@@ -51,6 +51,9 @@
 <div>
     {% if is_friend %}
         <!-- User is a friend -->
+        <!-- Creates/Routes to chat -->
+        <a href="{% url 'private_chat_redirect' profile.user.id %}" class="btn btn-primary">Message</a>
+
         <form action="{% url 'remove_friend' profile.user.id %}" method="POST">
             {% csrf_token %}
             <button type="submit">Remove Friend</button>

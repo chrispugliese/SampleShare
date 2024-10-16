@@ -27,11 +27,11 @@ class UserProfile(models.Model):
 		return str(self.user)
 
 class FriendRequest(models.Model):
-    from_user = models.ForeignKey(UserProfile, related_name='sent_requests', on_delete=models.CASCADE)
-    to_user = models.ForeignKey(UserProfile, related_name='received_requests', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    def __str__(self):
-        return f"{self.from_user} -> {self.to_user}"
+	from_user = models.ForeignKey(UserProfile, related_name='sent_requests', on_delete=models.CASCADE)
+	to_user = models.ForeignKey(UserProfile, related_name='received_requests', on_delete=models.CASCADE)
+	created_at = models.DateTimeField(auto_now_add=True)
+	def __str__(self):
+		return f"{self.from_user} -> {self.to_user}"
 
 
 # ------Samples------
@@ -82,10 +82,20 @@ class Chat(models.Model):
 	chatTimeStamp = models.DateTimeField(auto_now_add=True)
 	# Many to Many with UserProfiles
 	userProfiles = models.ManyToManyField(UserProfile, null=True)
+	is_group_chat = models.BooleanField(default=False)
 
 	def __str__(self):
-		return f"{self.chatName} {self.chatTimeStamp}"
+		if self.is_group_chat:
+			return self.chatName
+		else:
+			# For private chats, return the name of the other user
+			return f"Chat with {self.get_other_user()}"
 
+	def get_other_user(self):
+		# Assumes this is a private chat between 2 people
+		if self.userProfiles.count() == 2:
+			return self.userProfiles.exclude(user=self.request.user).first()
+		return None
 
 # ------Messages------
 # message = TEXT NOT NULL
