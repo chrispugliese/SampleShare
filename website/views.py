@@ -98,10 +98,12 @@ def upload(request):
         return redirect("login")
 
 
-def sample_player(request, sample_id):
+def sample_player(request):
     if request.user.is_authenticated:
-        query_sample = get_object_or_404(Sample, pk=sample_id)
-        return render(request, "sample_player.html", {"query_sample": query_sample})
+        query_all_sample = Sample.objects.filter(isPublic=True)
+        return render(
+            request, "sample_player.html", {"query_all_sample": query_all_sample}
+        )
     else:
         messages.error(request, "You must be logged in to listen to samples.")
         return redirect("login")
