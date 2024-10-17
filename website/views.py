@@ -97,10 +97,11 @@ def register_user(request):
 			login(request, user)
 			messages.success(request, "Account Registered!")
 			return redirect("home")
+		else:
+			return render(request, "register.html", {"form": form})
 	else:
 		form = SignUpForm()
 		return render(request, "register.html", {"form": form})
-	return render(request, "register.html", {"form": form})
 
 @login_required
 def send_friend_request(request, user_id):
@@ -285,7 +286,7 @@ def chat(request, chat_id):
 	if user_profile not in chat.userProfiles.all():
 		return redirect('home')  # Or show an error message
 
-	messages = chat.message_set.all().order_by('created_at')  # Get messages for the chat
+	chatMessages = chat.message_set.all().order_by('created_at')  # Get messages for the chat
 
 	# Fetch all chats that the user is a part of (ordered by timestamp)
 	user_chats = Chat.objects.filter(userProfiles=user_profile).order_by('-chatTimeStamp')
@@ -294,7 +295,7 @@ def chat(request, chat_id):
 		'chat': chat,        # Pass the chat room object
 		'user_profile': user_profile,   # Pass the user profile
 		'chats': user_chats,           # Pass the list of chats
-		'messages': messages,           #Pass the sorted messages 
+		'chatMessages': chatMessages,           #Pass the sorted messages 
 	})
 
 def private_chat_redirect(request, user_id):
@@ -350,7 +351,7 @@ def add_message(request, chat_id):
                 'chat': chat,
                 'user_profile': request.user.userprofile,
                 'chats': Chat.objects.filter(userProfiles=request.user.userprofile).order_by('-chatTimeStamp'),
-                'messages': messages,
+                'chatMessages': chatMessages,
                 'form': form,  # Pass the form back with errors
             })
 

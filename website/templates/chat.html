@@ -280,24 +280,24 @@
 		  	<div class="col-inside-lg decor-default">
 				<div class="chat-body">
 			  		<h6>Mini Chat</h6>
-			  		{% for message in messages %}
-						{% if message.user == request.user %}
+			  		{% for chatMessage in chatMessages %}
+						{% if chatMessage.user == request.user %}
 							<div class="answer right"> <!-- User's messages on the right -->
 								<div class="avatar">
 									<img src="{% static request.user.userprofile.userPhoto %}" alt="{{ request.user.username }}">
 								</div>
 								<div class="name">{{ request.user.username }}</div>
-								<div class="text">{{ message.content }}</div>
-								<div class="time">{{ message.created_at|timesince }} ago</div> <!-- Format the time appropriately -->
+								<div class="text">{{ chatMessage.content }}</div>
+								<div class="time">{{ chatMessage.created_at|timesince }} ago</div> <!-- Format the time appropriately -->
 							</div>
 						{% else %}
 							<div class="answer left"> <!-- Other user's messages on the left -->
 								<div class="avatar">
 									<img src="{% static message.user.userprofile.userPhoto %}" alt="{{ message.user.username }}">
 								</div>
-								<div class="name">{{ message.user.username }}</div>
-								<div class="text">{{ message.content }}</div>
-								<div class="time">{{ message.created_at|timesince }} ago</div> <!-- Format the time appropriately -->
+								<div class="name">{{ chatMessage.user.username }}</div>
+								<div class="text">{{ chatMessage.content }}</div>
+								<div class="time">{{ chatMessage.created_at|timesince }} ago</div> <!-- Format the time appropriately -->
 							</div>
 						{% endif %}
 			  		{% endfor %}
