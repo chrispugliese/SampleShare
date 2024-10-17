@@ -20,13 +20,22 @@ def home(request):
     return render(request, "home.html", {})
 
 
+# --------------------------------------------------------------------#
+
+
 def user_detail(request, user_id):
     user_profile = get_object_or_404(UserProfile, id=user_id)  # Query UserProfile by ID
     return render(request, "user_detail.html", {"user_profile": user_profile})
 
 
+# --------------------------------------------------------------------#
+
+
 def page_not_found(request):
     raise Http404("Page not here tho")
+
+
+# --------------------------------------------------------------------#
 
 
 def profile_page(request, username):
@@ -37,6 +46,9 @@ def profile_page(request, username):
     context = {"profile_user": profile_user, "is_owner": is_owner}
 
     return render(request, "profile_page.html", context)
+
+
+# --------------------------------------------------------------------#
 
 
 # Login/Logout/Register Users
@@ -57,10 +69,16 @@ def login_user(request):
         return render(request, "login.html")
 
 
+# --------------------------------------------------------------------#
+
+
 def logout_user(request):
     logout(request)
     messages.success(request, "Logged out")
     return redirect("home")
+
+
+# --------------------------------------------------------------------#
 
 
 def register_user(request):
@@ -82,6 +100,9 @@ def register_user(request):
     return render(request, "register.html", {"form": form})
 
 
+# --------------------------------------------------------------------#
+
+
 def upload(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -96,6 +117,9 @@ def upload(request):
     else:
         messages.error(request, "You must be logged in to upload a sample file!")
         return redirect("login")
+
+
+# --------------------------------------------------------------------#
 
 
 def sample_player(request):
@@ -140,6 +164,9 @@ def posts(request):
         return redirect("home")
 
 
+# --------------------------------------------------------------------#
+
+
 def user_post(request, pk):
     if request.user.is_authenticated:
         user_post = Post.objects.get(id=pk)
@@ -149,11 +176,17 @@ def user_post(request, pk):
         return redirect("home")
 
 
+# --------------------------------------------------------------------#
+
+
 class CreatePostView(CreateView):
     model = Post
     form_class = PostForm
     template_name = "create_post.html"
     # fields = '__all__'
+
+
+# --------------------------------------------------------------------#
 
 
 def update_post(request, pk):
@@ -170,6 +203,9 @@ def update_post(request, pk):
     else:
         messages.success(request, "Your Must Be Logged In...")
         return redirect("home")
+
+
+# --------------------------------------------------------------------#
 
 
 def delete_post(request, pk):
@@ -207,6 +243,9 @@ class CreateCommentView(CreateView):
     template_name = "create_comment.html"
 
 
+# --------------------------------------------------------------------#
+
+
 def create_comment(request, pk):
     if request.user.is_authenticated:
         current_post = Post.objects.get(id=pk)
@@ -224,6 +263,9 @@ def create_comment(request, pk):
         return redirect("home")
 
 
+# --------------------------------------------------------------------#
+
+
 def comments(request, pk):
     if request.user.is_authenticated:
         # Look Up Posts
@@ -239,6 +281,9 @@ def comments(request, pk):
         return redirect("home")
 
 
+# --------------------------------------------------------------------#
+
+
 def comment_detail(request, pk):
     if request.user.is_authenticated:
         user_comment = Comment.objects.get(id=pk)
@@ -246,6 +291,9 @@ def comment_detail(request, pk):
     else:
         messages.success(request, "Your Must Be Logged In...")
         return redirect("home")
+
+
+# --------------------------------------------------------------------#
 
 
 def update_comment(request, pk):
@@ -263,6 +311,9 @@ def update_comment(request, pk):
         return redirect("home")
 
 
+# --------------------------------------------------------------------#
+
+
 def delete_comment(request, pk):
     if request.user.is_authenticated:
         deleteComment = Comment.objects.get(id=pk)
@@ -272,6 +323,17 @@ def delete_comment(request, pk):
     else:
         messages.success(request, "You Must Be Logged In To Do That...")
         return redirect("posts")
+
+
+# ---------------------------------Delete Account-----------------------------------#
+
+
+def delete_account(request):
+    if request.method == "POST":
+        request.user.delete()
+        messages.success(request, "Your account has been deleted. ")
+        return redirect("home")
+    return render(request, "confirm_delete_account.html")
 
 
 # --------------------------------------------------------------------#

@@ -16,6 +16,7 @@ urlpatterns = [
     path("register/", views.register_user, name="register"),
     path("search/", views.search_user, name="search_user"),
     path("profile/<str:username>/", views.profile_page, name="profile"),
+    path("delete-account/", views.delete_account, name="delete_account"),
     # -------Samples/Uploads Links------------#
     path("upload/", views.upload, name="upload"),
     path("sample/", views.sample_player, name="sample_player"),
