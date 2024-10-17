@@ -138,7 +138,12 @@ class Comment(models.Model):
     # One to Many with Posts
     posts = models.ForeignKey(Post, on_delete=models.CASCADE)
     # One to Many with Samples
-    samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True)
+    samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True, blank=True)
+
+    userProfile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.commentMessage} {self.commentTimeStamp}"
+    
+    def get_absolute_url(self):
+        return reverse("posts")
