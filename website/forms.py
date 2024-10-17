@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Sample, UserProfile, Post
+from .models import Sample, UserProfile, Post, Comment
 
 
 class SampleForm(forms.ModelForm):
@@ -106,3 +106,36 @@ class ProfileForm(forms.ModelForm):
 
 
 # ---------------------------------------------------
+
+
+# ----------------------Comment Code------------------#\
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ("commentMessage", "posts", "samples", "userProfile")
+
+        widgets = {
+            "commentMessage": forms.TextInput(attrs={"class": "form-control"}),
+            "posts": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "value": "",
+                    "id": "post",
+                    "type": "hidden",
+                }
+            ),
+            "samples": forms.Select(attrs={"class": "form-control"}),
+            "userProfile": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "value": "",
+                    "id": "user",
+                    "type": "hidden",
+                }
+            ),
+        }
+
+
+# ----------------------------------------------------#

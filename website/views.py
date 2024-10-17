@@ -3,10 +3,10 @@ from django.http.request import is_same_domain
 from django.http.response import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from .models import Sample, UserProfile, Post
+from .models import Sample, UserProfile, Post, Comment
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SampleForm, SignUpForm, PostForm
+from .forms import SampleForm, SignUpForm, PostForm, CommentForm
 from django.contrib.auth.models import User
 from django.views.generic import CreateView
 from .forms import ProfileForm
@@ -183,6 +183,9 @@ def delete_post(request, pk):
         return redirect("posts")
 
 
+# --------------------------------------------------------------------#
+
+
 def edit_profile(request):
     profile = request.user.userprofile
     if request.method == "POST":
@@ -193,6 +196,82 @@ def edit_profile(request):
     else:
         form = ProfileForm(instance=profile)
     return render(request, "edit_profile.html", {"form": form})
+
+
+# -----------------------Comment Code-----------------------#
+
+
+class CreateCommentView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "create_comment.html"
+
+
+def create_comment(request, pk):
+    if request.user.is_authenticated:
+        current_post = Post.objects.get(id=pk)
+        form = CommentForm(request.POST or None)
+        if request.method == "POST":
+            if form.is_valid():
+                add_comment = form.save()
+                messages.success(request, "Comment Created...")
+                return redirect("posts")
+        return render(
+            request, "create_comment.html", {"form": form, "current_post": current_post}
+        )
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
+
+
+def comments(request, pk):
+    if request.user.is_authenticated:
+        # Look Up Posts
+        userComments = Comment.objects.filter(posts=pk)
+        user_post = Post.objects.get(id=pk)
+        return render(
+            request,
+            "comments.html",
+            {"userComments": userComments, "user_post": user_post},
+        )
+    else:
+        messages.success(request, "You Must Be Logged In To Do That...")
+        return redirect("home")
+
+
+def comment_detail(request, pk):
+    if request.user.is_authenticated:
+        user_comment = Comment.objects.get(id=pk)
+        return render(request, "comment_detail.html", {"user_comment": user_comment})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
+
+
+def update_comment(request, pk):
+    if request.user.is_authenticated:
+        current_comment = Comment.objects.get(id=pk)
+        form = CommentForm(request.POST or None, instance=current_comment)
+        if request.method == "POST":
+            if form.is_valid():
+                add_comment = form.save()
+                messages.success(request, "Comment Updated...")
+                return redirect("posts")
+        return render(request, "update_comment.html", {"form": form})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
+
+
+def delete_comment(request, pk):
+    if request.user.is_authenticated:
+        deleteComment = Comment.objects.get(id=pk)
+        deleteComment.delete()
+        messages.success(request, "Comment Was Deleted...")
+        return redirect("posts")
+    else:
+        messages.success(request, "You Must Be Logged In To Do That...")
+        return redirect("posts")
 
 
 # --------------------------------------------------------------------#
