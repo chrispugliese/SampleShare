@@ -23,6 +23,11 @@
 <!-- howler lib + the call to the sample player -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 <script src="{% static 'js/sample_player.js' %}"</script>
+<script>
+  var name = "{{ user.userprofile.id }}";
+  document.getElementById("user").value =
+    name;
+</script>
 
 {% endblock %}
 
