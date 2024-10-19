@@ -3,7 +3,6 @@ from django.http.request import is_same_domain
 from django.http.response import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from mutagen.wave import delete
 from .models import Sample, UserProfile, Post, Comment
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
