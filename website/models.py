@@ -125,7 +125,7 @@ class Post(models.Model):
         return f"{self.postText} {self.postTimeStamp}"
 
     def get_absolute_url(self):
-        return reverse("posts")
+        return reverse("home")
 
 
 # ------Comments------
@@ -146,4 +146,4 @@ class Comment(models.Model):
         return f"{self.commentMessage} {self.commentTimeStamp}"
     
     def get_absolute_url(self):
-        return reverse("posts")
+        return reverse("home")

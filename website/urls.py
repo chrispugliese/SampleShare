@@ -21,7 +21,7 @@ urlpatterns = [
     path("upload/", views.upload, name="upload"),
     path("sample/", views.sample_player, name="sample_player"),
     # -------Posts Links------------#
-    path("posts/", views.posts, name="posts"),
+    #path("posts/", views.posts, name="posts"),
     path("user_post/<int:pk>", views.user_post, name="user_post"),
     # path('create_post/', views.create_post, name ='create_post'),
     path("create_post/", CreatePostView.as_view(), name="create_post"),
