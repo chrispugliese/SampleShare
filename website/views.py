@@ -17,13 +17,9 @@ import os
 # Create your views here.
 def home(request):
     profiles = UserProfile.objects.all()
-    if request.user.is_authenticated:
         # Look Up Posts
-        userPosts = Post.objects.all()
-        return render(request, "home.html", {"userPosts": userPosts})
-    else:
-        messages.success(request, "You Must Be Logged In To Do That...")
-        return redirect("home")
+    userPosts = Post.objects.all()
+    return render(request, "home.html", {"userPosts": userPosts})
     #return render(request, "home.html", {})
 
 
@@ -181,11 +177,22 @@ def user_post(request, pk):
         return redirect("home")
 
 
-class CreatePostView(CreateView):
-    model = Post
-    form_class = PostForm
-    template_name = "create_post.html"
-    # fields = '__all__'
+def create_post(request, pk):
+    if request.user.is_authenticated:
+        #current_post = Post.objects.get(id=pk)
+        user_samples = Sample.objects.filter(userProfiles=pk)
+        form = PostForm(request.POST or None)
+        if request.method == "POST":
+            if form.is_valid():
+                add_post = form.save()
+                messages.success(request, "Post Created...")
+                return redirect("home")
+        return render(
+            request, "create_post.html", {"form": form, "user_samples": user_samples}
+        )
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
 
 
 def update_post(request, pk):

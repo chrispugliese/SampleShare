@@ -94,7 +94,13 @@ class PostForm(forms.ModelForm):
                     "type": "hidden",
                 }
             ),
-            "sample": forms.Select(attrs={"class": "form-control"}),
+            "sample": forms.Select(
+                attrs={
+                    "class": "form-control",
+                    #"value": "",
+                    "id": "userSample",
+                    }
+                ),
         }
 
 

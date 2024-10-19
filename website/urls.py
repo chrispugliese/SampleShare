@@ -1,4 +1,4 @@
-from .views import CreatePostView, CreateCommentView
+from .views import CreateCommentView
 from django.urls import path
 from . import views
 from django.http import Http404
@@ -24,7 +24,7 @@ urlpatterns = [
     #path("posts/", views.posts, name="posts"),
     path("user_post/<int:pk>", views.user_post, name="user_post"),
     # path('create_post/', views.create_post, name ='create_post'),
-    path("create_post/", CreatePostView.as_view(), name="create_post"),
+    path("create_post/<int:pk>", views.create_post, name="create_post"),
     path("update_post/<int:pk>", views.update_post, name="update_post"),
     path("delete_post/<int:pk>", views.delete_post, name="delete_post"),
     path("edit-profile/", views.edit_profile, name="edit_profile"),
