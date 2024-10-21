@@ -230,7 +230,9 @@ def posts(request):
 def user_post(request, pk):
     if request.user.is_authenticated:
         user_post = Post.objects.get(id=pk)
-        return render(request, "userPost.html", {"user_post": user_post})
+        likes = get_object_or_404(Post, id=pk)
+        total_likes = likes.total_likes()
+        return render(request, "userPost.html", {"user_post": user_post, "total_likes":total_likes})
     else:
         messages.success(request, "Your Must Be Logged In...")
         return redirect("home")
@@ -280,6 +282,12 @@ def delete_post(request, pk):
     else:
         messages.success(request, "You Must Be Logged In To Do That...")
         return redirect("home")
+
+
+def like_view(request, pk):
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    post.likes.add(request.user)
+    return redirect('home')
 
 
 # --------------------------------------------------------------------#
