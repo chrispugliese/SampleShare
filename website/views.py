@@ -226,13 +226,16 @@ def posts(request):
         return redirect("home")
 
 
-
 def user_post(request, pk):
     if request.user.is_authenticated:
         user_post = Post.objects.get(id=pk)
         likes = get_object_or_404(Post, id=pk)
         total_likes = likes.total_likes()
-        return render(request, "userPost.html", {"user_post": user_post, "total_likes":total_likes})
+
+        liked = False
+        if likes.likes.filter(id=request.user.id):
+            liked = True
+        return render(request, "userPost.html", {"user_post": user_post, "total_likes":total_likes, "liked":liked})
     else:
         messages.success(request, "Your Must Be Logged In...")
         return redirect("home")
@@ -260,8 +263,9 @@ def create_post(request, pk):
 def update_post(request, pk):
 
     if request.user.is_authenticated:
+        user_id = request.user.userprofile
         current_post = Post.objects.get(id=pk)
-        form = PostForm(request.POST or None, instance=current_post)
+        form = PostForm(request.POST or None, user_id=user_id, instance=current_post)
         if request.method == "POST":
             if form.is_valid():
                 add_post = form.save()
@@ -286,7 +290,14 @@ def delete_post(request, pk):
 
 def like_view(request, pk):
     post = get_object_or_404(Post, id=request.POST.get('post_id'))
-    post.likes.add(request.user)
+    #post.likes.add(request.user)
+    liked = False
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
     return redirect('home')
 
 
@@ -358,8 +369,9 @@ def comment_detail(request, pk):
 
 def update_comment(request, pk):
     if request.user.is_authenticated:
+        userProfile_id = request.user.userprofile
         current_comment = Comment.objects.get(id=pk)
-        form = CommentForm(request.POST or None, instance=current_comment)
+        form = CommentForm(request.POST or None,userProfile_id=userProfile_id, instance=current_comment)
         if request.method == "POST":
             if form.is_valid():
                 add_comment = form.save()
