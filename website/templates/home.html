@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content%}
 
 <div class="col-md-6 offset-md-3">      
@@ -14,7 +14,12 @@
             <a href ="{% url 'profile' post.userProfiles.user.username %}">{{ post.userProfiles.user.username }} </a>
         </li>
         <li class="list-group-item">{{ post.postText }}</li>
-        <li class="list-group-item">{{ post.samples }}</li>
+        <li class="list-group-item">
+            <strong>Sample:</strong>
+            {{ post.samples.sampleName }} 
+            <div class="player-container"> 
+            <button onclick="playPause('{{ post.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
+          </div></li>
         
     </ul>
     <a href="{%url 'user_post' post.id%}" class="btn btn-secondary"> View Post </a>
@@ -23,5 +28,7 @@
 {% endif %}
 <br/>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="{% static 'js/sample_player.js' %}"></script>
 
 {% endblock %}
