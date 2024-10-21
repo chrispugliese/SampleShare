@@ -106,10 +106,16 @@ class SignUpForm(UserCreationForm):
 
 # -----------------Post Form-----------------
 class PostForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('user_id', None)
+        super(PostForm, self).__init__(*args, **kwargs)
+        if user_id is not None:
+            self.fields['samples'].queryset = Sample.objects.filter(userProfiles=user_id)
+        #else:
+            #self.fields['samples'].queryset = Sample.objects.none()
     class Meta:
         model = Post
         fields = ("postText", "userProfiles", "samples")
-
         widgets = {
             "postText": forms.TextInput(attrs={"class": "form-control"}),
             #'userProfiles': forms.Select(attrs={'class': 'form-control'}),
@@ -121,11 +127,9 @@ class PostForm(forms.ModelForm):
                     "type": "hidden",
                 }
             ),
-            "sample": forms.Select(
+            "samples": forms.Select(
                 attrs={
                     "class": "form-control",
-                    #"value": "",
-                    "id": "userSample",
                     }
                 ),
         }

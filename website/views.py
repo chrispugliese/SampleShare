@@ -240,7 +240,8 @@ def create_post(request, pk):
     if request.user.is_authenticated:
         #current_post = Post.objects.get(id=pk)
         user_samples = Sample.objects.filter(userProfiles=pk)
-        form = PostForm(request.POST or None)
+        user_id = request.user.userprofile
+        form = PostForm(request.POST or None, user_id=user_id)
         if request.method == "POST":
             if form.is_valid():
                 add_post = form.save()

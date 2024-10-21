@@ -10,14 +10,8 @@
         {{ form.as_p }}
         <button class="btn btn-secondary"> Post</button>
         <a href ="{% url 'home'%}" class="btn btn-secondary">back</a>
-    
-        <script>
-            var samples = "{{ user_samples }}";
-            for(let i = 0; i < samples.length; i++){
-                //document.write(samples[i])
-            }
-            document.getElementById("userSample").value=sample;
-        </script>
+
+        
         <script>
             var name = "{{ user.userprofile.id }}";
             document.getElementById("user").value=
