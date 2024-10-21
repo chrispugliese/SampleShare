@@ -146,6 +146,11 @@ class ProfileForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('userProfile_id', None)
+        super(CommentForm, self).__init__(*args, **kwargs)
+        if user_id is not None:
+            self.fields['samples'].queryset = Sample.objects.filter(userProfiles=user_id)
     class Meta:
         model = Comment
         fields = ("commentMessage", "posts", "samples", "userProfile")

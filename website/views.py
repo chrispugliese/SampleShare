@@ -309,7 +309,8 @@ class CreateCommentView(CreateView):
 def create_comment(request, pk):
     if request.user.is_authenticated:
         current_post = Post.objects.get(id=pk)
-        form = CommentForm(request.POST or None)
+        userProfile_id = request.user.userprofile
+        form = CommentForm(request.POST or None, userProfile_id=userProfile_id)
         if request.method == "POST":
             if form.is_valid():
                 add_comment = form.save()
