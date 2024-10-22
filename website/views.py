@@ -229,13 +229,14 @@ def posts(request):
 def user_post(request, pk):
     if request.user.is_authenticated:
         user_post = Post.objects.get(id=pk)
+        comments = Comment.objects.filter(posts=pk)
         likes = get_object_or_404(Post, id=pk)
         total_likes = likes.total_likes()
 
         liked = False
         if likes.likes.filter(id=request.user.id):
             liked = True
-        return render(request, "userPost.html", {"user_post": user_post, "total_likes":total_likes, "liked":liked})
+        return render(request, "userPost.html", {"user_post": user_post, "total_likes":total_likes, "liked":liked, "comments":comments})
     else:
         messages.success(request, "Your Must Be Logged In...")
         return redirect("home")
@@ -334,7 +335,7 @@ def create_comment(request, pk):
             if form.is_valid():
                 add_comment = form.save()
                 messages.success(request, "Comment Created...")
-                return redirect("home")
+                return redirect("user_post", current_post.id)
         return render(
             request, "create_comment.html", {"form": form, "current_post": current_post}
         )
@@ -376,7 +377,7 @@ def update_comment(request, pk):
             if form.is_valid():
                 add_comment = form.save()
                 messages.success(request, "Comment Updated...")
-                return redirect("home")
+                return redirect("user_post", current_comment.posts.id)
         return render(request, "update_comment.html", {"form": form})
     else:
         messages.success(request, "Your Must Be Logged In...")
@@ -388,7 +389,7 @@ def delete_comment(request, pk):
         deleteComment = Comment.objects.get(id=pk)
         deleteComment.delete()
         messages.success(request, "Comment Was Deleted...")
-        return redirect("home")
+        return redirect("user_post", deleteComment.posts.id)
     else:
         messages.success(request, "You Must Be Logged In To Do That...")
         return redirect("home")

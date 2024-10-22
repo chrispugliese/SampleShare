@@ -22,7 +22,7 @@
 <a href="{% url 'update_post' user_post.id %}" class="btn btn-secondary">Update</a>
 {% endif %}
 <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
-<a href="{% url 'comments' user_post.id %}" class="btn btn-secondary">Comments</a>
+<a href="{% url 'create_comment' user_post.id %}" class="btn btn-primary"> Make A Comment</a>
 <form action = "{% url 'like_post' user_post.id %}" method="POST">
     {% csrf_token %}
 
@@ -34,4 +34,29 @@
     {% endif %}
     - {{total_likes }} Likes
 </form>
+<!-- COMMENT SECTION -->
+<div class="card">
+    <div class="card-header"><strong>
+          Comments
+          </strong>
+    </div>
+    <div class="card-body">
+
+   
+    <!-- Comment Display Code -->
+    {% if comments %}
+    {% for comment in comments %}
+    <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{ comment.userProfile.user.username }} </a>
+        <p> {{ comment.commentMessage }}</p>
+
+        <p>
+        {% if user.userprofile.id == comment.userProfile.id %}
+        <a href="{% url 'update_comment' comment.id %}" class="btn btn-primary">Update Comment</a>
+        <a href="{% url 'delete_comment' comment.id %}" class="btn btn-danger">Delete Comment</a>
+        {% endif %}
+        </p>
+
+    {% endfor %}
+    {% endif %}
+<!-- ----------------------- -->
 {% endblock %}
