@@ -1,4 +1,4 @@
-from .views import CreatePostView, CreateCommentView
+from .views import CreateCommentView
 from django.urls import path
 from . import views
 from django.http import Http404
@@ -19,12 +19,18 @@ urlpatterns = [
     path("delete-account/", views.delete_account, name="delete_account"),
     # -------Samples/Uploads Links------------#
     path("upload/", views.upload, name="upload"),
+    path("edit_samples/", views.update_user_samples, name="edit_samples"),
+    path(
+        "delete_user_sample/<int:sample_id>/",
+        views.delete_user_sample,
+        name="delete_user_sample",
+    ),
     path("sample/", views.sample_player, name="sample_player"),
     # -------Posts Links------------#
-    path("posts/", views.posts, name="posts"),
+    #path("posts/", views.posts, name="posts"),
     path("user_post/<int:pk>", views.user_post, name="user_post"),
     # path('create_post/', views.create_post, name ='create_post'),
-    path("create_post/", CreatePostView.as_view(), name="create_post"),
+    path("create_post/<int:pk>", views.create_post, name="create_post"),
     path("update_post/<int:pk>", views.update_post, name="update_post"),
     path("delete_post/<int:pk>", views.delete_post, name="delete_post"),
     path("edit-profile/", views.edit_profile, name="edit_profile"),
@@ -34,5 +40,6 @@ urlpatterns = [
     path("comment_detail/<int:pk>", views.comment_detail, name="comment_detail"),
     path("update_comment/<int:pk>", views.update_comment, name="update_comment"),
     path("delete_comment/<int:pk>", views.delete_comment, name="delete_comment"),
+    path("like/<int:pk>", views.like_view, name='like_post'),
     # --------------------------------------#
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
