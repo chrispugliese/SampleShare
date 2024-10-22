@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap');
  <head>
 	<style>
 			body{
@@ -8,6 +9,19 @@
 		}
 		.row.row-broken {
 			padding-bottom: 0;
+		}
+		.modal-header .close {
+		    color: white; /* White color for the 'X' */
+		    background-color: black; /* Black background */
+		    margin-left: auto; /* Pushes the button to the right */
+		    margin-right: 20px; /* Space between the button and the title */
+		    border: none; /* Remove default border */
+		    border-radius: 50%; /* Make it circular */
+		    width: 36px; /* Fixed width */
+		    height: 36px; /* Fixed height */
+		    display: flex; /* Center content */
+		    justify-content: center; /* Center horizontally */
+		    align-items: center; /* Center vertically */
 		}
 		.col-inside-lg {
 			padding: 20px;
@@ -39,9 +53,10 @@
 			position: absolute;
 		}
 		.chat .avatar img {
-			display: block;
-			border-radius: 20px;
-			height: 100%;
+		    border-radius: 50%;
+		    position: relative;
+		    left: -5px;
+		    z-index: 1;
 		}
 		.chat .avatar .status.off {
 			border: 1px solid #5a5a5a;
@@ -208,8 +223,9 @@
 			border-radius: 0;
 		}
 		.chat-body .answer-add .answer-btn-1 {
-			background: url("http://91.234.35.26/iwiki-admin/v1.0.0/admin/img/icon-40.png") 50% 50% no-repeat;
-			right: 56px;
+			background: #46be8a;
+			right: 20px;
+			height: 55px;
 		}
 		.chat-body .answer-add .answer-btn {
 			display: block;
@@ -219,10 +235,6 @@
 			position: absolute;
 			top: 50%;
 			margin-top: -18px;
-		}
-		.chat-body .answer-add .answer-btn-2 {
-			background: url("http://91.234.35.26/iwiki-admin/v1.0.0/admin/img/icon-41.png") 50% 50% no-repeat;
-			right: 20px;
 		}
 		.chat input::-webkit-input-placeholder {
 		   color: #fff;
@@ -247,26 +259,54 @@
     <title>Your Chat</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
 </head>
 <body>
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 <div class="container">
 <div class="content container-fluid bootstrap snippets bootdey">
 	<div class="row row-broken">
 		<div class="col-sm-3 col-xs-12">
 			<div class="col-inside-lg decor-default chat" style="overflow: hidden; outline: none;" tabindex="5000">
 				<div class="chat-users">
-					<h6>Chats</h6>
+					<h6>
+						Chats
+						<button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#newChatModal" style="float: right;">
+        					<i class="fa fa-plus"></i>
+    					</button>
+					</h6>
 					{% for chat in chats %}
 						<div class="user">
 							<div class="avatar">
+								{% if chat.is_group_chat %}
+                					{% for user_profile in chat.userProfiles.all %}
+                					  {% if user_profile.user != request.user %}
+                    					{% if forloop.counter <= 3 %}
+                    					<span class="avatar">
+                        					<img src="{% static user_profile.userPhoto %}" alt="{{ user_profile.user.username }}">
+                        				</span>
+					                    {% endif %}
+					                  {% endif %}
+					                {% endfor %}
+					            {% else %}
 								{% for user_profile in chat.userProfiles.all %}
 									{% if user_profile.user != request.user %}
 										<img src="{% static user_profile.userPhoto %}" alt="{{ user_profile.user.username }}">
-							</div>
-							<div class="name">{{ user_profile.user.username }}</div> <!-- Displaying the other user's name -->
 									{% endif %}
 								{% endfor %}
+								{% endif %}
+							</div>
+							<div class="name">
+								{% if chat.is_group_chat %}
+                					{{ chat.chatName }} <!-- Group chat: Display chat name -->
+            					{% else %}
+            					    {% for user_profile in chat.userProfiles.all %}
+            					        {% if user_profile.user != request.user %}
+											{{ user_profile.user.username }} <!-- Displaying the other user's name -->
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+							</div>
 								<!-- Edit below 2 lines, class refers to style settings above. --->
 							<div class="status {% if chat.message_set.last.is_read %}on{% else %}off{% endif %}"></div>
 							<div class="mood">{{ chat.message_set.last.content }}</div>  <!-- Most recent message -->
@@ -293,7 +333,7 @@
 						{% else %}
 							<div class="answer left"> <!-- Other user's messages on the left -->
 								<div class="avatar">
-									<img src="{% static message.user.userprofile.userPhoto %}" alt="{{ message.user.username }}">
+									<img src="{% static chatMessage.user.userprofile.userPhoto %}" alt="{{ chatMessage.user.username }}">
 								</div>
 								<div class="name">{{ chatMessage.user.username }}</div>
 								<div class="text">{{ chatMessage.content }}</div>
@@ -335,5 +375,127 @@
         setTimeout(scrollToBottom, 100); // Wait for new message to render
     });
 </script>
+
+<!-- New Chat Modal -->
+<div class="modal fade" id="newChatModal" tabindex="-1" role="dialog" aria-labelledby="newChatModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newChatModalLabel">Create New Chat</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{% url 'create_chat' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="chat-name">Chat Name</label>
+                        <input type="text" class="form-control" id="chat-name" name="chat_name" placeholder="Enter chat name">
+                    </div>
+                    <div class="form-group">
+					    <label for="chat-users">Add Users</label>
+					    <input type="text" class="form-control" id="chat-users" name="chat_users" placeholder="Enter usernames">
+						<div id="user-dropdown" class="dropdown-menu" style="max-height: 200px; overflow-y: auto; display: none;">
+					      <!-- Dynamic user buttons will be added here -->
+					    </div>
+					    <div id="selected-users" class="mt-2">
+      						<!-- Selected user tags will be displayed here -->
+    					</div>
+					    <input type="hidden" name="chat_users" id="hidden-chat-users" value=""> <!-- Hidden input for form submission -->
+					</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Chat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+    var selectedUsers = [];
+
+    $('#chat-users').on('input', function() {
+        var query = $(this).val();
+        if (query.length > 0) {
+            // Make an AJAX call to fetch users based on the query
+            $.ajax({
+                url: '{% url "search_users" %}',
+                data: { 'query': query },
+                success: function(data) {
+                    var dropdown = $('#user-dropdown');
+                    dropdown.empty(); // Clear previous results
+                    dropdown.show(); // Show dropdown
+
+                    // Iterate through the fetched users
+                    $.each(data.users, function(index, user) {
+                        if (!selectedUsers.includes(user.username)) { // Exclude already selected users
+                            dropdown.append(`
+                                <button class="dropdown-item" data-username="${user.username}">
+                                    <img src="${user.avatar}" alt="${user.username}" style="border-radius: 50%; width: 30px; height: 30px;"> 
+                                    ${user.username}
+                                </button>
+                            `);
+                        }
+                    });
+                }
+            });
+        } else {
+            $('#user-dropdown').hide(); // Hide dropdown if input is empty
+        }
+    });
+
+    // Handle user selection
+    $(document).on('click', '.dropdown-item', function(event) {
+        event.preventDefault(); // Prevent default behavior
+        var username = $(this).data('username');
+        if (!selectedUsers.includes(username)) {
+            selectedUsers.push(username); // Add selected username to the array
+            var tag = $(`
+                <span class="badge bg-primary me-2">
+                    ${username} <button class="btn-close btn-close-white remove-user" data-username="${username}"></button>
+                </span>
+            `);
+            $('#selected-users').append(tag); // Add tag to the selected users container
+            $('#chat-users').val(selectedUsers.join(', ')); // Update input field
+            $('#hidden-chat-users').val(selectedUsers.join(',')); // Update hidden input for form submission
+            $('#user-dropdown').hide(); // Hide dropdown after selection
+            $('#chat-users').focus(); // Keep focus on the input field
+        }
+    });
+
+    // Remove user from the selected users list
+    $(document).on('click', '.remove-user', function() {
+        var username = $(this).data('username');
+        selectedUsers = selectedUsers.filter(user => user !== username); // Remove user from the array
+        $(this).parent().remove(); // Remove the tag from the DOM
+        $('#hidden-chat-users').val(selectedUsers.join(',')); // Update hidden input for form submission
+
+    });
+
+    // Handle form submission for creating chat
+	$('#create-chat-button').on('click', function() {
+    	var selectedUserList = selectedUsers; // This will be your array of selected usernames
+
+    	// Join the selected usernames into a comma-separated string
+    	$('#hidden-chat-users').val(selectedUserList.join(',')); 
+
+    	// For demonstration, just log the selected usernames
+    	console.log(selectedUserList); // This is optional for debugging
+	});
+
+    // Close dropdown if clicked outside
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('#chat-users, #user-dropdown').length) {
+            $('#user-dropdown').hide();
+        }
+    });
+});
+</script>
+
 </body>
  {% endblock %}

@@ -3,8 +3,9 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Q
-from django.http import Http404, HttpRequest, StreamingHttpResponse, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpRequest, StreamingHttpResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.generic import CreateView
@@ -191,6 +192,12 @@ def search_user(request):
 				request, "search_results.html", {"users": None, "query": query}
 			)
 
+#Used for auto-populating drop-down lists
+def search_users(request):
+	query = request.GET.get('query', '')
+	users = User.objects.filter(username__icontains=query).exclude(username=request.user.username)  # Adjust filters as needed
+	user_data = [{'username': user.username, 'avatar': staticfiles_storage.url(user.userprofile.userPhoto)} for user in users]
+	return JsonResponse({'users': user_data})
 
 # ----------------------------Post Code -------------------------------#
 def posts(request):
@@ -322,13 +329,49 @@ def private_chat_redirect(request, user_id):
 		return redirect('chat', chat_id=private_chat.id)
 	else:
 		# If no chat exists, create a new private chat
-		new_chat = Chat.objects.create(is_group_chat=False)
-		new_chat.userProfiles.add(user_profile, other_profile)
-		new_chat.save()
+		new_chat = create_chat(request, user_ids=[other_profile.user.id], is_group_chat=False, chat_name=None)
+		if new_chat:
+			return redirect('chat', chat_id=new_chat.id)
+		else:
+			return redirect('home')  # Handle the case where chat creation fails
 
-		# Redirect to the newly created chat
-		return redirect('chat', chat_id=new_chat.id)
 
+@login_required
+def create_chat(request):
+	"""
+	View to create a new chat. It can handle both private and group chats.
+	:param user_ids: List of user IDs to include in the chat
+	:param is_group_chat: Boolean flag to determine if it's a group chat
+	:param chat_name: Optional name for group chats
+	"""
+	user_profile = get_object_or_404(UserProfile, user=request.user)
+
+	if request.method == 'POST':
+		chat_name = request.POST.get('chat_name')
+		chat_usernames = request.POST.get('chat_users').split(',')  # Get the list of usernames from form
+		other_users = UserProfile.objects.filter(user__username__in=chat_usernames)  # Fetch users by username
+
+		if len(other_users) < 1:
+			return None  # Handle the case where no users are provided (or raise an error)
+
+		# Ensure the current user is included in the chat
+		users = list(other_users) + [user_profile]
+
+		# Determine if this is a group chat
+		is_group_chat = len(users) > 2
+
+		# Create the chat instance
+		chat = Chat.objects.create(is_group_chat=is_group_chat)
+		if is_group_chat:
+			chat.chatName = chat_name  # Set the chat name for group chats
+
+		# Add users to the chat
+		chat.userProfiles.set(users)
+		chat.save()
+
+		return redirect('chat', chat_id=chat.id)  # Redirect after successful chat creation (adjust to your desired route)
+
+	return render(request, 'create_chat.html')  # Render the form page in case of GET request
 
 @login_required  # Ensure user is logged in
 def add_message(request, chat_id):
@@ -344,16 +387,16 @@ def add_message(request, chat_id):
 			chat.save()
 			return redirect('chat', chat_id=chat_id)  # Redirect to the chat page after posting
 	else:
-            # Form is invalid, render the chat page with errors
-            messages.error(request, "There was an error with your submission.")  # Optional: Flash an error message
-            messages = chat.message_set.all().order_by('created_at')  # Fetch messages for the chat
-            return render(request, 'chat.html', {
-                'chat': chat,
-                'user_profile': request.user.userprofile,
-                'chats': Chat.objects.filter(userProfiles=request.user.userprofile).order_by('-chatTimeStamp'),
-                'chatMessages': chatMessages,
-                'form': form,  # Pass the form back with errors
-            })
+			# Form is invalid, render the chat page with errors
+			messages.error(request, "There was an error with your submission.")  # Optional: Flash an error message
+			messages = chat.message_set.all().order_by('created_at')  # Fetch messages for the chat
+			return render(request, 'chat.html', {
+				'chat': chat,
+				'user_profile': request.user.userprofile,
+				'chats': Chat.objects.filter(userProfiles=request.user.userprofile).order_by('-chatTimeStamp'),
+				'chatMessages': chatMessages,
+				'form': form,  # Pass the form back with errors
+			})
 
 	return redirect('chat', chat_id=chat_id)
 #---------------------End chat Code------------------------------
