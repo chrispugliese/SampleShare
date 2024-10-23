@@ -2,30 +2,34 @@
 {% load static %}
 
 {% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <!-- Card container for the profile -->
+      <div class="profile-card">
+        <!-- Left-align the profile picture and information -->
+        <div class="profile-info">
+          {% if profile_user.userprofile.userPhoto %}
+            <!-- Display the uploaded profile photo -->
+            <img src="{{ profile_user.userprofile.userPhoto.url }}" alt="Profile Photo" class="profile-photo">
+          {% else %}
+            <!-- Use the default profile picture from static if no photo is uploaded -->
+            <img src="{% static 'images/profile_picture_default.jpg' %}" alt="Default Profile Photo" class="profile-photo">
+          {% endif %}
 
-<div style="display: flex; align-items: center; gap: 20px;">
-  {% if profile_user.userprofile.userPhoto %}
-    <!-- Display the uploaded profile photo -->
-    <img src="{{ profile_user.userprofile.userPhoto.url }}" alt="Profile Photo" style="width:150px; height:150px; border-radius: 50%;">
-{% else %}
-    <!-- Use the default profile picture from static if no photo is uploaded -->
-    <img src="{% static 'images/profile_picture_default.jpg' %}" alt="Default Profile Photo" style="width:150px; height:150px; border-radius: 50%;">
-{% endif %}
-<h2>Profile of {{ profile_user.username }}</h2>
+          <div class="profile-details">
+            <h2>Profile of {{ profile_user.username }}</h2>
+            <p>Email: {{ profile_user.email }}</p>
+            <p>First Name: {{ profile_user.first_name }}</p>
+            <p>Last Name: {{ profile_user.last_name }}</p>
+            <p>Bio: {{ profile_user.userprofile.bio }}</p>
+            <!-- Link to Edit Profile -->
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary animated-border-btn">Edit Profile</a>
+            <a href="{% url 'edit_samples' %}" class="btn btn-primary animated-border-btn">Edit Samples</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-
-  <p>Email: {{ profile_user.email }}</p>
-  <p>First Name: {{ profile_user.first_name }}</p>
-  <p>Last Name: {{ profile_user.last_name }}</p>
-  <p>Bio: {{ profile_user.userprofile.bio }}</p>
-
-  <!-- Link to Edit Profile -->
-  <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
-  <a href="{% url 'edit_samples' %}" class="btn btn-primary">Edit Samples</a>
-
-
-
 {% endblock %}
-
-
