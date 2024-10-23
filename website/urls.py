@@ -31,9 +31,11 @@ urlpatterns = [
 
 
 	#Chat stuff here
+    path("chat/", views.recent_chat_redirect, name="recent_chat_redirect"),
 	path("chat/<int:chat_id>/", views.chat, name="chat"),
 	path('create_chat/', views.create_chat, name='create_chat'),
 	path('chat/private/<int:user_id>/', views.private_chat_redirect, name='private_chat_redirect'),
+	path('chat/delete/<int:chat_id>/', views.delete_chat, name='delete_chat'),
 	path('send_message/<int:chat_id>/', views.add_message, name='send_message'),
 	path('search_users/', views.search_users, name='search_users'), #To add users to auto-populating dropdown list
 

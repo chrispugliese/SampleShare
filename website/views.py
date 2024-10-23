@@ -283,6 +283,18 @@ def edit_profile(request):
 
 #--------------------Start Chat code---------------------------
 @login_required
+def delete_chat(request, chat_id):
+	chat = get_object_or_404(Chat, id=chat_id)
+	
+	# Optional: Check if the user is part of the chat before deleting
+	if request.user.userprofile in chat.userProfiles.all():
+		chat.delete()
+		# Redirect to the chat list or another appropriate page
+		return redirect('recent_chat_redirect')
+	else:
+		return redirect('recent_chat_redirect')  # You can add a message for unauthorized deletion if needed
+
+@login_required
 def chat(request, chat_id):
 	#Get the logged-in user from the session:
 	user_profile = get_object_or_404(UserProfile, user=request.user)
@@ -291,7 +303,8 @@ def chat(request, chat_id):
 
 	# Check if the user is part of the chat's userProfiles (Many-to-Many)
 	if user_profile not in chat.userProfiles.all():
-		return redirect('home')  # Or show an error message
+		messages.success(request, "You are not part of requested chat.")
+		return redirect('recent_chat_redirect')  # Or show an error message
 
 	chatMessages = chat.message_set.all().order_by('created_at')  # Get messages for the chat
 
@@ -305,12 +318,28 @@ def chat(request, chat_id):
 		'chatMessages': chatMessages,           #Pass the sorted messages 
 	})
 
+@login_required
+def recent_chat_redirect(request):
+	# Get the logged-in user
+	user_profile = get_object_or_404(UserProfile, user=request.user)
+	# Fetch the most recent chat that the user is part of
+	recent_chat = Chat.objects.filter(userProfiles=user_profile).order_by('-chatTimeStamp').first()
+	if recent_chat:
+		# Redirect to the most recent chat's URL
+		return redirect('chat', chat_id=recent_chat.id)
+	else:
+		# Handle case where no chats exist (redirect to home or show message)
+		messages.info(request, "You are not part of any chats.")
+		return redirect('home')  # Adjust the redirect as needed
+
+@login_required
 def private_chat_redirect(request, user_id):
 	# Get the logged-in user
 	user_profile = get_object_or_404(UserProfile, user=request.user)
 	# Get the profile user (the user whose profile is being visited)
 	other_user = get_object_or_404(User, id=user_id)
 	other_profile = get_object_or_404(UserProfile, user=other_user)
+	users = [other_profile] + [user_profile]
 
 	# Check if the two users are friends
 	if other_profile not in user_profile.friends.all():
@@ -329,7 +358,9 @@ def private_chat_redirect(request, user_id):
 		return redirect('chat', chat_id=private_chat.id)
 	else:
 		# If no chat exists, create a new private chat
-		new_chat = create_chat(request, user_ids=[other_profile.user.id], is_group_chat=False, chat_name=None)
+		new_chat = Chat.objects.create(is_group_chat=False)
+		new_chat.userProfiles.set(users)
+		new_chat.save()
 		if new_chat:
 			return redirect('chat', chat_id=new_chat.id)
 		else:
@@ -352,10 +383,22 @@ def create_chat(request):
 		other_users = UserProfile.objects.filter(user__username__in=chat_usernames)  # Fetch users by username
 
 		if len(other_users) < 1:
-			return None  # Handle the case where no users are provided (or raise an error)
+			messages.info(request, "Cannot make a chat with only one user.")
+			return redirect(recent_chat_redirect)
 
 		# Ensure the current user is included in the chat
 		users = list(other_users) + [user_profile]
+
+		# Check for an existing private chat between the current user and the other user
+		if len(users) == 2:  # Only check if there are exactly two users (one current user and one other)
+			existing_chat = Chat.objects.filter(is_group_chat=False, userProfiles=user_profile).filter(
+				userProfiles__in=other_users
+			).distinct().first()
+			if existing_chat:
+				other_user = users[0] if users[1] == user_profile else users[1]
+				messages.info(request, f"You already have an active chat with {other_user.user.username}.")
+				return redirect('chat', chat_id=existing_chat.id)  # Redirect to existing chat
+
 
 		# Determine if this is a group chat
 		is_group_chat = len(users) > 2
