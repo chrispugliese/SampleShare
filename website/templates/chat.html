@@ -290,15 +290,15 @@
                 					  {% if user_profile.user != request.user %}
                     					{% if forloop.counter <= 3 %}
                     					<span class="avatar">
-                        					<img src="{% static user_profile.userPhoto %}" alt="{{ user_profile.user.username }}">
-                        				</span>
+                        					<img src="{{user_profile.userPhoto.url }}" alt="{{ user_profile.user.username }}">
+                        				</span>dddddd
 					                    {% endif %}
 					                  {% endif %}
 					                {% endfor %}
 					            {% else %}
 								{% for user_profile in listchat.userProfiles.all %}
 									{% if user_profile.user != request.user %}
-										<img src="{% static user_profile.userPhoto %}" alt="{{ user_profile.user.username }}">
+										<img src="{{user_profile.userPhoto.url }}" alt="{{ user_profile.user.username }}">
 									{% endif %}
 								{% endfor %}
 								{% endif %}
@@ -350,7 +350,7 @@
 					    {% endif %}
 					</h6>
 			  		{% for chatMessage in chatMessages %}
-    				{% with avatar_url=chatMessage.user.userprofile.userPhoto username=chatMessage.user.username message_text=chatMessage.content message_time=chatMessage.created_at %}
+    				{% with avatar_url=chatMessage.user.userprofile.userPhoto.url username=chatMessage.user.username message_text=chatMessage.content message_time=chatMessage.created_at %}
         				{% if chatMessage.show_time %}
 			                <!-- Code for messages within the time frame -->
 			                {% if chatMessage.user == request.user %}

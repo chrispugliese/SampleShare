@@ -139,22 +139,22 @@ class Genre(models.Model):
 # postTimeStamp = VARCHAR(50) NOT NULL
 # ------------------------------------
 class Post(models.Model):
-    postText = models.TextField()
-    postTimeStamp = models.DateTimeField(auto_now_add=True)
-    # one to many with samples
-    samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True)
-    # Many to Many with user-Profiles
-    userProfiles = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
-    likes = models.ManyToManyField(User, related_name="User_Posts")
+	postText = models.TextField()
+	postTimeStamp = models.DateTimeField(auto_now_add=True)
+	# one to many with samples
+	samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True)
+	# Many to Many with user-Profiles
+	userProfiles = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
+	likes = models.ManyToManyField(User, related_name="User_Posts")
 
 	def __str__(self):
 		return f"{self.postText} {self.postTimeStamp}"
 
-    def get_absolute_url(self):
-        return reverse("home")
-    
-    def total_likes(self):
-        return self.likes.count()
+	def get_absolute_url(self):
+		return reverse("home")
+	
+	def total_likes(self):
+		return self.likes.count()
 
 
 # ------Comments------
@@ -162,17 +162,17 @@ class Post(models.Model):
 # commentTimeStamp = DATETIME NOT NULL
 # ------------------------------------
 class Comment(models.Model):
-    commentMessage = models.TextField()
-    commentTimeStamp = models.DateTimeField(auto_now_add=True)
-    # One to Many with Posts
-    posts = models.ForeignKey(Post, on_delete=models.CASCADE)
-    # One to Many with Samples
-    samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True, blank=True)
+	commentMessage = models.TextField()
+	commentTimeStamp = models.DateTimeField(auto_now_add=True)
+	# One to Many with Posts
+	posts = models.ForeignKey(Post, on_delete=models.CASCADE)
+	# One to Many with Samples
+	samples = models.ForeignKey(Sample, on_delete=models.CASCADE, null=True, blank=True)
 
-    userProfile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
+	userProfile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
 
-    def __str__(self):
-        return f"{self.commentMessage} {self.commentTimeStamp}"
-    
-    def get_absolute_url(self):
-        return reverse("home")
+	def __str__(self):
+		return f"{self.commentMessage} {self.commentTimeStamp}"
+	
+	def get_absolute_url(self):
+		return reverse("home")

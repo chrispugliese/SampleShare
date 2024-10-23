@@ -1,4 +1,4 @@
-from .views import CreatePostView, CreateCommentView, send_friend_request, accept_friend_request, decline_friend_request, remove_friend, private_chat_redirect
+from .views import CreateCommentView, send_friend_request, accept_friend_request, decline_friend_request, remove_friend, private_chat_redirect
 from django.urls import path
 from . import views
 from django.http import Http404
