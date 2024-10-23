@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.conf import django, settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -13,7 +14,6 @@ from typing import AsyncGenerator
 from .forms import SampleForm, SignUpForm, PostForm, MessageForm
 from .models import Sample, UserProfile, Post, Chat, Message, FriendRequest
 import asyncio, json, os
-
 
 # Create your views here.
 def home(request):
@@ -315,7 +315,7 @@ def chat(request, chat_id):
 		'chat': chat,        # Pass the chat room object
 		'user_profile': user_profile,   # Pass the user profile
 		'chats': user_chats,           # Pass the list of chats
-		'chatMessages': chatMessages,           #Pass the sorted messages 
+		'chatMessages': chatMessages,  #Pass the sorted messages 
 	})
 
 @login_required

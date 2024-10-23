@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
+{% load time_filters %}
+
  <head>
 	<style>
 			body{
@@ -321,10 +323,12 @@
 								        <em>No messages yet</em>
 								    {% endif %}
 								</div>
-								<form method="POST" action="{% url 'delete_chat' listchat.id %}" style="display: inline;">
-						            {% csrf_token %}
-						            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this chat?');">Delete</button>
-						        </form>
+								<div class="d-flex justify-content-end">
+									<form method="POST" action="{% url 'delete_chat' listchat.id %}" style="display: inline;">
+							            {% csrf_token %}
+							            <button type="submit" class="btn btn-danger btn-sm ms-auto" style="padding: 2px 6px; font-size: 8px;" onclick="return confirm('Are you sure you want to delete this chat?');">X</button>
+							        </form>
+							    </div>
 							</a>
 						</div>
 					{% endfor %}
@@ -356,7 +360,10 @@
 								<div class="name">{{ request.user.username }}</div>
 							      </a>
 								<div class="text">{{ chatMessage.content }}</div>
-								<div class="time">{{ chatMessage.created_at|timesince }} ago</div> <!-- Format the time appropriately -->
+								            {% if forloop.last or forloop.counter < chatMessages|length and chatMessages|index:forloop.counter0.timestamp > chatMessages|index:forloop.counter0|add:-600) or (not forloop.last and chatMessages|index:forloop.counter0.user != chatMessages|index:forloop.counter) %}
+								<time class="time">
+                					{{ chatMessage.created_at|timesince }} ago
+    							</time>
 							</div>
 						{% else %}
 							<div class="answer left"> <!-- Other user's messages on the left -->
@@ -553,12 +560,25 @@ $(document).ready(function() {
     	$('#hidden-chat-users').val(selectedUserList.join(',')); 
 	});
 
+	//Empties field on New Chat modal when hitting cancel button
 	$('#cancelButton').on('click', function() {
             selectedUsers = []; // Clear the selected users array
             $('#selected-users').empty(); // Remove user tags from the DOM
             $('#hidden-chat-users').val(''); // Clear the hidden input value
+            $('#chat-name').val('')
             $('#chat-users').val(''); // Clear the chat users input
+            updateChatNameFieldVisibility();
         });
+
+	//Empties fields on New Chat modal when hiding modal
+	$('#newChatModal').on('hidden.bs.modal', function() {
+	    selectedUsers = []; // Clear the selected users array
+	    $('#selected-users').empty(); // Remove user tags from the DOM
+	    $('#hidden-chat-users').val(''); // Clear the hidden input value
+	    $('#chat-name').val('')
+	    $('#chat-users').val(''); // Clear the chat users input
+	    updateChatNameFieldVisibility();
+	});
 
     // Close dropdown if clicked outside
     $(document).on('click', function(event) {
