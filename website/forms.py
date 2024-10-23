@@ -1,13 +1,40 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Sample, UserProfile, Post
+from .models import Sample, UserProfile, Post, Comment
 
 
 class SampleForm(forms.ModelForm):
     class Meta:
         model = Sample
         fields = ["sampleName", "audioFile", "isPublic", "userProfiles"]
+        widgets = {
+            "userProfiles": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "value": "",
+                    "id": "user",
+                    "type": "hidden",
+                }
+            )
+        }
+
+
+class SampleEditForm(forms.ModelForm):
+    class Meta:
+        model = Sample
+        fields = ["sampleName", "isPublic", "userProfiles"]
+        labels = {"isPublic": "Make Sample Public?"}
+        widgets = {
+            "userProfiles": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "value": "",
+                    "id": "user",
+                    "type": "hidden",
+                }
+            )
+        }
 
 
 class SignUpForm(UserCreationForm):
@@ -79,10 +106,16 @@ class SignUpForm(UserCreationForm):
 
 # -----------------Post Form-----------------
 class PostForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('user_id', None)
+        super(PostForm, self).__init__(*args, **kwargs)
+        if user_id is not None:
+            self.fields['samples'].queryset = Sample.objects.filter(userProfiles=user_id)
+        #else:
+            #self.fields['samples'].queryset = Sample.objects.none()
     class Meta:
         model = Post
         fields = ("postText", "userProfiles", "samples")
-
         widgets = {
             "postText": forms.TextInput(attrs={"class": "form-control"}),
             #'userProfiles': forms.Select(attrs={'class': 'form-control'}),
@@ -94,7 +127,11 @@ class PostForm(forms.ModelForm):
                     "type": "hidden",
                 }
             ),
-            "sample": forms.Select(attrs={"class": "form-control"}),
+            "samples": forms.Select(
+                attrs={
+                    "class": "form-control",
+                    }
+                ),
         }
 # ---------------------------------------------------
 
@@ -105,3 +142,48 @@ class MessageForm(forms.Form):
         max_length=1000,
         required=True
     )
+
+
+# -------------------Profile Form--------------------------------
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ["bio", "userPhoto"]
+
+
+# ----------------------Comment Code------------------#\
+
+
+class CommentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('userProfile_id', None)
+        super(CommentForm, self).__init__(*args, **kwargs)
+        if user_id is not None:
+            self.fields['samples'].queryset = Sample.objects.filter(userProfiles=user_id)
+    class Meta:
+        model = Comment
+        fields = ("commentMessage", "posts", "samples", "userProfile")
+
+        widgets = {
+            "commentMessage": forms.TextInput(attrs={"class": "form-control"}),
+            "posts": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "value": "",
+                    "id": "post",
+                    "type": "hidden",
+                }
+            ),
+            "samples": forms.Select(attrs={"class": "form-control"}),
+            "userProfile": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "value": "",
+                    "id": "user",
+                    "type": "hidden",
+                }
+            ),
+        }
+
+
+# ----------------------------------------------------#

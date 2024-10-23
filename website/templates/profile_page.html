@@ -5,14 +5,14 @@
 <!-- User name + Profile Pic -->
   <div style="display: flex; align-items: center; gap: 20px;">
     {% if profile_user.userprofile.userPhoto %}
-        <!-- Load the user photo from the static/images directory -->
-        <img src="{% static profile_user.userprofile.userPhoto %}" alt="Profile Photo" style="width:150px; height:150px; border-radius: 50%;">
+        <!-- Display the uploaded profile photo -->
+        <img src="{{ profile_user.userprofile.userPhoto.url }}" alt="Profile Photo" style="width:150px; height:150px; border-radius: 50%;">
     {% else %}
-        <!-- Use a default profile picture if no photo is provided -->
+        <!-- Use the default profile picture from static if no photo is uploaded -->
         <img src="{% static 'images/profile_picture_default.jpg' %}" alt="Default Profile Photo" style="width:150px; height:150px; border-radius: 50%;">
     {% endif %}
-    <h2>{{ profile_user.username }}</h2>
-
+    <h2>{{ profile_user.username }}</h2>        
+  </div>
 <!--- Allows friend request options OR displays list of friend requests if its own profile --->
   {% if is_owner %}
   <div>
@@ -91,5 +91,7 @@
 
   <!-- Link to Edit Profile -->
   <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
-
+  <a href="{% url 'edit_samples' %}" class="btn btn-primary">Edit Samples</a>
 {% endblock %}
+
+

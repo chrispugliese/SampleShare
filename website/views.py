@@ -7,22 +7,33 @@ from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Q
 from django.http import Http404, HttpRequest, StreamingHttpResponse, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http.request import is_same_domain
+from django.shortcuts import render, get_object_or_404, redirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.generic import CreateView
 from typing import AsyncGenerator
-from .forms import SampleForm, SignUpForm, PostForm, MessageForm
-from .models import Sample, UserProfile, Post, Chat, Message, FriendRequest
+from .forms import SampleEditForm, SampleForm, SignUpForm, PostForm, CommentForm, MessageForm, ProfileForm
+from .models import Sample, UserProfile, Post, Comment, Chat, Message, FriendRequest
 import asyncio, json, os
 
 # Create your views here.
 def home(request):
-	profiles = UserProfile.objects.all()
-	return render(request, "home.html", {})
+    profiles = UserProfile.objects.all()
+        # Look Up Posts
+    userPosts = Post.objects.all()
+    return render(request, "home.html", {"userPosts": userPosts})
+    #return render(request, "home.html", {})
+# --------------------------------------------------------------------#
+
+def user_detail(request, user_id):
+    user_profile = get_object_or_404(UserProfile, id=user_id)  # Query UserProfile by ID
+    return render(request, "user_detail.html", {"user_profile": user_profile})
+# --------------------------------------------------------------------#
 
 def page_not_found(request):
 	raise Http404("Page not here tho")
-
+# --------------------------------------------------------------------#
 
 def profile_page(request, username):
 	profile_user = get_object_or_404(User, username=username)
@@ -61,6 +72,9 @@ def profile_page(request, username):
 	return render(request, 'profile_page.html', context)
 
 
+# --------------------------------------------------------------------#
+
+
 # Login/Logout/Register Users
 def login_user(request):
 	if request.method == "POST":
@@ -79,10 +93,16 @@ def login_user(request):
 		return render(request, "login.html")
 
 
+# --------------------------------------------------------------------#
+
+
 def logout_user(request):
 	logout(request)
 	messages.success(request, "Logged out")
 	return redirect("home")
+
+
+# --------------------------------------------------------------------#
 
 
 def register_user(request):
@@ -155,8 +175,9 @@ def remove_friend(request, user_id):
 	return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-# TODO: need to add a 6 second restriction for audio files.
-# and some exception handling for if user is logged or not.
+# ----------------------------Sample Functionality---------------------------------------#
+
+
 def upload(request):
 	if request.user.is_authenticated:
 		if request.method == "POST":
@@ -173,24 +194,114 @@ def upload(request):
 		return redirect("login")
 
 
+def update_user_samples(request):
+    if request.user.is_authenticated:
+        user_samples = Sample.objects.filter(userProfiles__user=request.user)
+        form = None
+
+        if request.method == "POST":
+            sample_id_to_update = request.POST.get("sample_id")
+            if sample_id_to_update:
+                sample = get_object_or_404(
+                    Sample, pk=sample_id_to_update, userProfiles__user=request.user
+                )
+                form = SampleEditForm(request.POST, instance=sample)
+                form.instance.audioFile = sample.audioFile
+
+                if form.is_valid():
+                    form.save()
+                    messages.success(
+                        request, f"{sample.sampleName} updated successfully!"
+                    )
+                    return redirect("edit_samples")
+        else:
+            sample_id_to_update = request.GET.get("update")
+            if sample_id_to_update:
+                sample = get_object_or_404(
+                    Sample, pk=sample_id_to_update, userProfiles__user=request.user
+                )
+                form = SampleEditForm(instance=sample)
+
+        return render(
+            request,
+            "edit_samples.html",
+            {"user_samples": user_samples, "form": form},
+        )
+    else:
+        messages.error(request, "You need to be logged in to access this page.")
+        return redirect("login")
+
+
+def delete_user_sample(request, sample_id):
+    if request.user.is_authenticated:
+        try:
+            sample_to_delete = get_object_or_404(
+                Sample, id=sample_id, userProfiles__user=request.user
+            )
+            audio_file_path = sample_to_delete.audioFile.path
+            sample_to_delete.delete()
+
+            if os.path.exists(audio_file_path):
+                os.remove(audio_file_path)
+                messages.success(request, "Sample file deleted successfully.")
+        except Exception as e:
+            messages.warning(request, f"An unexpected error occurred: \n {e}")
+    else:
+        messages.error(request, "You need to be logged in!")
+        return redirect("login")
+
+    return redirect("edit_samples")
+
+
+def sample_player(request):
+    if request.user.is_authenticated:
+        query_all_sample = Sample.objects.filter(isPublic=True)
+        return render(
+            request, "sample_player.html", {"query_all_sample": query_all_sample}
+        )
+    else:
+        messages.error(request, "You must be logged in to listen to samples.")
+        return redirect("login")
+
+
+# --------------------------------------------------------------------#
+
+
 def search_user(request):
-	if request.method == "GET":
-		query = request.GET.get(
-			"q"
-		)  # 'q' is the name attribute in your search input field
-		if query:
-			matching_users = User.objects.filter(
-				username__icontains=query
-			)  # Case-insensitive search
-			return render(
-				request,
-				"search_results.html",
-				{"users": matching_users, "query": query},
-			)
-		else:
-			return render(
-				request, "search_results.html", {"users": None, "query": query}
-			)
+    if request.method == "GET":
+        query = request.GET.get("q")
+        filter_type = request.GET.getlist("filter")  # This allows for multiple filters to be selected
+
+        # Default to showing both usernames and samples if no filter is selected
+        if not filter_type or 'all' in filter_type:
+            filter_type = ['username', 'sample']
+
+        matching_users = []
+        matching_samples = []
+
+        # Apply the filters based on the selected checkboxes
+        if query:
+            if 'username' in filter_type:
+                matching_users = User.objects.filter(username__icontains=query)
+            
+            if 'sample' in filter_type:
+                matching_samples = Sample.objects.filter(sampleName__icontains=query, isPublic=True)
+
+        # Render the template with the filtered results
+        return render(request, 'search_results.html', {
+            'users': matching_users,
+            'samples': matching_samples,
+            'query': query,
+            'filter_type': filter_type  # Passing filter_type back to the template to maintain checkbox state
+        })
+
+    # Default state: show all
+    return render(request, 'search_results.html', {
+        'users': None, 
+        'samples': None, 
+        'query': None, 
+        'filter_type': ['username', 'sample']  # Default filter shows all initially
+    })
 
 #Used for auto-populating drop-down lists
 def search_users(request):
@@ -211,48 +322,165 @@ def posts(request):
 
 
 def user_post(request, pk):
-	if request.user.is_authenticated:
-		user_post = Post.objects.get(id=pk)
-		return render(request, "userPost.html", {"user_post": user_post})
-	else:
-		messages.success(request, "Your Must Be Logged In...")
-		return redirect("home")
+    if request.user.is_authenticated:
+        user_post = Post.objects.get(id=pk)
+        likes = get_object_or_404(Post, id=pk)
+        total_likes = likes.total_likes()
 
+        liked = False
+        if likes.likes.filter(id=request.user.id):
+            liked = True
+        return render(request, "userPost.html", {"user_post": user_post, "total_likes":total_likes, "liked":liked})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
 
-class CreatePostView(CreateView):
-	model = Post
-	form_class = PostForm
-	template_name = "create_post.html"
-	# fields = '__all__'
-
+def create_post(request, pk):
+    if request.user.is_authenticated:
+        #current_post = Post.objects.get(id=pk)
+        user_samples = Sample.objects.filter(userProfiles=pk)
+        user_id = request.user.userprofile
+        form = PostForm(request.POST or None, user_id=user_id)
+        if request.method == "POST":
+            if form.is_valid():
+                add_post = form.save()
+                messages.success(request, "Post Created...")
+                return redirect("home")
+        return render(
+            request, "create_post.html", {"form": form, "user_samples": user_samples}
+        )
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
 
 def update_post(request, pk):
-
-	if request.user.is_authenticated:
-		current_post = Post.objects.get(id=pk)
-		form = PostForm(request.POST or None, instance=current_post)
-		if request.method == "POST":
-			if form.is_valid():
-				add_post = form.save()
-				messages.success(request, "Post Updated...")
-				return redirect("home")
-		return render(request, "update_post.html", {"form": form})
-	else:
-		messages.success(request, "Your Must Be Logged In...")
-		return redirect("home")
-
+    if request.user.is_authenticated:
+        user_id = request.user.userprofile
+        current_post = Post.objects.get(id=pk)
+        form = PostForm(request.POST or None, user_id=user_id, instance=current_post)
+        if request.method == "POST":
+            if form.is_valid():
+                add_post = form.save()
+                messages.success(request, "Post Updated...")
+                return redirect("home")
+        return render(request, "update_post.html", {"form": form})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
 
 def delete_post(request, pk):
-	if request.user.is_authenticated:
-		deletePost = Post.objects.get(id=pk)
-		deletePost.delete()
-		messages.success(request, "Post Was Deleted...")
-		return redirect("posts")
-	else:
-		messages.success(request, "You Must Be Logged In To Do That...")
-		return redirect("posts")
+    if request.user.is_authenticated:
+        deletePost = Post.objects.get(id=pk)
+        deletePost.delete()
+        messages.success(request, "Post Was Deleted...")
+        return redirect("home")
+    else:
+        messages.success(request, "You Must Be Logged In To Do That...")
+        return redirect("home")
+
+def like_view(request, pk):
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    #post.likes.add(request.user)
+    liked = False
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
+    return redirect('home')
+# --------------------------------------------------------------------#
+
+def edit_profile(request):
+    profile = request.user.userprofile
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()  # Save directly without handling file manually
+            return redirect("profile", username=request.user.username)
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, "edit_profile.html", {"form": form})
 
 
+# -----------------------Comment Code-----------------------#
+class CreateCommentView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "create_comment.html"
+
+def create_comment(request, pk):
+    if request.user.is_authenticated:
+        current_post = Post.objects.get(id=pk)
+        userProfile_id = request.user.userprofile
+        form = CommentForm(request.POST or None, userProfile_id=userProfile_id)
+        if request.method == "POST":
+            if form.is_valid():
+                add_comment = form.save()
+                messages.success(request, "Comment Created...")
+                return redirect("home")
+        return render(
+            request, "create_comment.html", {"form": form, "current_post": current_post}
+        )
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
+
+def comments(request, pk):
+    if request.user.is_authenticated:
+        # Look Up Posts
+        userComments = Comment.objects.filter(posts=pk)
+        user_post = Post.objects.get(id=pk)
+        return render(
+            request,
+            "comments.html",
+            {"userComments": userComments, "user_post": user_post},
+        )
+    else:
+        messages.success(request, "You Must Be Logged In To Do That...")
+        return redirect("home")
+
+def comment_detail(request, pk):
+    if request.user.is_authenticated:
+        user_comment = Comment.objects.get(id=pk)
+        return render(request, "comment_detail.html", {"user_comment": user_comment})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
+
+def update_comment(request, pk):
+    if request.user.is_authenticated:
+        userProfile_id = request.user.userprofile
+        current_comment = Comment.objects.get(id=pk)
+        form = CommentForm(request.POST or None,userProfile_id=userProfile_id, instance=current_comment)
+        if request.method == "POST":
+            if form.is_valid():
+                add_comment = form.save()
+                messages.success(request, "Comment Updated...")
+                return redirect("home")
+        return render(request, "update_comment.html", {"form": form})
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
+
+def delete_comment(request, pk):
+    if request.user.is_authenticated:
+        deleteComment = Comment.objects.get(id=pk)
+        deleteComment.delete()
+        messages.success(request, "Comment Was Deleted...")
+        return redirect("home")
+    else:
+        messages.success(request, "You Must Be Logged In To Do That...")
+        return redirect("home")
+
+
+# ---------------------------------Delete Account-----------------------------------#
+def delete_account(request):
+    if request.method == "POST":
+        request.user.delete()
+        messages.success(request, "Your account has been deleted. ")
+        return redirect("home")
+    return render(request, "confirm_delete_account.html")
 
 def edit_profile(request):
 	profile = request.user.userprofile
