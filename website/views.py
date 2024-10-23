@@ -306,7 +306,26 @@ def chat(request, chat_id):
 		messages.success(request, "You are not part of requested chat.")
 		return redirect('recent_chat_redirect')  # Or show an error message
 
-	chatMessages = chat.message_set.all().order_by('created_at')  # Get messages for the chat
+	chatMessages = list(chat.message_set.all().order_by('created_at'))  # Get messages for the chat
+
+	# Loop through the messages to set show_time and show_name
+	for i in range(len(chatMessages)):
+		current_message = chatMessages[i]
+		current_message.show_time = True
+		current_message.day_old = False
+
+		if current_message.created_at < timezone.now() - timezone.timedelta(hours=24):
+			current_message.day_old = True  # Set day_old to True if 24 hours or more
+		if i == 0:
+			current_message.show_name = True  # Automatically show name for the first message
+		else:
+			previous_message = chatMessages[i - 1]
+			# Calculate the time difference between the current and previous message
+			time_difference = (current_message.created_at - previous_message.created_at).total_seconds()
+			# Set show_time to True if time_difference > 600 seconds or if the user has changed
+			previous_message.show_time = time_difference > 600 or current_message.user != previous_message.user
+			# Set show_name to True if the previous message shows time or if no previous message
+			current_message.show_name = previous_message.show_time
 
 	# Fetch all chats that the user is a part of (ordered by timestamp)
 	user_chats = Chat.objects.filter(userProfiles=user_profile).order_by('-chatTimeStamp')

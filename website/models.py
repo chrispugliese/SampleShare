@@ -104,6 +104,23 @@ class Message(models.Model):
 	def __str__(self):
 		return f"{self.user.username}: {self.content[:20]} at {self.created_at}"
 
+	def formatted_created_at(self):
+		"""Return the created_at field formatted as 'Month DaySuffix Time'."""
+		if self.created_at is None:
+			return ""
+
+		day = self.created_at.day
+		month = self.created_at.strftime("%B")  # Full month name
+		time = self.created_at.strftime("%-I:%M%p").lower()  # 12-hour format, lowercase 'pm'
+
+		# Add ordinal suffix to the day
+		if 10 <= day % 100 <= 20:
+			suffix = 'th'
+		else:
+			suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
+
+		return f"{month} {day}{suffix}, {time}"
+
 
 # ------Genres------
 # genrename = VARCHAR(50) NOT NULL

@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
-{% load time_filters %}
-
+{% load tz %}
+{% now "Y-m-d H:i:s" as current_time %}
  <head>
 	<style>
 			body{
@@ -103,7 +103,7 @@
 			margin: 0 0 20px;
 		}
 		.chat-body .answer.left {
-			padding: 0 0 0 58px;
+			padding: 5px 0 0 58px;
 			text-align: left;
 			float: left;
 		}
@@ -117,7 +117,7 @@
 			left: 0;
 		}
 		.chat-body .answer .avatar {
-			bottom: 36px;
+			bottom: 15px;
 		}
 		.chat .avatar {
 			width: 40px;
@@ -129,15 +129,14 @@
 			border-radius: 20px;
 			height: 100%;
 		}
-		.chat-body .answer .name {
+		
+		.chat .name {
+			position: relative;
+		}
+		.chat-body .answer.left .name {
 			font-size: 14px;
-			line-height: 36px;
-		}
-		.chat-body .answer.left .avatar .status {
-			right: 4px;
-		}
-		.chat-body .answer .avatar .status {
-			bottom: 0;
+			line-height: 24px;
+			Left: -58px;
 		}
 		.chat-body .answer.left .text {
 			background: #ebebeb;
@@ -145,7 +144,7 @@
 			border-radius: 8px 8px 8px 0;
 			word-wrap: break-word;
 			white-space: normal; /* Allow text to wrap */    
-			padding: 10px; /* Add padding */
+			padding: 12px; /* Add padding */
 		}
 		.chat-body .answer .text {
 			padding: 12px;
@@ -167,18 +166,18 @@
 			border-bottom-width: 0;
 		}
 		.chat-body .answer.left .time {
-			padding-left: 12px;
 			color: #333333;
+			height: 12px;
 		}
 		.chat-body .answer .time {
-			font-size: 16px;
-			line-height: 36px;
+			font-size: 12px;
+			line-height: 12px;
 			position: relative;
 			padding-bottom: 1px;
 		}
 		/*RIGHT*/
 		.chat-body .answer.right {
-			padding: 0 58px 0 0;
+			padding: 5px 58px 0 0;
 			text-align: right;
 			float: right;
 		}
@@ -186,8 +185,10 @@
 		.chat-body .answer.right .avatar {
 			right: 0;
 		}
-		.chat-body .answer.right .avatar .status {
-			left: 4px;
+		.chat-body .answer.right .name {
+			font-size: 14px;
+			line-height: 24px;
+			right: -58px;
 		}
 		.chat-body .answer.right .text {
 			background: #7266ba;
@@ -203,7 +204,6 @@
 			border-left-width: 12px;
 		}
 		.chat-body .answer.right .time {
-			padding-right: 12px;
 			color: #333333;
 		}
 
@@ -267,7 +267,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-
 </head>
 <body>
 <div class="container">
@@ -351,38 +350,68 @@
 					    {% endif %}
 					</h6>
 			  		{% for chatMessage in chatMessages %}
-						{% if chatMessage.user == request.user %}
-							<div class="answer right"> <!-- User's messages on the right -->
-								<div class="avatar">
-								  <a href="{% url 'profile' chatMessage.user.username %}" style="text-decoration: none; color: black;">
-									<img src="{% static request.user.userprofile.userPhoto %}" alt="{{ request.user.username }}">
-								</div>
-								<div class="name">{{ request.user.username }}</div>
-							      </a>
-								<div class="text">{{ chatMessage.content }}</div>
-								            {% if forloop.last or forloop.counter < chatMessages|length and chatMessages|index:forloop.counter0.timestamp > chatMessages|index:forloop.counter0|add:-600) or (not forloop.last and chatMessages|index:forloop.counter0.user != chatMessages|index:forloop.counter) %}
-								<time class="time">
-                					{{ chatMessage.created_at|timesince }} ago
-    							</time>
-							</div>
+    				{% with avatar_url=chatMessage.user.userprofile.userPhoto username=chatMessage.user.username message_text=chatMessage.content message_time=chatMessage.created_at %}
+        				{% if chatMessage.show_time %}
+			                <!-- Code for messages within the time frame -->
+			                {% if chatMessage.user == request.user %}
+			                    <div class="answer right">
+			                    	<div class="avatar">
+					                    <a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
+					                        <img src="{% static avatar_url %}" alt="{{ username }}">
+					                    </a>
+					                </div>
+					                {% if chatMessage.show_name %}
+					                	<a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
+					                    	<div class="name">{{ username }}</div>
+					                    </a>
+					                {% endif %}
+					                <div class="text">{{ message_text }}</div>
+					                <time class="time">
+					                	{% if chatMessage.day_old %}
+                    						{{ chatMessage.formatted_created_at }}
+	                					{% else %}
+	                    					{{ message_time|timesince }} ago
+							            {% endif %}
+						            </time>
+					            </div>
+			                {% else %}
+			                    <div class="answer left">
+			                    	<div class="avatar">
+					                    <a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
+					                        <img src="{% static avatar_url %}" alt="{{ username }}">
+					                    </a>
+					                </div>
+					                {% if chatMessage.show_name %}
+					                	<a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
+					                    	<div class="name">{{ username }}</div>
+					                    </a>
+					                {% endif %}
+					                <div class="text">{{ message_text }}</div>
+					                <time class="time">{{ message_time|timesince }} ago</time>
+					            </div>
+			                {% endif %}
 						{% else %}
-							<div class="answer left"> <!-- Other user's messages on the left -->
-								<div class="avatar">
-									<a href="{% url 'profile' chatMessage.user.username %}" style="text-decoration: none; color: black;">
-										<img src="{% static chatMessage.user.userprofile.userPhoto %}" alt="{{ chatMessage.user.username }}">
-								</div>
-								<div class="name">{{ chatMessage.user.username }}</div>
-									</a>
-								<div class="text">{{ chatMessage.content }}</div>
-								<div class="time">{{ chatMessage.created_at|timesince }} ago</div> <!-- Format the time appropriately -->
-							</div>
-						{% endif %}
-			  		{% endfor %}
+			                {% if chatMessage.user == request.user %}
+			                    <div class="answer right">
+			                {% else %}
+			                    <div class="answer left">
+			                {% endif %}
+			                {% if chatMessage.show_name %}
+			                    <a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
+					                <div class="name">{{ username }}</div>
+					            </a>
+			                {% endif %}
+			                    <div class="text">{{ message_text }}</div>
+			                </div>
+			            {% endif %}			        
+			    	{% endwith %}
+					{% endfor %}
+
 					<form method="POST" class="answer-add" action="{% url 'send_message' chat.id %}" id="message-form">
     					{% csrf_token %}
     					<input type="hidden" name="chat_id" value="{{ chat.id }}">  <!-- Make sure you pass the chat ID -->
     					<div class="form-group">
-        					<textarea name="content" placeholder="Type message..." class="form-control" rows="1" maxlength="500">{{ form.content.value }}</textarea>
+        					<textarea name="content" id="chat-message-input" placeholder="Type message..." class="form-control" rows="1" maxlength="500">{{ form.content.value }}</textarea>
     					</div>
     					<span class="answer-btn answer-btn-1" onclick="this.closest('form').submit();">Send</span>
 					</form>

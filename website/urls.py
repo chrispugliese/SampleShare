@@ -1,4 +1,4 @@
-from .views import CreatePostView, chat, send_friend_request, accept_friend_request, decline_friend_request, remove_friend, private_chat_redirect
+from .views import CreatePostView, send_friend_request, accept_friend_request, decline_friend_request, remove_friend, private_chat_redirect
 from django.urls import path
 from . import views
 from django.http import Http404
@@ -31,7 +31,7 @@ urlpatterns = [
 
 
 	#Chat stuff here
-    path("chat/", views.recent_chat_redirect, name="recent_chat_redirect"),
+	path("chat/", views.recent_chat_redirect, name="recent_chat_redirect"),
 	path("chat/<int:chat_id>/", views.chat, name="chat"),
 	path('create_chat/', views.create_chat, name='create_chat'),
 	path('chat/private/<int:user_id>/', views.private_chat_redirect, name='private_chat_redirect'),

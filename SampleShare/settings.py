@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "website",
-    "channels",
 ]
 
 MIDDLEWARE = [
@@ -73,13 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "SampleShare.wsgi.application"
 ASGI_APPLICATION = "SampleShare.asgi.application"
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    },
-}
-
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
