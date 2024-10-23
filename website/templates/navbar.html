@@ -25,8 +25,10 @@
         <li class="nav-item"></li>
         <a class="nav-link" href="{% url 'sample_player' %}">Samples</a>
         </li>
-
         <!-------------------------------------------------->
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'recent_chat_redirect' %}">Chats</a>
+        </li>
         {% else %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'register' %}">Register</a>
