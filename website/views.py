@@ -197,22 +197,39 @@ def sample_player(request):
 
 def search_user(request):
     if request.method == "GET":
-        query = request.GET.get(
-            "q"
-        )  # 'q' is the name attribute in your search input field
+        query = request.GET.get("q")
+        filter_type = request.GET.getlist("filter")  # This allows for multiple filters to be selected
+
+        # Default to showing both usernames and samples if no filter is selected
+        if not filter_type or 'all' in filter_type:
+            filter_type = ['username', 'sample']
+
+        matching_users = []
+        matching_samples = []
+
+        # Apply the filters based on the selected checkboxes
         if query:
-            matching_users = User.objects.filter(
-                username__icontains=query
-            )  # Case-insensitive search
-            return render(
-                request,
-                "search_results.html",
-                {"users": matching_users, "query": query},
-            )
-        else:
-            return render(
-                request, "search_results.html", {"users": None, "query": query}
-            )
+            if 'username' in filter_type:
+                matching_users = User.objects.filter(username__icontains=query)
+            
+            if 'sample' in filter_type:
+                matching_samples = Sample.objects.filter(sampleName__icontains=query, isPublic=True)
+
+        # Render the template with the filtered results
+        return render(request, 'search_results.html', {
+            'users': matching_users,
+            'samples': matching_samples,
+            'query': query,
+            'filter_type': filter_type  # Passing filter_type back to the template to maintain checkbox state
+        })
+
+    # Default state: show all
+    return render(request, 'search_results.html', {
+        'users': None, 
+        'samples': None, 
+        'query': None, 
+        'filter_type': ['username', 'sample']  # Default filter shows all initially
+    })
 
 
 # ----------------------------Post Code -------------------------------#
