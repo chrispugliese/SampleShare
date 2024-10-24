@@ -1,4 +1,3 @@
-import os
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from mutagen import File as MutagenFile
@@ -6,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 from .models import Sample, UserProfile, Post, Comment
-import mimetypes
+import os, mimetypes
 
 class SampleForm(forms.ModelForm):
     class Meta:
