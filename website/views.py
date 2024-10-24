@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.views.generic import CreateView
 from .forms import ProfileForm
 from django.conf import settings
+import mimetypes
 import os
 
 
@@ -109,18 +110,21 @@ def register_user(request):
 def upload(request):
     if request.user.is_authenticated:
         if request.method == "POST":
-            form = SampleForm(request.POST, request.FILES or None)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Your sample was uploaded successfully!")
-                return redirect("home")
-        else:
-            form = SampleForm()
-        return render(request, "upload.html", {"form": form})
+            user_profile = UserProfile.objects.get(user=request.user)
+            sample_form = SampleForm(request.POST, request.FILES)
+
+            if sample_form.is_valid():
+                # Remove commit=False to let the form handle file saving completely
+                sample = sample_form.save(commit=False)
+                sample.userProfiles = user_profile  # Assign logged-in user
+                sample.save()  # This should handle both the file and other field
+            else:
+                messages.error(request, "Your file is not safe to upload.")
+
+        return render(request, "upload.html")
     else:
         messages.error(request, "You must be logged in to upload a sample file!")
         return redirect("login")
-
 
 def update_user_samples(request):
     if request.user.is_authenticated:

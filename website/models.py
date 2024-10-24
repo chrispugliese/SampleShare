@@ -52,10 +52,6 @@ class Sample(models.Model):
     sampleName = models.CharField(max_length=50)
     audioFile = models.FileField(
         upload_to="samples/",
-        validators=[
-            validate_length,
-            FileExtensionValidator(allowed_extensions=["mp3", "wav"]),
-        ],
     )
     isPublic = models.BooleanField()
     # one to Many with UserProfiles
