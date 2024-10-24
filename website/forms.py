@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django import forms
 from .models import Sample, UserProfile, Post, Comment
 
-
 class SampleForm(forms.ModelForm):
     class Meta:
         model = Sample
@@ -18,7 +17,6 @@ class SampleForm(forms.ModelForm):
                 }
             )
         }
-
 
 class SampleEditForm(forms.ModelForm):
     class Meta:
@@ -35,7 +33,6 @@ class SampleEditForm(forms.ModelForm):
                 }
             )
         }
-
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(
