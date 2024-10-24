@@ -62,7 +62,6 @@ def validate_audio_file(file):
     except Exception as e:
         raise ValidationError(f'Error processing audio file: {str(e)}')
 
-
 class SampleEditForm(forms.ModelForm):
     class Meta:
         model = Sample
@@ -78,7 +77,6 @@ class SampleEditForm(forms.ModelForm):
                 }
             )
         }
-
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(
@@ -100,7 +98,6 @@ class SignUpForm(UserCreationForm):
             }
         )
     )
-    user_Photo = "images/profile_picture_default.jpg"
 
     class Meta:
         model = User
@@ -141,7 +138,6 @@ class SignUpForm(UserCreationForm):
             UserProfile.objects.create(
                 user=user,
                 dateOfBirth=date_of_birth,
-                userPhoto=self.user_Photo,
                 numberOfFollowers=0,  # default to 0
             )
         return user
