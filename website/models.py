@@ -23,9 +23,9 @@ class UserProfile(models.Model):
     bio = models.TextField(max_length=1000)
     numberOfFollowers = models.IntegerField()
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
-	
     def __str__(self):
 	    return str(self.user)
+
 
 class FriendRequest(models.Model):
 	from_user = models.ForeignKey(UserProfile, related_name='sent_requests', on_delete=models.CASCADE)
@@ -40,30 +40,23 @@ class FriendRequest(models.Model):
 # fileLocation = TEXT NOT NULL
 # isPublic = BOOLEAN NOT NULL
 # ------------------------------------
-# TODO: need to ask if further validation is needed for file extensions
+
 def validate_length(audio_file):
-	max_length_allowed = 6.0
-	audio = None
-	if audio_file.name.endswith(".mp3"):
-		audio = mp3.MP3(audio_file)
-	elif audio_file.name.endswith(".wav"):
-		audio = wave.WAVE(audio_file)
+    max_length_allowed = 6.0
+    audio = None
+    if audio_file.name.endswith(".mp3"):
+        audio = mp3.MP3(audio_file)
+    elif audio_file.name.endswith(".wav"):
+        audio = wave.WAVE(audio_file)
 
-	if audio and audio.info.length > max_length_allowed + 0.9:
-		raise ValidationError(
-			"Only samples of 6 seconds length are allowed, please try another sample."
-		)
-
+    if audio and audio.info.length > max_length_allowed + 0.9:
+        raise ValidationError(
+            "Only samples of 6 seconds length are allowed, please try another sample."
+        )
 
 class Sample(models.Model):
 	sampleName = models.CharField(max_length=50)
-	audioFile = models.FileField(
-		upload_to="samples/",
-		validators=[
-			validate_length,
-			FileExtensionValidator(allowed_extensions=["mp3", "wav"]),
-		],
-	)
+	audioFile = models.FileField(upload_to="samples/")
 	isPublic = models.BooleanField()
 	# one to Many with UserProfiles
 	userProfiles = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)

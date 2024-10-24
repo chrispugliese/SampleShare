@@ -7,10 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Sample</title>
     <style>
-        /* Basic styling for drag-and-drop area */
         #drop-zone {
             width: 70%;
-            height: 150px;
+            height: 300px;
             border: 2px dashed #ccc;
             display: flex;
             align-items: center;
@@ -32,17 +31,145 @@
 
     <form id="SampleUploadForm" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.media }}
-        {{ form.as_p }}
-        <br><br>
-        <button type="submit" id="submit-btn">Upload</button>
+        <input type="hidden" id="userProfiles" name="userProfiles" value="{{ request.user.userprofile.id }}">
+        <button type="button" id="submit-btn">Upload</button>
         <button type="button" onclick="window.location.href='/'">Cancel</button>
-        <script>
-          var name = "{{ user.userprofile.id }}";
-          document.getElementById("user").value =
-            name;
-        </script>
-        
     </form>
+
+    <script>
+        var dropZone = document.getElementById('drop-zone');
+        var fileList = document.getElementById('file-list');
+        var fileQueue = [];
+
+        dropZone.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            dropZone.style.backgroundColor = '#eee';
+        });
+
+        dropZone.addEventListener('dragleave', function (e) {
+            dropZone.style.backgroundColor = '#000000';
+        });
+
+        dropZone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            var files = e.dataTransfer.files;
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+
+                // Validate if the file is an audio file using MIME type check
+                if (!file.type.startsWith('audio/')) {
+                    alert('Only audio files are allowed.');
+                    continue;
+                }
+
+                // Validate file by checking its duration asynchronously
+                validateAndAddFile(file);
+            }
+        });
+
+        function validateAndAddFile(file) {
+            // Create an Audio object to check file duration
+            var audio = new Audio();
+            audio.src = URL.createObjectURL(file);
+
+            audio.addEventListener('loadedmetadata', function () {
+                var duration = audio.duration;
+
+                // Check if the file duration is 7 seconds or longer
+                if (duration >= 7) {
+                    alert('Files longer than 6 seconds are not allowed.');
+                    return;  // Don't add the invalid file
+                }
+
+                // If valid, add the file to the list
+                addFileToList(file);
+            });
+
+            audio.addEventListener('error', function () {
+                alert('Error loading audio file. This file cannot be added.');
+            });
+        }
+
+        function addFileToList(file) {
+            // Avoid adding duplicate files
+            if (fileQueue.some(f => f.name === file.name)) {
+                alert('This file is already in the queue.');
+                return;
+            }
+
+            var fileItem = document.createElement('li');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <span>${file.name}</span>
+                <input type="text" name="sampleName_${file.name}" placeholder="Rename">
+                <label>Public? <input type="checkbox" name="isPublic_${file.name}"></label>
+                <button type="button" onclick="removeFile('${file.name}', this)">Remove</button>
+            `;
+            fileList.appendChild(fileItem);
+            fileQueue.push(file);
+        }
+
+        function removeFile(fileName, element) {
+            // Remove from queue
+            fileQueue = fileQueue.filter(f => f.name !== fileName);
+
+            // Remove from UI
+            element.parentElement.remove();
+        }
+
+        document.getElementById('submit-btn').addEventListener('click', function (e) {
+            if (fileQueue.length === 0) {
+                alert("You must add a file to submit.");
+                return;
+            }
+
+            // Confirm before submission
+            if (confirm("Are you sure you want to upload these files?")) {
+                // Disable button to prevent duplicate submission
+                document.getElementById('submit-btn').disabled = true;
+
+                uploadFiles(fileQueue).then(() => {
+                    alert("All files uploaded successfully!");
+                    fileQueue = [];  // Clear file queue
+                    fileList.innerHTML = "";  // Clear UI
+                    document.getElementById('submit-btn').disabled = false;  // Re-enable button
+                }).catch((error) => {
+                    alert("An error occurred during upload.");
+                    document.getElementById('submit-btn').disabled = false;
+                });
+            }
+        });
+
+        async function uploadFiles(files) {
+            for (let file of files) {
+                const formData = new FormData();
+                formData.append('audioFile', file);
+                if (document.querySelector(`[name="sampleName_${file.name}"]`).value == "") {
+                    formData.append('sampleName', file.name);} 
+                else {
+                    formData.append('sampleName', document.querySelector(`[name="sampleName_${file.name}"]`).value);}
+                formData.append('isPublic', document.querySelector(`[name="isPublic_${file.name}"]`).checked);
+                formData.append('userProfiles', document.getElementById('userProfiles').value);
+
+                await fetch('/upload/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                }).then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(`Failed to upload file: ${err.error}`);
+                        });
+                    }
+                }).catch(error => {
+                    alert(`An error occurred while uploading ${file.name}: ${error.message}`);
+                    console.error('Upload error:', error);
+                });
+            }
+        }
+    </script>
 </body>
 {% endblock %}
