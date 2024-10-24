@@ -534,7 +534,6 @@ def chat(request, chat_id):
 
 	return render(request, 'chat.html', {
 		'chat': chat,        # Pass the chat room object
-		'user_profile': user_profile,   # Pass the user profile
 		'chats': user_chats,           # Pass the list of chats
 		'chatMessages': chatMessages,  #Pass the sorted messages 
 	})
