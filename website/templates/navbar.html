@@ -17,10 +17,7 @@
         </li>
         <!-------------------- Post Code  ----------------->
         <li class="nav-item"></li>
-        <a class="nav-link" href="{% url 'create_post' %}">Create Post</a>
-        </li>
-        <li class="nav-item"></li>
-        <a class="nav-link" href="{% url 'posts' %}">Posts</a>
+        <a class="nav-link" href="{% url 'create_post' user.userprofile.id%}">Create Post</a>
         </li>
         <li class="nav-item"></li>
         <a class="nav-link" href="{% url 'upload' %}">Upload</a>
@@ -28,8 +25,10 @@
         <li class="nav-item"></li>
         <a class="nav-link" href="{% url 'sample_player' %}">Samples</a>
         </li>
-
         <!-------------------------------------------------->
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'recent_chat_redirect' %}">Chats</a>
+        </li>
         {% else %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'register' %}">Register</a>
@@ -41,7 +40,7 @@
       </ul>
 
       <form method="get" action="{% url 'search_user' %}">
-        <input type="text" name="q" placeholder="Search for a username">
+        <input type="text" name="q" placeholder="Search">
         <button type="submit" class="btn btn-outline-primary">Search</button>
       </form>
     </div>
