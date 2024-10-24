@@ -39,7 +39,7 @@ class FriendRequest(models.Model):
 # fileLocation = TEXT NOT NULL
 # isPublic = BOOLEAN NOT NULL
 # ------------------------------------
-# TODO: need to ask if further validation is needed for file extensions
+
 def validate_length(audio_file):
 	max_length_allowed = 6.0
 	audio = None
@@ -53,16 +53,9 @@ def validate_length(audio_file):
 			"Only samples of 6 seconds length are allowed, please try another sample."
 		)
 
-
 class Sample(models.Model):
 	sampleName = models.CharField(max_length=50)
-	audioFile = models.FileField(
-		upload_to="samples/",
-		validators=[
-			validate_length,
-			FileExtensionValidator(allowed_extensions=["mp3", "wav"]),
-		],
-	)
+	audioFile = models.FileField(upload_to="samples/")
 	isPublic = models.BooleanField()
 	# one to Many with UserProfiles
 	userProfiles = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)

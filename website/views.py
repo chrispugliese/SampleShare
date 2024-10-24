@@ -15,7 +15,7 @@ from django.views.generic import CreateView
 from typing import AsyncGenerator
 from .forms import SampleEditForm, SampleForm, SignUpForm, PostForm, CommentForm, MessageForm, ProfileForm
 from .models import Sample, UserProfile, Post, Comment, Chat, Message, FriendRequest
-import asyncio, json, os
+import asyncio, json, os, mimetypes
 
 # Create your views here.
 def home(request):
@@ -179,19 +179,23 @@ def remove_friend(request, user_id):
 
 
 def upload(request):
-	if request.user.is_authenticated:
-		if request.method == "POST":
-			form = SampleForm(request.POST, request.FILES or None)
-			if form.is_valid():
-				form.save()
-				messages.success(request, "Your sample was uploaded successfully!")
-				return redirect("home")
-		else:
-			form = SampleForm()
-		return render(request, "upload.html", {"form": form})
-	else:
-		messages.error(request, "You must be logged in to upload a sample file!")
-		return redirect("login")
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            user_profile = UserProfile.objects.get(user=request.user)
+            sample_form = SampleForm(request.POST, request.FILES)
+
+            if sample_form.is_valid():
+                # Remove commit=False to let the form handle file saving completely
+                sample = sample_form.save(commit=False)
+                sample.userProfiles = user_profile  # Assign logged-in user
+                sample.save()  # This should handle both the file and other field
+            else:
+                messages.error(request, "Your file is not safe to upload.")
+
+        return render(request, "upload.html")
+    else:
+        messages.error(request, "You must be logged in to upload a sample file!")
+        return redirect("login")
 
 
 def update_user_samples(request):
