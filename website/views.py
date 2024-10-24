@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.views.generic import CreateView
 from .forms import SampleEditForm, SampleForm, SignUpForm, PostForm, CommentForm, MessageForm, ProfileForm
 from typing import AsyncGenerator
-import asyncio, json, os, mimetypes
+import asyncio, json, os, mimetypes, send_friend_request
 
 
 # Create your views here.
