@@ -1,18 +1,17 @@
-from django.conf import django
+from django.conf import django, settings
 from django.http.request import is_same_domain
 from django.http.response import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from .models import Sample, UserProfile, Post, Comment
+from .models import Sample, UserProfile, Post, Comment, Chat, Message, FriendRequest
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SampleEditForm, SampleForm, SignUpForm, PostForm, CommentForm
 from django.contrib.auth.models import User
 from django.views.generic import CreateView
-from .forms import ProfileForm
-from django.conf import settings
-import mimetypes
-import os
+from .forms import SampleEditForm, SampleForm, SignUpForm, PostForm, CommentForm, MessageForm, ProfileForm
+from typing import AsyncGenerator
+import asyncio, json, os, mimetypes
 
 
 # Create your views here.
