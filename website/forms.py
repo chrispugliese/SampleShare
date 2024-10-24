@@ -57,7 +57,6 @@ class SignUpForm(UserCreationForm):
             }
         )
     )
-    user_Photo = "images/profile_picture_default.jpg"
 
     class Meta:
         model = User
@@ -98,7 +97,6 @@ class SignUpForm(UserCreationForm):
             UserProfile.objects.create(
                 user=user,
                 dateOfBirth=date_of_birth,
-                userPhoto=self.user_Photo,
                 numberOfFollowers=0,  # default to 0
             )
         return user
