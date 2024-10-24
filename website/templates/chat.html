@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-{% load static %}
 {% load tz %}
 {% now "Y-m-d H:i:s" as current_time %}
  <head>
@@ -58,6 +57,11 @@
 		    position: relative;
 		    left: 0px;
 		    z-index: 1;
+			width: 100%;          /* Ensures the image fills the container's width */
+			height: 100%;         /* Ensures the image fills the container's height */
+			object-fit: cover;    /* Ensures the image scales to fit within the container without distortion */
+			overflow: hidden; 
+			display: block;
 		}
 		.chat .avatar .status.off {
 			border: 1px solid #5a5a5a;
@@ -123,11 +127,6 @@
 			width: 40px;
 			height: 40px;
 			position: absolute;
-		}
-		.chat .avatar img {
-			display: block;
-			border-radius: 20px;
-			height: 100%;
 		}
 		
 		.chat .name {
@@ -291,7 +290,7 @@
                     					{% if forloop.counter <= 3 %}
                     					<span class="avatar">
                         					<img src="{{user_profile.userPhoto.url }}" alt="{{ user_profile.user.username }}">
-                        				</span>dddddd
+                        				</span>
 					                    {% endif %}
 					                  {% endif %}
 					                {% endfor %}
@@ -357,7 +356,7 @@
 			                    <div class="answer right">
 			                    	<div class="avatar">
 					                    <a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
-					                        <img src="{% static avatar_url %}" alt="{{ username }}">
+					                        <img src="{{ avatar_url }}" alt="{{ username }}">
 					                    </a>
 					                </div>
 					                {% if chatMessage.show_name %}
@@ -378,7 +377,7 @@
 			                    <div class="answer left">
 			                    	<div class="avatar">
 					                    <a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
-					                        <img src="{% static avatar_url %}" alt="{{ username }}">
+					                        <img src="{{ avatar_url }}" alt="{{ username }}">
 					                    </a>
 					                </div>
 					                {% if chatMessage.show_name %}

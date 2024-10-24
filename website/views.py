@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.http import Http404, HttpRequest, StreamingHttpResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.http.request import is_same_domain
 from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.generic import CreateView
 from typing import AsyncGenerator
@@ -484,32 +485,6 @@ def delete_account(request):
         messages.success(request, "Your account has been deleted. ")
         return redirect("home")
     return render(request, "confirm_delete_account.html")
-
-def edit_profile(request):
-	profile = request.user.userprofile
-	if request.method == 'POST':
-		form = ProfileForm(request.POST, request.FILES, instance=profile)
-		if form.is_valid():
-			# Handle file upload if a new file is uploaded
-			if 'userPhoto' in request.FILES:
-				# Save the file to a directory under 'media/profile_pics/'
-				uploaded_file = request.FILES['userPhoto']
-				file_path = os.path.join('profile_pics', uploaded_file.name)
-				
-				# Write the file to the media directory
-				with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as destination:
-					for chunk in uploaded_file.chunks():
-						destination.write(chunk)
-				
-				# Save the file path in the CharField
-				profile.userPhoto = file_path
-
-			# Save profile instance
-			profile.save()
-			return redirect('profile', username=request.user.username)
-	else:
-		form = ProfileForm(instance=profile)
-	return render(request, 'edit_profile.html', {'form': form})
 # --------------------------------------------------------------------#
 
 #--------------------Start Chat code---------------------------
@@ -563,7 +538,6 @@ def chat(request, chat_id):
 
 	return render(request, 'chat.html', {
 		'chat': chat,        # Pass the chat room object
-		'user_profile': user_profile,   # Pass the user profile
 		'chats': user_chats,           # Pass the list of chats
 		'chatMessages': chatMessages,  #Pass the sorted messages 
 	})
