@@ -1,0 +1,622 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load tz %}
+{% now "Y-m-d H:i:s" as current_time %}
+ <head>
+	<style>
+			body{
+			background:#eee;
+		}
+		.row.row-broken {
+			padding-bottom: 0;
+		}
+		.modal-header .close {
+		    color: white; /* White color for the 'X' */
+		    background-color: black; /* Black background */
+		    margin-left: auto; /* Pushes the button to the right */
+		    margin-right: 20px; /* Space between the button and the title */
+		    border: none; /* Remove default border */
+		    border-radius: 50%; /* Make it circular */
+		    width: 36px; /* Fixed width */
+		    height: 36px; /* Fixed height */
+		    display: flex; /* Center content */
+		    justify-content: center; /* Center horizontally */
+		    align-items: center; /* Center vertically */
+		}
+		.col-inside-lg {
+			padding: 20px;
+		}
+		.chat {
+			height: calc(100vh - 180px);
+		}
+		.decor-default {
+			background-color: #ffffff;
+		}
+		.chat-users h6 {
+			font-size: 20px;
+			margin: 0 0 20px;
+		}
+		.chat-users .user {
+			position: relative;
+			padding: 0 0 0 50px;
+			display: block;
+			cursor: pointer;
+			margin: 0 0 10px;
+		}
+		.chat-users .user .avatar {
+			top: 0;
+			left: 0;
+		}
+		.chat .avatar {
+			width: 40px;
+			height: 40px;
+			position: absolute;
+		}
+		.chat .avatar img {
+		    border-radius: 50%;
+		    position: relative;
+		    left: 0px;
+		    z-index: 1;
+		}
+		.chat .avatar .status.off {
+			border: 1px solid #5a5a5a;
+			background: #ffffff;
+		}
+		.chat .avatar .status.online {
+			background: #4caf50;
+		}
+		.chat .avatar .status.busy {
+			background: #ffc107;
+		}
+		.chat .avatar .status.offline {
+			background: #ed4e6e;
+		}
+		.chat-users .user .status {
+			bottom: 0;
+			left: 28px;
+		}
+		.chat .avatar .status {
+			width: 10px;
+			height: 10px;
+			border-radius: 5px;
+			position: absolute;
+		}
+		.chat-users .user .name {
+			font-size: 14px;
+			font-weight: bold;
+			line-height: 20px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.chat-users .user .mood {
+			font: 200 14px/20px "Raleway", sans-serif;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		/*****************CHAT BODY *******************/
+		.chat-body h6 {
+			font-size: 20px;
+			margin: 0 0 20px;
+		}
+		.chat-body .answer.left {
+			padding: 5px 0 0 58px;
+			text-align: left;
+			float: left;
+		}
+		.chat-body .answer {
+			position: relative;
+			max-width: 600px;
+			overflow: hidden;
+			clear: both;
+		}
+		.chat-body .answer.left .avatar {
+			left: 0;
+		}
+		.chat-body .answer .avatar {
+			bottom: 15px;
+		}
+		.chat .avatar {
+			width: 40px;
+			height: 40px;
+			position: absolute;
+		}
+		.chat .avatar img {
+			display: block;
+			border-radius: 20px;
+			height: 100%;
+		}
+		
+		.chat .name {
+			position: relative;
+		}
+		.chat-body .answer.left .name {
+			font-size: 14px;
+			line-height: 24px;
+			Left: -58px;
+		}
+		.chat-body .answer.left .text {
+			background: #ebebeb;
+			color: #333333;
+			border-radius: 8px 8px 8px 0;
+			word-wrap: break-word;
+			white-space: normal; /* Allow text to wrap */    
+			padding: 12px; /* Add padding */
+		}
+		.chat-body .answer .text {
+			padding: 12px;
+			font-size: 16px;
+			line-height: 26px;
+			position: relative;
+		}
+		.chat-body .answer.left .text:before {
+			left: -30px;
+			border-right-color: #ebebeb;
+			border-right-width: 12px;
+		}
+		.chat-body .answer .text:before {
+			content: '';
+			display: block;
+			position: absolute;
+			bottom: 0;
+			border: 18px solid transparent;
+			border-bottom-width: 0;
+		}
+		.chat-body .answer.left .time {
+			color: #333333;
+			height: 12px;
+		}
+		.chat-body .answer .time {
+			font-size: 12px;
+			line-height: 12px;
+			position: relative;
+			padding-bottom: 1px;
+		}
+		/*RIGHT*/
+		.chat-body .answer.right {
+			padding: 5px 58px 0 0;
+			text-align: right;
+			float: right;
+		}
+
+		.chat-body .answer.right .avatar {
+			right: 0;
+		}
+		.chat-body .answer.right .name {
+			font-size: 14px;
+			line-height: 24px;
+			right: -58px;
+		}
+		.chat-body .answer.right .text {
+			background: #7266ba;
+			color: #ffffff;
+			border-radius: 8px 8px 0 8px;
+			word-wrap: break-word;
+			white-space: normal; /* Allow text to wrap */    
+			padding: 10px; /* Add padding */
+		}
+		.chat-body .answer.right .text:before {
+			right: -30px;
+			border-left-color: #7266ba;
+			border-left-width: 12px;
+		}
+		.chat-body .answer.right .time {
+			color: #333333;
+		}
+
+		/**************ADD FORM ***************/
+		.chat-body .answer-add {
+			clear: both;
+			position: relative;
+			margin: 20px -20px -20px;
+			padding: 20px;
+			background: #46be8a;
+		}
+		.chat-body .answer-add input {
+			border: none;
+			background: none;
+			display: block;
+			width: 100%;
+			font-size: 16px;
+			line-height: 20px;
+			padding: 0;
+			color: #ffffff;
+		}
+		.chat input {
+			-webkit-appearance: none;
+			border-radius: 0;
+		}
+		.chat-body .answer-add .answer-btn-1 {
+			background: #46be8a;
+			right: 20px;
+			height: 55px;
+		}
+		.chat-body .answer-add .answer-btn {
+			display: block;
+			cursor: pointer;
+			width: 36px;
+			height: 36px;
+			position: absolute;
+			top: 50%;
+			margin-top: -18px;
+		}
+		.chat input::-webkit-input-placeholder {
+		   color: #fff;
+		}
+
+		.chat input:-moz-placeholder { /* Firefox 18- */
+		   color: #fff;  
+		}
+
+		.chat input::-moz-placeholder {  /* Firefox 19+ */
+		   color: #fff;  
+		}
+
+		.chat input:-ms-input-placeholder {  
+		   color: #fff;  
+		}
+		.chat input {
+			-webkit-appearance: none;
+			border-radius: 0;
+		}
+	</style>
+    <title>Your Chat</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+</head>
+<body>
+<div class="container">
+<div class="content container-fluid bootstrap snippets bootdey">
+	<div class="row row-broken">
+		<div class="col-sm-3 col-xs-12">
+			<div class="col-inside-lg decor-default chat" style="overflow: hidden; outline: none;" tabindex="5000">
+				<div class="chat-users">
+					<h6>
+						Chats
+						<button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#newChatModal" style="float: right;">
+        					<i class="fa fa-plus"></i>
+    					</button>
+					</h6>
+					{% for listchat in chats %}
+						<div class="user" style="{% if listchat.id == chat.id %}background-color: lightgrey;min-height: 50px;{% endif %}">
+						  <a href="{% url 'chat' listchat.id %}" style="text-decoration: none; color: black;"> <!-- Link to the chat page -->
+							<div class="avatar">
+								{% if listchat.is_group_chat %}
+                					{% for user_profile in listchat.userProfiles.all %}
+                					  {% if user_profile.user != request.user %}
+                    					{% if forloop.counter <= 3 %}
+                    					<span class="avatar">
+                        					<img src="{{user_profile.userPhoto.url }}" alt="{{ user_profile.user.username }}">
+                        				</span>dddddd
+					                    {% endif %}
+					                  {% endif %}
+					                {% endfor %}
+					            {% else %}
+								{% for user_profile in listchat.userProfiles.all %}
+									{% if user_profile.user != request.user %}
+										<img src="{{user_profile.userPhoto.url }}" alt="{{ user_profile.user.username }}">
+									{% endif %}
+								{% endfor %}
+								{% endif %}
+							</div>
+							<div class="name">
+								{% if listchat.is_group_chat %}
+                					{{ listchat.chatName }} <!-- Group chat: Display chat name -->
+            					{% else %}
+            					    {% for user_profile in listchat.userProfiles.all %}
+            					        {% if user_profile.user != request.user %}
+											{{ user_profile.user.username }} <!-- Displaying the other user's name -->
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+							</div>
+								<!-- Edit below 2 lines, class refers to style settings above. --->
+								<div class="mood">
+    								{% if listchat.message_set.exists %}
+								        {{ listchat.message_set.last.content }}  <!-- Most recent message -->
+								    {% else %}
+								        <em>No messages yet</em>
+								    {% endif %}
+								</div>
+								<div class="d-flex justify-content-end">
+									<form method="POST" action="{% url 'delete_chat' listchat.id %}" style="display: inline;">
+							            {% csrf_token %}
+							            <button type="submit" class="btn btn-danger btn-sm ms-auto" style="padding: 2px 6px; font-size: 8px;" onclick="return confirm('Are you sure you want to delete this chat?');">X</button>
+							        </form>
+							    </div>
+							</a>
+						</div>
+					{% endfor %}
+				</div>
+		  	</div>
+		</div>
+		<!-- Middle section: Populated with current selected chat. -->
+		<div class="col-sm-9 col-xs-12 chat" id="chat-body" style="overflow: hidden; outline: none;" tabindex="5001">
+		  	<div class="col-inside-lg decor-default">
+				<div class="chat-body">
+					<h6>
+					    {% if chat.is_group_chat %}
+					        Chat with {{ chat.chatName }}  <!-- Use group chat name -->
+					    {% else %}
+					    	{% for user_profile in chat.userProfiles.all %}
+                				{% if user_profile.user != request.user %}
+					        		Chat with {{ user_profile.user.username }}
+					        	{% endif %}
+					        {% endfor %}
+					    {% endif %}
+					</h6>
+			  		{% for chatMessage in chatMessages %}
+    				{% with avatar_url=chatMessage.user.userprofile.userPhoto.url username=chatMessage.user.username message_text=chatMessage.content message_time=chatMessage.created_at %}
+        				{% if chatMessage.show_time %}
+			                <!-- Code for messages within the time frame -->
+			                {% if chatMessage.user == request.user %}
+			                    <div class="answer right">
+			                    	<div class="avatar">
+					                    <a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
+					                        <img src="{% static avatar_url %}" alt="{{ username }}">
+					                    </a>
+					                </div>
+					                {% if chatMessage.show_name %}
+					                	<a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
+					                    	<div class="name">{{ username }}</div>
+					                    </a>
+					                {% endif %}
+					                <div class="text">{{ message_text }}</div>
+					                <time class="time">
+					                	{% if chatMessage.day_old %}
+                    						{{ chatMessage.formatted_created_at }}
+	                					{% else %}
+	                    					{{ message_time|timesince }} ago
+							            {% endif %}
+						            </time>
+					            </div>
+			                {% else %}
+			                    <div class="answer left">
+			                    	<div class="avatar">
+					                    <a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
+					                        <img src="{% static avatar_url %}" alt="{{ username }}">
+					                    </a>
+					                </div>
+					                {% if chatMessage.show_name %}
+					                	<a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
+					                    	<div class="name">{{ username }}</div>
+					                    </a>
+					                {% endif %}
+					                <div class="text">{{ message_text }}</div>
+					                <time class="time">{{ message_time|timesince }} ago</time>
+					            </div>
+			                {% endif %}
+						{% else %}
+			                {% if chatMessage.user == request.user %}
+			                    <div class="answer right">
+			                {% else %}
+			                    <div class="answer left">
+			                {% endif %}
+			                {% if chatMessage.show_name %}
+			                    <a href="{% url 'profile' username %}" style="text-decoration: none; color: black;">
+					                <div class="name">{{ username }}</div>
+					            </a>
+			                {% endif %}
+			                    <div class="text">{{ message_text }}</div>
+			                </div>
+			            {% endif %}			        
+			    	{% endwith %}
+					{% endfor %}
+
+					<form method="POST" class="answer-add" action="{% url 'send_message' chat.id %}" id="message-form">
+    					{% csrf_token %}
+    					<input type="hidden" name="chat_id" value="{{ chat.id }}">  <!-- Make sure you pass the chat ID -->
+    					<div class="form-group">
+        					<textarea name="content" id="chat-message-input" placeholder="Type message..." class="form-control" rows="1" maxlength="500">{{ form.content.value }}</textarea>
+    					</div>
+    					<span class="answer-btn answer-btn-1" onclick="this.closest('form').submit();">Send</span>
+					</form>
+				</div>
+		  	</div>
+		</div>
+	</div>
+</div>
+</div>
+<script>
+	const form = document.getElementById('message-form');
+    const textarea = form.querySelector('textarea');
+     // Function to submit the form
+    function submitForm() {
+        form.submit();
+    }
+
+    // Add event listener for keypress
+    textarea.addEventListener('keypress', function(event) {
+        // Check if Enter key is pressed without Shift
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault(); // Prevent default action of Enter key
+            submitForm(); // Submit the form
+        }
+    });
+
+    $(function() {
+        $(".chat").niceScroll();
+    });
+
+    function scrollToBottom() {
+        var chatBody = $('#chat-body');
+        if (chatBody.length) { // Check if the element exists
+            chatBody.scrollTop(chatBody[0].scrollHeight);
+        }
+    }
+
+    $(document).ready(function() {
+        setTimeout(scrollToBottom, 100); // Wait a bit for the chat to render
+    });
+
+    $('form.answer-add').on('submit', function() {
+        setTimeout(scrollToBottom, 100); // Wait for new message to render
+    });
+</script>
+
+<!-- New Chat Modal -->
+<div class="modal fade" id="newChatModal" tabindex="-1" role="dialog" aria-labelledby="newChatModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newChatModalLabel">Create New Chat</h5>
+            </div>
+            <form method="POST" id="newChatForm" action="{% url 'create_chat' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group" id="chat-name-group" style="display: none;"> <!-- Initially hidden -->
+                        <label for="chat-name">Chat Name</label>
+                        <input type="text" class="form-control" id="chat-name" name="chat_name" placeholder="Enter group name">
+                    </div>
+                    <div class="form-group">
+					    <label for="chat-users">Add Users</label>
+					    <input type="text" class="form-control" id="chat-users" name="chat_users" placeholder="Enter usernames">
+						<div id="user-dropdown" class="dropdown-menu" style="max-height: 200px; overflow-y: auto; display: none;">
+					      <!-- Dynamic user buttons will be added here -->
+					    </div>
+					    <div id="selected-users" class="mt-2">
+      						<!-- Selected user tags will be displayed here -->
+    					</div>
+					    <input type="hidden" name="chat_users" id="hidden-chat-users" value=""> <!-- Hidden input for form submission -->
+					</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelButton" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Chat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+	const chatUsersInput = document.getElementById('chat-users');
+    const chatNameGroup = document.getElementById('chat-name-group');
+
+    // Function to update the chat name field visibility
+    function updateChatNameFieldVisibility() {
+        const selectedUsers = document.querySelectorAll('#selected-users .badge'); // Assuming user tags are marked with a class 'user-tag'
+        if (selectedUsers.length >= 2) {
+            chatNameGroup.style.display = 'block'; // Show the chat name field
+        } else {
+            chatNameGroup.style.display = 'none'; // Hide the chat name field
+        }
+    }
+
+
+	//Dropdown user list functionality
+$(document).ready(function() {
+    var selectedUsers = [];
+
+    $('#chat-users').on('input', function() {
+        var query = $(this).val();
+        if (query.length > 0) {
+            // Make an AJAX call to fetch users based on the query
+            $.ajax({
+                url: '{% url "search_users" %}',
+                data: { 'query': query },
+                success: function(data) {
+                    var dropdown = $('#user-dropdown');
+                    dropdown.empty(); // Clear previous results
+                    dropdown.show(); // Show dropdown
+
+                    // Iterate through the fetched users
+                    $.each(data.users, function(index, user) {
+                        if (!selectedUsers.includes(user.username)) { // Exclude already selected users
+                            dropdown.append(`
+                                <button class="dropdown-item" data-username="${user.username}">
+                                    <img src="${user.avatar}" alt="${user.username}" style="border-radius: 50%; width: 30px; height: 30px;"> 
+                                    ${user.username}
+                                </button>
+                            `);
+                        }
+                    });
+                }
+            });
+        } else {
+            $('#user-dropdown').hide(); // Hide dropdown if input is empty
+        }
+    });
+
+    // Handle user selection
+    $(document).on('click', '.dropdown-item', function(event) {
+        event.preventDefault(); // Prevent default behavior
+        var username = $(this).data('username');
+        if (!selectedUsers.includes(username)) {
+            selectedUsers.push(username); // Add selected username to the array
+            var tag = $(`
+                <span class="badge bg-primary me-2">
+                    ${username} <button class="btn-close btn-close-white remove-user" data-username="${username}"></button>
+                </span>
+            `);
+            $('#selected-users').append(tag); // Add tag to the selected users container
+			$('#chat-users').val(''); // Clear the input field after user selection
+            $('#hidden-chat-users').val(selectedUsers.join(',')); // Update hidden input for form submission
+            $('#user-dropdown').hide(); // Hide dropdown after selection
+            $('#chat-users').focus(); // Keep focus on the input field
+            updateChatNameFieldVisibility();
+        }
+    });
+    //Prevents creation of group chat w/o chat name
+    document.getElementById('newChatForm').onsubmit = function(event) {
+    	const users = document.getElementById('hidden-chat-users').value.split(',').filter(Boolean); // Get selected users from hidden input
+    	const chatName = document.getElementById('chat-name').value.trim();
+
+    	if (users.length >= 2 && !chatName) {
+        event.preventDefault(); // Prevent form submission
+        alert("Please provide a chat name when adding 2 or more users."); // Alert message
+	    }
+	};
+    // Remove user from the selected users list
+    $(document).on('click', '.remove-user', function() {
+        var username = $(this).data('username');
+        selectedUsers = selectedUsers.filter(user => user !== username); // Remove user from the array
+        $(this).parent().remove(); // Remove the tag from the DOM
+        $('#hidden-chat-users').val(selectedUsers.join(',')); // Update hidden input for form submission
+        updateChatNameFieldVisibility();
+    });
+
+    // Handle form submission for creating chat
+	$('#create-chat-button').on('click', function() {
+    	var selectedUserList = selectedUsers; // This will be your array of selected usernames
+
+    	// Join the selected usernames into a comma-separated string
+    	$('#hidden-chat-users').val(selectedUserList.join(',')); 
+	});
+
+	//Empties field on New Chat modal when hitting cancel button
+	$('#cancelButton').on('click', function() {
+            selectedUsers = []; // Clear the selected users array
+            $('#selected-users').empty(); // Remove user tags from the DOM
+            $('#hidden-chat-users').val(''); // Clear the hidden input value
+            $('#chat-name').val('')
+            $('#chat-users').val(''); // Clear the chat users input
+            updateChatNameFieldVisibility();
+        });
+
+	//Empties fields on New Chat modal when hiding modal
+	$('#newChatModal').on('hidden.bs.modal', function() {
+	    selectedUsers = []; // Clear the selected users array
+	    $('#selected-users').empty(); // Remove user tags from the DOM
+	    $('#hidden-chat-users').val(''); // Clear the hidden input value
+	    $('#chat-name').val('')
+	    $('#chat-users').val(''); // Clear the chat users input
+	    updateChatNameFieldVisibility();
+	});
+
+    // Close dropdown if clicked outside
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('#chat-users, #user-dropdown').length) {
+            $('#user-dropdown').hide();
+        }
+    });
+});
+</script>
+
+</body>
+ {% endblock %}

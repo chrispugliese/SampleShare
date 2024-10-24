@@ -177,6 +177,15 @@ class PostForm(forms.ModelForm):
                     }
                 ),
         }
+# ---------------------------------------------------
+
+
+class MessageForm(forms.Form):
+    content = forms.CharField(
+        widget=forms.Textarea(attrs={'placeholder': 'Type message...'}),
+        max_length=1000,
+        required=True
+    )
 
 
 # -------------------Profile Form--------------------------------

@@ -1,5 +1,7 @@
 asgiref==3.8.1
+cryptography==43.0.1
 Django==5.1.1
+mutagen==1.47.0
 mysql-connector-python==9.0.0
 mysqlclient==2.2.4
 psycopg2-binary==2.9.9
