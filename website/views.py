@@ -15,7 +15,7 @@ from django.views.generic import CreateView
 from typing import AsyncGenerator
 from .forms import SampleEditForm, SampleForm, SignUpForm, PostForm, CommentForm, MessageForm, ProfileForm
 from .models import Sample, UserProfile, Post, Comment, Chat, Message, FriendRequest
-import asyncio, json, os
+import asyncio, json, os, mimetypes
 
 # Create your views here.
 def home(request):
@@ -179,19 +179,23 @@ def remove_friend(request, user_id):
 
 
 def upload(request):
-	if request.user.is_authenticated:
-		if request.method == "POST":
-			form = SampleForm(request.POST, request.FILES or None)
-			if form.is_valid():
-				form.save()
-				messages.success(request, "Your sample was uploaded successfully!")
-				return redirect("home")
-		else:
-			form = SampleForm()
-		return render(request, "upload.html", {"form": form})
-	else:
-		messages.error(request, "You must be logged in to upload a sample file!")
-		return redirect("login")
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            user_profile = UserProfile.objects.get(user=request.user)
+            sample_form = SampleForm(request.POST, request.FILES)
+
+            if sample_form.is_valid():
+                # Remove commit=False to let the form handle file saving completely
+                sample = sample_form.save(commit=False)
+                sample.userProfiles = user_profile  # Assign logged-in user
+                sample.save()  # This should handle both the file and other field
+            else:
+                messages.error(request, "Your file is not safe to upload.")
+
+        return render(request, "upload.html")
+    else:
+        messages.error(request, "You must be logged in to upload a sample file!")
+        return redirect("login")
 
 
 def update_user_samples(request):
@@ -481,32 +485,6 @@ def delete_account(request):
         messages.success(request, "Your account has been deleted. ")
         return redirect("home")
     return render(request, "confirm_delete_account.html")
-
-def edit_profile(request):
-	profile = request.user.userprofile
-	if request.method == 'POST':
-		form = ProfileForm(request.POST, request.FILES, instance=profile)
-		if form.is_valid():
-			# Handle file upload if a new file is uploaded
-			if 'userPhoto' in request.FILES:
-				# Save the file to a directory under 'media/profile_pics/'
-				uploaded_file = request.FILES['userPhoto']
-				file_path = os.path.join('profile_pics', uploaded_file.name)
-				
-				# Write the file to the media directory
-				with open(os.path.join(settings.MEDIA_ROOT, file_path), 'wb+') as destination:
-					for chunk in uploaded_file.chunks():
-						destination.write(chunk)
-				
-				# Save the file path in the CharField
-				profile.userPhoto = file_path
-
-			# Save profile instance
-			profile.save()
-			return redirect('profile', username=request.user.username)
-	else:
-		form = ProfileForm(instance=profile)
-	return render(request, 'edit_profile.html', {'form': form})
 # --------------------------------------------------------------------#
 
 #--------------------Start Chat code---------------------------
@@ -560,7 +538,6 @@ def chat(request, chat_id):
 
 	return render(request, 'chat.html', {
 		'chat': chat,        # Pass the chat room object
-		'user_profile': user_profile,   # Pass the user profile
 		'chats': user_chats,           # Pass the list of chats
 		'chatMessages': chatMessages,  #Pass the sorted messages 
 	})
