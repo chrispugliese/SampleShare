@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Q
 from django.http import Http404, HttpRequest, StreamingHttpResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.http.request import is_same_domain
@@ -311,7 +310,7 @@ def search_user(request):
 def search_users(request):
 	query = request.GET.get('query', '')
 	users = User.objects.filter(username__icontains=query).exclude(username=request.user.username)  # Adjust filters as needed
-	user_data = [{'username': user.username, 'avatar': staticfiles_storage.url(user.userprofile.userPhoto)} for user in users]
+	user_data = [{'username': user.username, 'avatar': user.userprofile.userPhoto.url} for user in users]
 	return JsonResponse({'users': user_data})
 
 # ----------------------------Post Code -------------------------------#
