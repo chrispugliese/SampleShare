@@ -17,6 +17,11 @@
       <p>First Name: {{ profile_user.first_name }}</p>
       <p>Last Name: {{ profile_user.last_name }}</p>
       <p>Bio: {{ profile_user.userprofile.bio }}</p>
+      <!-- Link to Edit Profile -->
+      {% if is_owner %}
+        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+        <a href="{% url 'edit_samples' %}" class="btn btn-primary">Edit Samples</a>
+      {% endif %}
     </div>
   </div>
 
@@ -75,11 +80,4 @@
     {% endif %}
   </div>
 </div>
-
-<!-- Link to Edit Profile -->
-{% if is_owner %}
-  <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
-  <a href="{% url 'edit_samples' %}" class="btn btn-primary">Edit Samples</a>
-{% endif %}
-
 {% endblock %}
