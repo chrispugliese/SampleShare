@@ -15,6 +15,7 @@ from typing import AsyncGenerator
 from .forms import SampleEditForm, SampleForm, SignUpForm, PostForm, CommentForm, MessageForm, ProfileForm
 from .models import Sample, UserProfile, Post, Comment, Chat, Message, FriendRequest
 import asyncio, json, os, mimetypes
+from django.http import FileResponse
 
 # Create your views here.
 def home(request):
@@ -667,3 +668,14 @@ def add_message(request, chat_id):
 
 	return redirect('chat', chat_id=chat_id)
 #---------------------End chat Code------------------------------
+
+
+#------------------------ download code-------------------------#
+
+def download_sample(request, pk):
+      current_sample = get_object_or_404(Sample, id=pk)
+      file_path = current_sample.audioFile.path 
+      response = FileResponse(open(file_path, 'rb'))
+      response['Content-Type'] = 'application/octet-stream'
+      response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}"'
+      return response

@@ -11,8 +11,14 @@
     <div class="card-body">
 
     <p class="card-text">
-    <strong>Text: </strong>{{ user_post.postText }}</p> 
+    <strong>Text: </strong>{{ user_post.postText }}
+    <br/>
+    <strong>Text: </strong>{{ user_post.samples.sampleName }}
+    </p> 
     <!-- This is where the sample would be displayed -->
+     <p>
+        <button><a href="{% url 'download_sample' user_post.samples.id %}">Download</a></button>
+     </p>
 
 
 </div>
@@ -50,7 +56,6 @@
     <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{ comment.userProfile.user.username }} </a>
         <p> {{ comment.commentMessage }}</p>
         <p>{{ comment.samples.sampleName }} 
-            
             <div class="player-container"> 
                 <button onclick="playPause('{{ comment.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
               </div>
