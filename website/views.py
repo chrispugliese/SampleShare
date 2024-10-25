@@ -366,7 +366,7 @@ def update_post(request, pk):
             if form.is_valid():
                 add_post = form.save()
                 messages.success(request, "Post Updated...")
-                return redirect("home")
+                return redirect("user_post", current_post.id)
         return render(request, "update_post.html", {"form": form})
     else:
         messages.success(request, "Your Must Be Logged In...")
@@ -392,7 +392,7 @@ def like_view(request, pk):
     else:
         post.likes.add(request.user)
         liked = True
-    return redirect('home')
+    return redirect('user_post',post.id)
 # --------------------------------------------------------------------#
 
 def edit_profile(request):

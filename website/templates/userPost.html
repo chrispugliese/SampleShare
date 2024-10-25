@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 <br/>
 
@@ -48,7 +49,12 @@
     {% for comment in comments %}
     <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{ comment.userProfile.user.username }} </a>
         <p> {{ comment.commentMessage }}</p>
-
+        <p>{{ comment.samples.sampleName }} 
+            
+            <div class="player-container"> 
+                <button onclick="playPause('{{ comment.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
+              </div>
+        </p>
         <p>
         {% if user.userprofile.id == comment.userProfile.id %}
         <a href="{% url 'update_comment' comment.id %}" class="btn btn-primary">Update Comment</a>
@@ -59,4 +65,6 @@
     {% endfor %}
     {% endif %}
 <!-- ----------------------- -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="{% static 'js/sample_player.js' %}"></script>
 {% endblock %}
