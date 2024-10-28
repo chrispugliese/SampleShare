@@ -27,9 +27,12 @@
 {%else%}
   <p>No Samples Uploaded!</p>
 {%endif%}
+  <div id="waveform"></div>
+
 
 <!-- howler lib + the call to the sample player -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script src="{% static 'js/sample_player.js' %}"</script>
 
 {% endblock %}
