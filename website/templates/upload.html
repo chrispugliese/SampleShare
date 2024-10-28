@@ -20,7 +20,43 @@
         .file-item {
             margin: 10px 0;
         }
+        .genre-tag {
+            border-radius: 12px;
+            padding: 4px 8px;
+            margin: 0 4px;
+            display: flex;
+            align-items: center;
+            color: #e0e0e0; /* Light text color for visibility */
+            background-color: #202830; /* Dark background matching profile card */
+        }
+        .genre-tag button {
+            background: none;
+            border: none;
+            font-size: 12px;
+            margin-left: 4px;
+            cursor: pointer;
+            color: #e0e0e0; /* Ensure the remove button text is also legible */
+        }
+        #genre-suggestions {
+            display: none; /* Initially hidden */
+            position: absolute; /* Positioning */
+            z-index: 1000; /* Ensure it appears above other elements */
+        }
+
+        .suggestion-item {
+            display: block; /* Each suggestion takes a full line */
+            width: 100%; /* Full width */
+            text-align: left; /* Align text to the left */
+            padding: 10px; /* Padding for better clickability */
+            color: #e0e0e0; /* Light text color for visibility */
+            background-color: #202830; /* Dark background matching profile card */
+        }
+
+        .suggestion-item:hover {
+            background-color: #f8f9fa; /* Light background on hover */
+        }
     </style>
+    <script src="{% static 'js/genre_autocomplete.js' %}"></script>
 </head>
 <body>
 
@@ -32,11 +68,26 @@
     <form id="SampleUploadForm" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="hidden" id="userProfiles" name="userProfiles" value="{{ request.user.userprofile.id }}">
+        <!-- Genre Selection Section -->
+        <div style="display: flex; align-items: center; margin-top: 16px;">
+            <label for="id_genres" style="margin-right: 8px;">Tags:</label>
+            <div style="display: flex; align-items: center;">
+                <input type="text" id="id_genres" placeholder="Search genres..." style="width: 150px; padding-right: 24px;">
+                <button type="button" id="add-genre-btn" style="margin-left: -28px; padding: 0 8px; font-size: 18px;">+</button>
+            </div>
+            <!-- Container for displaying selected genres inline -->
+            <div id="selected-genres-inline" class="selected-genres" style="display: flex; align-items: center; margin-left: 8px;"></div>
+        </div>
+
+        <!-- Suggestions for genres -->
+        <div id="genre-suggestions" class="suggestions-box"></div>
+
         <button type="button" id="submit-btn">Upload</button>
         <button type="button" onclick="window.location.href='/'">Cancel</button>
     </form>
 
     <script>
+        // Drop Zone and File Queue Logic
         var dropZone = document.getElementById('drop-zone');
         var fileList = document.getElementById('file-list');
         var fileQueue = [];
@@ -69,7 +120,6 @@
         });
 
         function validateAndAddFile(file) {
-            // Create an Audio object to check file duration
             var audio = new Audio();
             audio.src = URL.createObjectURL(file);
 
@@ -82,7 +132,6 @@
                     return;  // Don't add the invalid file
                 }
 
-                // If valid, add the file to the list
                 addFileToList(file);
             });
 
@@ -92,7 +141,6 @@
         }
 
         function addFileToList(file) {
-            // Avoid adding duplicate files
             if (fileQueue.some(f => f.name === file.name)) {
                 alert('This file is already in the queue.');
                 return;
@@ -111,11 +159,50 @@
         }
 
         function removeFile(fileName, element) {
-            // Remove from queue
             fileQueue = fileQueue.filter(f => f.name !== fileName);
-
-            // Remove from UI
             element.parentElement.remove();
+        }
+
+        // Genre Autocomplete Logic
+        const genreInput = document.getElementById('id_genres');
+        const genreSuggestions = document.getElementById('genre-suggestions');
+        const selectedGenresInline = document.getElementById('selected-genres-inline');
+        const genreSet = new Set(); // To track selected genres
+
+        document.getElementById('add-genre-btn').addEventListener('click', async function() {
+            const genre = genreInput.value.trim();
+            if (genre && !genreSet.has(genre)) {
+                const response = await fetch('/create-genre/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ name: genre })
+                });
+                if (response.ok) {
+                    addGenre(genre); // Add genre tag after creation
+                    genreInput.value = ''; // Clear input
+                    genreSuggestions.innerHTML = ''; // Clear suggestions
+                } else {
+                    alert("Failed to create genre.");
+                }
+            }
+        });
+
+        function addGenre(genre) {
+            genreSet.add(genre);
+            const genreTag = document.createElement('span');
+            genreTag.className = 'genre-tag';
+            genreTag.textContent = genre;
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = '×';
+            removeBtn.onclick = () => {
+                genreSet.delete(genre);
+                genreTag.remove();
+            };
+            genreTag.appendChild(removeBtn);
+            selectedGenresInline.appendChild(genreTag);
         }
 
         document.getElementById('submit-btn').addEventListener('click', function (e) {
@@ -124,52 +211,64 @@
                 return;
             }
 
+            // Add selected genres to form data
+            const selectedGenreNames = Array.from(genreSet);
+            if (selectedGenreNames.length > 0) {
+                document.getElementById('SampleUploadForm').append(...selectedGenreNames.map(genre => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'genres'; // Make sure this matches your server-side logic
+                    input.value = genre;
+                    return input;
+                }));
+            }
+
             // Confirm before submission
             if (confirm("Are you sure you want to upload these files?")) {
-                // Disable button to prevent duplicate submission
                 document.getElementById('submit-btn').disabled = true;
 
                 uploadFiles(fileQueue).then(() => {
                     alert("All files uploaded successfully!");
                     fileQueue = [];  // Clear file queue
                     fileList.innerHTML = "";  // Clear UI
-                    document.getElementById('submit-btn').disabled = false;  // Re-enable button
-                }).catch((error) => {
-                    alert("An error occurred during upload.");
+                    selectedGenresInline.innerHTML = ""; // Clear selected genres
+                    genreSet.clear(); // Clear genre set
+                    genreInput.value = ''; // Clear input
+                    genreSuggestions.innerHTML = ''; // Clear suggestions
+                    document.getElementById('submit-btn').disabled = false;
+                }).catch(() => {
+                    alert("There was an error uploading your files.");
                     document.getElementById('submit-btn').disabled = false;
                 });
             }
         });
 
-        async function uploadFiles(files) {
-            for (let file of files) {
-                const formData = new FormData();
-                formData.append('audioFile', file);
-                if (document.querySelector(`[name="sampleName_${file.name}"]`).value == "") {
-                    formData.append('sampleName', file.name);} 
-                else {
-                    formData.append('sampleName', document.querySelector(`[name="sampleName_${file.name}"]`).value);}
-                formData.append('isPublic', document.querySelector(`[name="isPublic_${file.name}"]`).checked);
-                formData.append('userProfiles', document.getElementById('userProfiles').value);
-
-                await fetch('/upload/', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                    }
-                }).then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => {
-                            throw new Error(`Failed to upload file: ${err.error}`);
-                        });
-                    }
-                }).catch(error => {
-                    alert(`An error occurred while uploading ${file.name}: ${error.message}`);
-                    console.error('Upload error:', error);
-                });
+        genreInput.addEventListener('input', async function() {
+            const query = genreInput.value.trim();
+            if (query.length < 2) {
+                genreSuggestions.innerHTML = ''; // Clear suggestions if too short
+                genreSuggestions.style.display = 'none'; // Hide suggestions
+                return;
             }
-        }
+            const response = await fetch(`/search-genres/?query=${query}`);
+            const suggestions = await response.json();
+            genreSuggestions.innerHTML = suggestions.map(g => `<div class="suggestion-item">${g.name}</div>`).join('');
+            genreSuggestions.style.display = suggestions.length > 0 ? 'block' : 'none'; // Show suggestions if there are results
+
+            // Add click handler for suggestions
+            const suggestionItems = document.querySelectorAll('.suggestion-item');
+            suggestionItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const selectedGenre = this.textContent;
+                    if (!genreSet.has(selectedGenre)) {
+                        addGenre(selectedGenre); // Add genre to inline display
+                        genreInput.value = ''; // Clear input
+                        genreSuggestions.innerHTML = ''; // Clear suggestions
+                    }
+                });
+            });
+        });
     </script>
+
 </body>
 {% endblock %}
