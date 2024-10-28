@@ -58,4 +58,7 @@ urlpatterns = [
 	path('chat/delete/<int:chat_id>/', views.delete_chat, name='delete_chat'),
 	path('send_message/<int:chat_id>/', views.add_message, name='send_message'),
 	path('search_users/', views.search_users, name='search_users'), #To add users to auto-populating dropdown list
+
+    #---------------download url--------------------#
+    path('download/<int:pk>', views.download_sample , name="download_sample"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
