@@ -38,9 +38,15 @@
             color: #e0e0e0; /* Ensure the remove button text is also legible */
         }
         #genre-suggestions {
-            display: none; /* Initially hidden */
-            position: absolute; /* Positioning */
-            z-index: 1000; /* Ensure it appears above other elements */
+            border-radius: 8px;
+            padding: 8px;
+            margin: 4px 0; /* Spacing between suggestions */
+            color: #e0e0e0; /* Light text color */
+            background-color: #202830; /* Dark background */
+            cursor: pointer; /* Change cursor to indicate interactivity */
+            transition: background-color 0.3s; /* Smooth background color change */
+            width: 150px; /* Set a fixed width for narrowness */
+            text-align: center; /* Center the text within the suggestion */
         }
 
         .suggestion-item {
@@ -48,12 +54,10 @@
             width: 100%; /* Full width */
             text-align: left; /* Align text to the left */
             padding: 10px; /* Padding for better clickability */
-            color: #e0e0e0; /* Light text color for visibility */
-            background-color: #202830; /* Dark background matching profile card */
         }
 
         .suggestion-item:hover {
-            background-color: #f8f9fa; /* Light background on hover */
+            background-color: #362d4b; /* Light background on hover */
         }
     </style>
     <script src="{% static 'js/genre_autocomplete.js' %}"></script>
