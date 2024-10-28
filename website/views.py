@@ -677,5 +677,12 @@ def download_sample(request, pk):
       file_path = current_sample.audioFile.path 
       response = FileResponse(open(file_path, 'rb'))
       response['Content-Type'] = 'application/octet-stream'
-      response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}"'
+      stringFilePath = str(current_sample.audioFile)
+      # if the audio file location ends with a 3 we can assume its an .mp3 file
+      # else we will assume its a .wav file
+      if stringFilePath[-1] == "3":
+            response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}.mp3"'
+      else:
+            response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}.wav"'
+
       return response
