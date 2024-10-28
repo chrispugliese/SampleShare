@@ -61,11 +61,18 @@
     {% for comment in comments %}
     <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{ comment.userProfile.user.username }} </a>
         <p> {{ comment.commentMessage }}</p>
-        <p>{{ comment.samples.sampleName }} 
+        {% if comment.samples != None %}
+        <p>{{ comment.samples.sampleName }}
+            <!-- Download Code -->
+            <p>
+                <a href="{% url 'download_sample' comment.samples.id %}" class="btn btn-primary">Download Sample</a>
+            </p>
+            <!-- End of Download Code --> 
             <div class="player-container"> 
                 <button onclick="playPause('{{ comment.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
               </div>
         </p>
+        {% endif %}
         <p>
         {% if user.userprofile.id == comment.userProfile.id %}
         <a href="{% url 'update_comment' comment.id %}" class="btn btn-primary btn-sm">Update Comment</a>
