@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
-    <div class="col-md-6 offset-md-3">      
-
-<h1>Register</h1>
-<br/>
-	<form method="POST" action="">
+<div class="col-md-6 offset-md-3">      
+    <h1>Register</h1>
+    <br/>
+    <form method="POST" action="">
         {% csrf_token %}
 
         {% if form.errors %}
@@ -21,9 +20,46 @@
         {% endif %}
 
         {{ form.as_p }}
-    <br/>
-     <button type="submit" class="btn btn-secondary">Submit</button>
-    </form>
 
+        <br/>
+        <button type="submit" class="btn btn-secondary" disabled>Submit</button>
+    </form>
 </div>
+
+<script>
+// JavaScript for dynamic password validation
+document.addEventListener("DOMContentLoaded", function () {
+    const passwordInput = document.getElementById("id_password1");
+    const submitButton = document.querySelector("button[type=submit]");
+
+    const requirements = [
+        { elementId: "requirement-1", regex: /.{8,}/ },
+        { elementId: "requirement-2", regex: /.{8,}/ },
+        { 
+            elementId: "requirement-3", 
+            regex: /^(?!(password|123456|qwerty|letmein|welcome|12345678|abc123|password1|iloveyou|111111)$)/i 
+        },
+        { elementId: "requirement-4", regex: /^(?!\d+$).+/ }
+    ];
+
+    passwordInput.addEventListener("input", function () {
+        const password = passwordInput.value;
+        let allMet = true;
+
+        requirements.forEach(req => {
+            const requirementElement = document.getElementById(req.elementId);
+            if (req.regex.test(password)) {
+                requirementElement.style.color = "green";  // Requirement met
+            } else {
+                requirementElement.style.color = "red";  // Requirement not met
+                allMet = false;
+            }
+        });
+
+        // Enable or disable the submit button based on all requirements
+        submitButton.disabled = !allMet;
+    });
+});
+</script>
+
 {% endblock %}
