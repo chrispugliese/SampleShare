@@ -196,7 +196,6 @@ def upload(request):
 				if genres_data:
 					genres_list = json.loads(genres_data)
 					for genreName in genres_list:
-						print (genreName)
 						genreName = genreName.capitalize()  # Format each genre
 						genre, created = Genre.objects.get_or_create(genreName=genreName)
 						sample.genres.add(genre)  # Associate genre with sample
@@ -211,7 +210,7 @@ def upload(request):
 
 def update_user_samples(request):
 	if request.user.is_authenticated:
-		user_samples = Sample.objects.filter(userProfiles__user=request.user)
+		user_samples = Sample.objects.filter(userProfiles__user=request.user).prefetch_related('genres')
 		form = None
 
 		if request.method == "POST":
@@ -222,11 +221,6 @@ def update_user_samples(request):
 				)
 				# Debugging: Log the incoming isPublic value
 				is_public_value = request.POST.get('isPublic') == 'True'
-				if is_public_value:
-					print("Is Public!!")
-				else:
-					print("Not public!")
-
 				form = SampleEditForm(request.POST, instance=sample)
 
 				# Update the isPublic field based on the checkbox
@@ -234,6 +228,18 @@ def update_user_samples(request):
 
 				# Debugging: Log the sample's isPublic status before saving
 				logging.debug(f"Sample ID: {sample.id}, isPublic before save: {sample.isPublic}")
+
+				 # Handle the genres
+				if 'genres' in request.POST:
+					genre_names = request.POST['genres'].split(',')
+					# Clear existing genres
+					sample.genres.clear()  
+					# Add new genres
+					for genre_name in genre_names:
+						genre_name = genre_name.strip()  # Remove any leading/trailing whitespace
+						if genre_name:  # Check if it's not an empty string
+							genre, created = Genre.objects.get_or_create(genreName=genre_name)
+							sample.genres.add(genre)
 
 				if form.is_valid():
 					form.save()  # Save the form fields first
