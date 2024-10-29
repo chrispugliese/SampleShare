@@ -12,7 +12,7 @@ class SampleForm(forms.ModelForm):
         model = Sample
         fields = ["sampleName", "audioFile", "isPublic", "userProfiles"]
         widgets = {
-            "userProfiles": forms.TextInput(
+            "userProfiles": forms.HiddenInput(
                 attrs={
                     "class": "form-control",
                     "value": "",
