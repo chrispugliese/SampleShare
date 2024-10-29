@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.fields import validators
 from django.utils import timezone
 from django.urls import reverse
-from mutagen import mp3, wave
+from mutagen import File as MutagenFile
 
 # Create your models here.
 
@@ -42,21 +42,23 @@ class FriendRequest(models.Model):
 # ------------------------------------
 
 def validate_length(audio_file):
-	max_length_allowed = 6.0
-	audio = None
-	if audio_file.name.endswith(".mp3"):
-		audio = mp3.MP3(audio_file)
-	elif audio_file.name.endswith(".wav"):
-		audio = wave.WAVE(audio_file)
-
-	if audio and audio.info.length > max_length_allowed + 0.9:
+	max_length_allowed = 6.9  # Maximum length in seconds
+	try:
+		audio = MutagenFile(audio_file)
+		if audio and hasattr(audio, 'info') and audio.info.length > max_length_allowed:
+			raise ValidationError("Only samples of 6 seconds or less are allowed.")
+	except Exception as e:
 		raise ValidationError(
 			"Only samples of 6 seconds length are allowed, please try another sample."
 		)
 
 class Sample(models.Model):
 	sampleName = models.CharField(max_length=50)
-	audioFile = models.FileField(upload_to="samples/")
+	audioFile = models.FileField(upload_to="samples/",
+		validators=[
+			validate_length,
+			FileExtensionValidator(allowed_extensions=['mp3', 'wav', 'aac', 'flac', 'ogg', 'm4a']),
+		],)
 	isPublic = models.BooleanField()
 	# one to Many with UserProfiles
 	userProfiles = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)

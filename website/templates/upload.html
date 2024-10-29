@@ -10,12 +10,12 @@
         #drop-zone {
             width: 70%;
             height: 300px;
-            border: 2px dashed #ccc;
+            border: 2px dashed #00FFFF;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
-            color: #666;
+            color: #000000;
         }
         .file-item {
             margin: 10px 0;
@@ -28,6 +28,7 @@
 
     <div id="drop-zone">Drag and drop files here</div>
     <ul id="file-list"></ul>
+    <input type="file" id="file-browse" multiple accept="audio/*" style="margin-bottom: 20px;">
 
     <form id="SampleUploadForm" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -43,11 +44,11 @@
 
         dropZone.addEventListener('dragover', function (e) {
             e.preventDefault();
-            dropZone.style.backgroundColor = '#eee';
+            dropZone.style.backgroundColor = '#301934';
         });
 
         dropZone.addEventListener('dragleave', function (e) {
-            dropZone.style.backgroundColor = '#000000';
+            dropZone.style.backgroundColor = '#301933';
         });
 
         dropZone.addEventListener('drop', function (e) {
@@ -68,6 +69,25 @@
             }
         });
 
+        // Add event listener for file input selection (browse)
+        document.getElementById('file-browse').addEventListener('change', function (e) {
+            var files = e.target.files;
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+
+                // Validate if the file is an audio file using MIME type check
+                if (!file.type.startsWith('audio/')) {
+                    alert('Only audio files are allowed.');
+                    continue;
+                }
+
+                // Validate file by checking its duration asynchronously
+                validateAndAddFile(file);
+            }
+        });
+
+
         function validateAndAddFile(file) {
             // Create an Audio object to check file duration
             var audio = new Audio();
@@ -81,6 +101,12 @@
                     alert('Files longer than 6 seconds are not allowed.');
                     return;  // Don't add the invalid file
                 }
+
+            const maxFileSize = 10 * 1024 * 1024; // 10MB limit
+            if (file.size > maxFileSize) {
+                alert('File size exceeds the limit of 10MB.');
+                return;}
+
 
                 // If valid, add the file to the list
                 addFileToList(file);
