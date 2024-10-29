@@ -1,68 +1,63 @@
-// function playSample(url) {
-// 	var sound = new Howl({
-// 		src: [url],
-// 		autoplay: false,
-// 		loop: false,
-// 		html5: true,
-// 		format: ['mp3', 'wav'],
-// 	});
-// 	sound.play();
-// }
-
-// const playerControls = {
-// 	playBtn: document.getElementById('playBtn'),
-// 	nxtBtn: document.getElementById('nxtBtn'),
-// 	prvBtn: document.getElementById('prvBtn'),
-// };
-// 
-// let currentUrl = ''
-// let wavesurfer = null
-// 
-// const initWaveSurfer = (url) => {
-// 	wavesurfer = WaveSurfer.create({
-// 		container: '#waveform',
-// 		waveColor: '#4F4A85',
-// 		progressColor: '#383351',
-// 		backend: 'MediaElement',
-// 	});
-// 	wavesurfer.load(url);
-// };
-// 
-// const playPause = (url) => {
-// 	if (!wavesurfer) {
-// 		initWaveSurfer(url)
-// 	}
-// 
-// 	if (url !== currentUrl) {
-// 		wavesurfer.load(url);
-// 		currentUrl = url
-// 	}
-// 
-// 	wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
-// };
-// 
-// playerControls.playBtn.addEventListener('click', () => playPause(currentUrl));
-//
-
 document.addEventListener('DOMContentLoaded', () => {
-	// Get the first sample URL from the hidden input
-	const sampleUrl = document.querySelector('.sample-url')?.value;
+	const sampleElements = document.querySelectorAll('.sample-url');
 
-	if (sampleUrl) {
-		initWaveSurfer(sampleUrl);
-		// Automatically play the audio when loaded
-	}
+	sampleElements.forEach((sampleEle, index) => {
+		const sampleUrl = sampleEle.value;
+		const containerId = `waveform-${index + 1}`;
+		initWaveSurfer(sampleUrl, containerId);
+	});
 });
 
-let wavesurfer = null;
-let currentUrl = '';
-
-const initWaveSurfer = (url) => {
-	wavesurfer = WaveSurfer.create({
-		container: '{waveform-#}',  // Assuming we want the first waveform to play automatically
+const initWaveSurfer = (url, containerId) => {
+	//some of the options for waveforms, more here: https://wavesurfer.xyz/examples/?all-options.js
+	const wavesurfer = WaveSurfer.create({
+		container: `#${containerId}`,
+		height: 150,
+		width: 800,
+		normalize: false,
 		waveColor: '#4F4A85',
-		progressColor: '#383351',
+		progressColor: '#000000',
+		cursorColor: '#000000',
+		barWidth: 3,
+		barGap: NaN,
+		barRadius: 5,
+		cursorWidth: 2,
+		fillParent: true,
+		mediaControls: false,
+		dragToSeek: true,
 		backend: 'MediaElement',
+
+		//	renderFunction: (channels, ctx) => {
+		//		const { width, height } = ctx.canvas
+		//		const scale = channels[0].length / width
+		//		const step = 10
+
+		//		ctx.translate(0, height / 2)
+		//		ctx.strokeStyle = ctx.fillStyle
+		//		ctx.beginPath()
+
+		//		for (let i = 0; i < width; i += step * 2) {
+		//			const index = Math.floor(i * scale)
+		//			const value = Math.abs(channels[0][index])
+		//			let x = i
+		//			let y = value * height
+
+		//			ctx.moveTo(x, 0)
+		//			ctx.lineTo(x, y)
+		//			ctx.arc(x + step / 2, y, step / 2, Math.PI, 0, true)
+		//			ctx.lineTo(x + step, 0)
+
+		//			x = x + step
+		//			y = -y
+		//			ctx.moveTo(x, 0)
+		//			ctx.lineTo(x, y)
+		//			ctx.arc(x + step / 2, y, step / 2, Math.PI, 0, false)
+		//			ctx.lineTo(x + step, 0)
+		//		}
+
+		//		ctx.stroke()
+		//		ctx.closePath()
+		//	},
 	});
 	wavesurfer.load(url);
 	wavesurfer.on('interaction', () => {
