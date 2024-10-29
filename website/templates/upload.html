@@ -208,6 +208,8 @@
                 formData.append('userProfiles', document.getElementById('userProfiles').value);
 
                  // Add selected genres to FormData before submission
+                console.log("Genres to upload:", Array.from(genreSet));
+
                 formData.append('genres', JSON.stringify(Array.from(genreSet))); // Include genres as an array
        
                 try {
@@ -227,30 +229,6 @@
                     console.error('Upload error:', error);
                     return; // Exit if there was an error
                 }
-            }
-
-            // After successful uploads, send a request to create new genres
-            if (newGenres.length) {
-                try {
-                    const response = await fetch('/create-genres/', { // Replace with your actual endpoint
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                        },
-                        body: JSON.stringify({ genres: newGenres })
-                    });
-                    if (!response.ok) {
-                        const err = await response.json();
-                        throw new Error(`Failed to create genres: ${err.error}`);
-                    }
-                    alert("All files uploaded successfully, and new genres created!");
-                } catch (error) {
-                    alert(`An error occurred while creating genres: ${error.message}`);
-                    console.error('Genre creation error:', error);
-                }
-            } else {
-                alert("All files uploaded successfully!");
             }
 
             fileQueue = [];

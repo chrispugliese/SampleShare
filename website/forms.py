@@ -8,22 +8,9 @@ from .models import Sample, UserProfile, Post, Comment, Genre
 import os, mimetypes
 
 class SampleForm(forms.ModelForm):
-	class GenreAutocompleteWidget(forms.TextInput):
-		template_name = 'widgets/genre_autocomplete.html'
-
-		class Media:
-			js = ('js/genre_autocomplete.js',)
-			css = {
-				'all': ('css/genre_autocomplete.css',)
-			}
-
-	genres = forms.CharField(
-		widget=GenreAutocompleteWidget(attrs={'placeholder': 'Type to search genres...'}),
-		required=False
-	)
 	class Meta:
 		model = Sample
-		fields = ["sampleName", "audioFile", "isPublic", "userProfiles", "genres"]
+		fields = ["sampleName", "audioFile", "isPublic", "userProfiles"]
 		widgets = {
 			"userProfiles": forms.HiddenInput(
 				attrs={

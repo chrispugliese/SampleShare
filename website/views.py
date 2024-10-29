@@ -191,6 +191,15 @@ def upload(request):
 				sample = sample_form.save(commit=False)
 				sample.userProfiles = user_profile  # Assign logged-in user
 				sample.save()  # This should handle both the file and other field
+
+				genres_data = request.POST.get('genres')
+				if genres_data:
+					genres_list = json.loads(genres_data)
+					for genreName in genres_list:
+						print (genreName)
+						genreName = genreName.capitalize()  # Format each genre
+						genre, created = Genre.objects.get_or_create(genreName=genreName)
+						sample.genres.add(genre)  # Associate genre with sample
 			else:
 				messages.error(request, "Your file is not safe to upload.")
 
@@ -295,7 +304,8 @@ def search_user(request):
 				matching_samples = Sample.objects.filter(sampleName__icontains=query, isPublic=True)
 
 			if 'genre' in filter_type:
-				matching_genres = Genre.objects.filter(genreName__icontains=query)
+				matching_genres = Genre.objects.filter(genreName=query)
+				matching_samples = Sample.objects.filter(genres__in=matching_genres).distinct()
 
 		# Render the template with the filtered results
 		return render(request, 'search_results.html', {
@@ -312,7 +322,7 @@ def search_user(request):
 		'samples': None,
 		'genres': None, 
 		'query': None, 
-		'filter_type': ['username', 'sample']  # Default filter shows all initially
+		'filter_type': ['username', 'sample', 'genre']  # Default filter shows all initially
 	})
 
 def search_genres(request):
