@@ -14,6 +14,9 @@
                 <label>
                     <input type="checkbox" name="filter" value="sample" {% if 'sample' in filter_type %}checked{% endif %}> Samples
                 </label>
+                <label>
+                    <input type="checkbox" name="filter" value="genre" {% if 'genre' in filter_type %}checked{% endif %}> Genre
+                </label>
             </div>
             <button type="submit" name="q" value="{{ query }}">Search</button>
         </form>
