@@ -15,6 +15,7 @@ from typing import AsyncGenerator
 from .forms import SampleEditForm, SampleForm, SignUpForm, PostForm, CommentForm, MessageForm, ProfileForm
 from .models import Sample, UserProfile, Post, Comment, Chat, Message, FriendRequest
 import asyncio, json, os, mimetypes
+from django.http import FileResponse
 
 # Create your views here.
 def home(request):
@@ -327,13 +328,14 @@ def posts(request):
 def user_post(request, pk):
     if request.user.is_authenticated:
         user_post = Post.objects.get(id=pk)
+        comments = Comment.objects.filter(posts=pk)
         likes = get_object_or_404(Post, id=pk)
         total_likes = likes.total_likes()
 
         liked = False
         if likes.likes.filter(id=request.user.id):
             liked = True
-        return render(request, "userPost.html", {"user_post": user_post, "total_likes":total_likes, "liked":liked})
+        return render(request, "userPost.html", {"user_post": user_post, "total_likes":total_likes, "liked":liked, "comments":comments})
     else:
         messages.success(request, "Your Must Be Logged In...")
         return redirect("home")
@@ -365,7 +367,7 @@ def update_post(request, pk):
             if form.is_valid():
                 add_post = form.save()
                 messages.success(request, "Post Updated...")
-                return redirect("home")
+                return redirect("user_post", current_post.id)
         return render(request, "update_post.html", {"form": form})
     else:
         messages.success(request, "Your Must Be Logged In...")
@@ -391,7 +393,7 @@ def like_view(request, pk):
     else:
         post.likes.add(request.user)
         liked = True
-    return redirect('home')
+    return redirect('user_post',post.id)
 # --------------------------------------------------------------------#
 
 def edit_profile(request):
@@ -421,7 +423,7 @@ def create_comment(request, pk):
             if form.is_valid():
                 add_comment = form.save()
                 messages.success(request, "Comment Created...")
-                return redirect("home")
+                return redirect("user_post", current_post.id)
         return render(
             request, "create_comment.html", {"form": form, "current_post": current_post}
         )
@@ -460,7 +462,7 @@ def update_comment(request, pk):
             if form.is_valid():
                 add_comment = form.save()
                 messages.success(request, "Comment Updated...")
-                return redirect("home")
+                return redirect("user_post", current_comment.posts.id)
         return render(request, "update_comment.html", {"form": form})
     else:
         messages.success(request, "Your Must Be Logged In...")
@@ -471,7 +473,7 @@ def delete_comment(request, pk):
         deleteComment = Comment.objects.get(id=pk)
         deleteComment.delete()
         messages.success(request, "Comment Was Deleted...")
-        return redirect("home")
+        return redirect("user_post", deleteComment.posts.id)
     else:
         messages.success(request, "You Must Be Logged In To Do That...")
         return redirect("home")
@@ -666,3 +668,21 @@ def add_message(request, chat_id):
 
 	return redirect('chat', chat_id=chat_id)
 #---------------------End chat Code------------------------------
+
+
+#------------------------ download code-------------------------#
+
+def download_sample(request, pk):
+      current_sample = get_object_or_404(Sample, id=pk)
+      file_path = current_sample.audioFile.path 
+      response = FileResponse(open(file_path, 'rb'))
+      response['Content-Type'] = 'application/octet-stream'
+      stringFilePath = str(current_sample.audioFile)
+      # if the audio file location ends with a 3 we can assume its an .mp3 file
+      # else we will assume its a .wav file
+      if stringFilePath[-1] == "3":
+            response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}.mp3"'
+      else:
+            response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}.wav"'
+
+      return response
