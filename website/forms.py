@@ -4,7 +4,7 @@ from mutagen import File as MutagenFile
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Sample, UserProfile, Post, Comment
+from .models import Sample, UserProfile, Post, Comment, Genre
 import os, mimetypes
 
 
@@ -16,7 +16,6 @@ class SampleForm(forms.ModelForm):
             "userProfiles": forms.HiddenInput(
                 attrs={
                     "class": "form-control",
-                    "value": "",
                     "id": "user",
                     "type": "hidden",
                 }

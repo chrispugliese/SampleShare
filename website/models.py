@@ -43,6 +43,11 @@ class FriendRequest(models.Model):
     def __str__(self):
         return f"{self.from_user} -> {self.to_user}"
 
+# ------Genres------
+class Genre(models.Model):
+    genreName = models.CharField(max_length=25, unique=True)
+    def __str__(self):
+	    return f"{self.genreName}"
 
 # ------Samples------
 # samplename = VARCHAR(50) NOT NULL
@@ -66,15 +71,19 @@ def validate_length(audio_file):
 
 
 class Sample(models.Model):
-    sampleName = models.CharField(max_length=50)
-    audioFile = models.FileField(upload_to="samples/")
-    isPublic = models.BooleanField()
-    # one to Many with UserProfiles
-    userProfiles = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
+	sampleName = models.CharField(max_length=50)
+	audioFile = models.FileField(upload_to="samples/",
+		validators=[
+			validate_length,
+			FileExtensionValidator(allowed_extensions=['mp3', 'wav', 'aac', 'flac', 'm4a']),
+		],)
+	isPublic = models.BooleanField()
+	# one to Many with UserProfiles
+	userProfiles = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
+	genres = models.ManyToManyField(Genre, blank=True, related_name="samples")
 
-    def __str__(self):
-        return f"{self.sampleName} {self.audioFile} {self.isPublic}"
-
+	def __str__(self):
+		return f"{self.sampleName} {self.audioFile} {self.isPublic}"
 
 # ------Chats------
 # chatName = VARCHAR(50) NOT NULL
@@ -82,18 +91,18 @@ class Sample(models.Model):
 # ------------------------------------
 
 
-class Chat(models.Model):
+class Chat(models.Model): 
     chatName = models.CharField(max_length=50)
     chatTimeStamp = models.DateTimeField(auto_now_add=True)
     # Many to Many with UserProfiles
-    userProfiles = models.ManyToManyField(UserProfile, null=True)
+    userProfiles = models.ManyToManyField(UserProfile, blank=True)
     is_group_chat = models.BooleanField(default=False)
 
     def get_other_user(self, current_user):
-        return self.userProfiles.exclude(user=current_user).first()
+	return self.userProfiles.exclude(user=current_user).first()
 
     def __str__(self):
-        return f"Chat with {', '.join(self.userProfiles.all().values_list('user__username', flat=True))}"
+	return f"Chat with {', '.join(self.userProfiles.all().values_list('user__username', flat=True))}"
 
 
 # ------Messages------
@@ -131,19 +140,6 @@ class Message(models.Model):
             suffix = {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
 
         return f"{month} {day}{suffix}, {time}"
-
-
-# ------Genres------
-# genrename = VARCHAR(50) NOT NULL
-# ------------------------------------
-class Genre(models.Model):
-    genreName = models.CharField(max_length=50)
-    # one to many with samples
-    samples = models.ManyToManyField(Sample, null=True)
-
-    def __str__(self):
-        return f"{self.genreName}"
-
 
 # ------Post------
 # postText = VARCHAR(50) NOT NULL

@@ -8,27 +8,29 @@ from django.db.models import Q
 from django.http import Http404, HttpRequest, StreamingHttpResponse, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.http.request import is_same_domain
 from django.shortcuts import render, get_object_or_404, redirect
-from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.views import View
 from django.views.generic import CreateView
 from typing import AsyncGenerator
 from .forms import SampleEditForm, SampleForm, SignUpForm, PostForm, CommentForm, MessageForm, ProfileForm
-from .models import Sample, UserProfile, Post, Comment, Chat, Message, FriendRequest
-import asyncio, json, os, mimetypes
+from .models import Sample, UserProfile, Post, Comment, Chat, Message, FriendRequest, Genre
+import asyncio, json, os, mimetypes, logging
 from django.http import FileResponse
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 def home(request):
-    profiles = UserProfile.objects.all()
-        # Look Up Posts
-    userPosts = Post.objects.all()
-    return render(request, "home.html", {"userPosts": userPosts})
-    #return render(request, "home.html", {})
+	profiles = UserProfile.objects.all()
+		# Look Up Posts
+	userPosts = Post.objects.all()
+	return render(request, "home.html", {"userPosts": userPosts})
+	#return render(request, "home.html", {})
 # --------------------------------------------------------------------#
 
 def user_detail(request, user_id):
-    user_profile = get_object_or_404(UserProfile, id=user_id)  # Query UserProfile by ID
-    return render(request, "user_detail.html", {"user_profile": user_profile})
+	user_profile = get_object_or_404(UserProfile, id=user_id)  # Query UserProfile by ID
+	return render(request, "user_detail.html", {"user_profile": user_profile})
 # --------------------------------------------------------------------#
 
 def page_not_found(request):
@@ -179,133 +181,200 @@ def remove_friend(request, user_id):
 
 
 def upload(request):
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            user_profile = UserProfile.objects.get(user=request.user)
-            sample_form = SampleForm(request.POST, request.FILES)
+	if request.user.is_authenticated:
+		if request.method == "POST":
+			user_profile = UserProfile.objects.get(user=request.user)
+			sample_form = SampleForm(request.POST, request.FILES)
 
-            if sample_form.is_valid():
-                # Remove commit=False to let the form handle file saving completely
-                sample = sample_form.save(commit=False)
-                sample.userProfiles = user_profile  # Assign logged-in user
-                sample.save()  # This should handle both the file and other field
-            else:
-                messages.error(request, "Your file is not safe to upload.")
+			if sample_form.is_valid():
+				# Remove commit=False to let the form handle file saving completely
+				sample = sample_form.save(commit=False)
+				sample.userProfiles = user_profile  # Assign logged-in user
+				sample.save()  # This should handle both the file and other field
 
-        return render(request, "upload.html")
-    else:
-        messages.error(request, "You must be logged in to upload a sample file!")
-        return redirect("login")
+				genres_data = request.POST.get('genres')
+				if genres_data:
+					genres_list = json.loads(genres_data)
+					for genreName in genres_list:
+						print (genreName)
+						genreName = genreName.capitalize()  # Format each genre
+						genre, created = Genre.objects.get_or_create(genreName=genreName)
+						sample.genres.add(genre)  # Associate genre with sample
+			else:
+				messages.error(request, "Your file is not safe to upload.")
+
+		return render(request, "upload.html")
+	else:
+		messages.error(request, "You must be logged in to upload a sample file!")
+		return redirect("login")
 
 
 def update_user_samples(request):
-    if request.user.is_authenticated:
-        user_samples = Sample.objects.filter(userProfiles__user=request.user)
-        form = None
+	if request.user.is_authenticated:
+		user_samples = Sample.objects.filter(userProfiles__user=request.user)
+		form = None
 
-        if request.method == "POST":
-            sample_id_to_update = request.POST.get("sample_id")
-            if sample_id_to_update:
-                sample = get_object_or_404(
-                    Sample, pk=sample_id_to_update, userProfiles__user=request.user
-                )
-                form = SampleEditForm(request.POST, instance=sample)
-                form.instance.audioFile = sample.audioFile
+		if request.method == "POST":
+			sample_id_to_update = request.POST.get("sample_id")
+			if sample_id_to_update:
+				sample = get_object_or_404(
+					Sample, pk=sample_id_to_update, userProfiles__user=request.user
+				)
+				form = SampleEditForm(request.POST, instance=sample)
+				form.instance.audioFile = sample.audioFile
 
-                if form.is_valid():
-                    form.save()
-                    messages.success(
-                        request, f"{sample.sampleName} updated successfully!"
-                    )
-                    return redirect("edit_samples")
-        else:
-            sample_id_to_update = request.GET.get("update")
-            if sample_id_to_update:
-                sample = get_object_or_404(
-                    Sample, pk=sample_id_to_update, userProfiles__user=request.user
-                )
-                form = SampleEditForm(instance=sample)
+				if form.is_valid():
+					form.save()
+					messages.success(
+						request, f"{sample.sampleName} updated successfully!"
+					)
+					return redirect("edit_samples")
+		else:
+			sample_id_to_update = request.GET.get("update")
+			if sample_id_to_update:
+				sample = get_object_or_404(
+					Sample, pk=sample_id_to_update, userProfiles__user=request.user
+				)
+				form = SampleEditForm(instance=sample)
 
-        return render(
-            request,
-            "edit_samples.html",
-            {"user_samples": user_samples, "form": form},
-        )
-    else:
-        messages.error(request, "You need to be logged in to access this page.")
-        return redirect("login")
+		return render(
+			request,
+			"edit_samples.html",
+			{"user_samples": user_samples, "form": form},
+		)
+	else:
+		messages.error(request, "You need to be logged in to access this page.")
+		return redirect("login")
 
 
 def delete_user_sample(request, sample_id):
-    if request.user.is_authenticated:
-        try:
-            sample_to_delete = get_object_or_404(
-                Sample, id=sample_id, userProfiles__user=request.user
-            )
-            audio_file_path = sample_to_delete.audioFile.path
-            sample_to_delete.delete()
+	if request.user.is_authenticated:
+		try:
+			sample_to_delete = get_object_or_404(
+				Sample, id=sample_id, userProfiles__user=request.user
+			)
+			audio_file_path = sample_to_delete.audioFile.path
+			sample_to_delete.delete()
 
-            if os.path.exists(audio_file_path):
-                os.remove(audio_file_path)
-                messages.success(request, "Sample file deleted successfully.")
-        except Exception as e:
-            messages.warning(request, f"An unexpected error occurred: \n {e}")
-    else:
-        messages.error(request, "You need to be logged in!")
-        return redirect("login")
+			if os.path.exists(audio_file_path):
+				os.remove(audio_file_path)
+				messages.success(request, "Sample file deleted successfully.")
+		except Exception as e:
+			messages.warning(request, f"An unexpected error occurred: \n {e}")
+	else:
+		messages.error(request, "You need to be logged in!")
+		return redirect("login")
 
-    return redirect("edit_samples")
+	return redirect("edit_samples")
 
 
 def sample_player(request):
-    if request.user.is_authenticated:
-        query_all_sample = Sample.objects.filter(isPublic=True)
-        return render(
-            request, "sample_player.html", {"query_all_sample": query_all_sample}
-        )
-    else:
-        messages.error(request, "You must be logged in to listen to samples.")
-        return redirect("login")
+	if request.user.is_authenticated:
+		query_all_sample = Sample.objects.filter(isPublic=True)
+		return render(
+			request, "sample_player.html", {"query_all_sample": query_all_sample}
+		)
+	else:
+		messages.error(request, "You must be logged in to listen to samples.")
+		return redirect("login")
 
 
 # --------------------------------------------------------------------#
 
 
 def search_user(request):
-    if request.method == "GET":
-        query = request.GET.get("q")
-        filter_type = request.GET.getlist("filter")  # This allows for multiple filters to be selected
+	if request.method == "GET":
+		query = request.GET.get("q")
+		filter_type = request.GET.getlist("filter")  # This allows for multiple filters to be selected
 
-        # Default to showing both usernames and samples if no filter is selected
-        if not filter_type or 'all' in filter_type:
-            filter_type = ['username', 'sample']
+		# Default to showing both usernames and samples if no filter is selected
+		if not filter_type or 'all' in filter_type:
+			filter_type = ['username', 'sample', 'genre']
 
-        matching_users = []
-        matching_samples = []
+		matching_users = []
+		matching_samples = []
+		matching_genres = [] 
 
-        # Apply the filters based on the selected checkboxes
-        if query:
-            if 'username' in filter_type:
-                matching_users = User.objects.filter(username__icontains=query)
-            
-            if 'sample' in filter_type:
-                matching_samples = Sample.objects.filter(sampleName__icontains=query, isPublic=True)
+		# Apply the filters based on the selected checkboxes
+		if query:
+			if 'username' in filter_type:
+				matching_users = User.objects.filter(username__icontains=query)
+			
+			if 'sample' in filter_type:
+				matching_samples = Sample.objects.filter(sampleName__icontains=query, isPublic=True)
 
-        # Render the template with the filtered results
-        return render(request, 'search_results.html', {
-            'users': matching_users,
-            'samples': matching_samples,
-            'query': query,
-            'filter_type': filter_type  # Passing filter_type back to the template to maintain checkbox state
-        })
+			if 'genre' in filter_type:
+				matching_genres = Genre.objects.filter(genreName=query)
+				matching_samples = Sample.objects.filter(genres__in=matching_genres).distinct()
 
-    # Default state: show all
-    return render(request, 'search_results.html', {
-        'users': None, 
-        'samples': None, 
-        'query': None, 
-        'filter_type': ['username', 'sample']  # Default filter shows all initially
-    })
+		# Render the template with the filtered results
+		return render(request, 'search_results.html', {
+			'users': matching_users,
+			'samples': matching_samples,
+			'genres': matching_genres,
+			'query': query,
+			'filter_type': filter_type  # Passing filter_type back to the template to maintain checkbox state
+		})
+
+	# Default state: show all
+	return render(request, 'search_results.html', {
+		'users': None, 
+		'samples': None,
+		'genres': None, 
+		'query': None, 
+		'filter_type': ['username', 'sample', 'genre']  # Default filter shows all initially
+	})
+
+def search_genres(request):
+	query = request.GET.get('query', '')
+	if query:
+		genres = Genre.objects.filter(genreName__icontains=query)  # Adjust based on your model field
+		genre_list = [{'name': genre.genreName} for genre in genres]  # Ensure this returns a list of dictionaries
+		return JsonResponse(genre_list, safe=False)  # Return the list as JSON
+	return JsonResponse([], safe=False)  # Return an empty list if no query
+
+class CreateGenreView(View):
+	def post(self, request):
+		data = json.loads(request.body)
+		genre_names = data.get('genres', [])  # Expecting a list of genre names
+		response_data = {
+			'success': True,
+			'created_genres': [],
+			'existing_genres': []
+		}
+
+		# Log the received genre names
+		logger.debug("CreateGenreView post method called.")
+		logger.debug(f"Request POST data: {data}")
+
+		# Validate that genre_names is a list
+		if not isinstance(genre_names, list) or not genre_names:
+			response_data['success'] = False
+			response_data['message'] = 'Genre names must be a non-empty list.'
+			return JsonResponse(response_data)
+
+		for genre_name in genre_names:
+			# Capitalize the first letter & make the rest lowercase
+			formatted_genre_name = genre_name.capitalize()
+
+			# Check if the genre already exists
+			if not Genre.objects.filter(genreName=formatted_genre_name).exists():
+				try:
+					new_genre = Genre.objects.create(genreName=formatted_genre_name)
+					response_data['created_genres'].append({
+						'genreId': new_genre.id,
+						'genreName': new_genre.genreName
+					})
+				except Exception as e:
+					logger.error(f"Error creating genre '{formatted_genre_name}': {e}")
+					response_data['success'] = False
+					response_data['message'] = 'An error occurred while creating some genres.'
+			else:
+				response_data['existing_genres'].append(formatted_genre_name)
+
+		return JsonResponse(response_data)
+
+
 
 #Used for auto-populating drop-down lists
 def search_users(request):
@@ -326,166 +395,166 @@ def posts(request):
 
 
 def user_post(request, pk):
-    if request.user.is_authenticated:
-        user_post = Post.objects.get(id=pk)
-        comments = Comment.objects.filter(posts=pk)
-        likes = get_object_or_404(Post, id=pk)
-        total_likes = likes.total_likes()
+	if request.user.is_authenticated:
+		user_post = Post.objects.get(id=pk)
+		comments = Comment.objects.filter(posts=pk)
+		likes = get_object_or_404(Post, id=pk)
+		total_likes = likes.total_likes()
 
-        liked = False
-        if likes.likes.filter(id=request.user.id):
-            liked = True
-        return render(request, "userPost.html", {"user_post": user_post, "total_likes":total_likes, "liked":liked, "comments":comments})
-    else:
-        messages.success(request, "Your Must Be Logged In...")
-        return redirect("home")
+		liked = False
+		if likes.likes.filter(id=request.user.id):
+			liked = True
+		return render(request, "userPost.html", {"user_post": user_post, "total_likes":total_likes, "liked":liked, "comments":comments})
+	else:
+		messages.success(request, "Your Must Be Logged In...")
+		return redirect("home")
 
 def create_post(request, pk):
-    if request.user.is_authenticated:
-        #current_post = Post.objects.get(id=pk)
-        user_samples = Sample.objects.filter(userProfiles=pk)
-        user_id = request.user.userprofile
-        form = PostForm(request.POST or None, user_id=user_id)
-        if request.method == "POST":
-            if form.is_valid():
-                add_post = form.save()
-                messages.success(request, "Post Created...")
-                return redirect("home")
-        return render(
-            request, "create_post.html", {"form": form, "user_samples": user_samples}
-        )
-    else:
-        messages.success(request, "Your Must Be Logged In...")
-        return redirect("home")
+	if request.user.is_authenticated:
+		#current_post = Post.objects.get(id=pk)
+		user_samples = Sample.objects.filter(userProfiles=pk)
+		user_id = request.user.userprofile
+		form = PostForm(request.POST or None, user_id=user_id)
+		if request.method == "POST":
+			if form.is_valid():
+				add_post = form.save()
+				messages.success(request, "Post Created...")
+				return redirect("home")
+		return render(
+			request, "create_post.html", {"form": form, "user_samples": user_samples}
+		)
+	else:
+		messages.success(request, "Your Must Be Logged In...")
+		return redirect("home")
 
 def update_post(request, pk):
-    if request.user.is_authenticated:
-        user_id = request.user.userprofile
-        current_post = Post.objects.get(id=pk)
-        form = PostForm(request.POST or None, user_id=user_id, instance=current_post)
-        if request.method == "POST":
-            if form.is_valid():
-                add_post = form.save()
-                messages.success(request, "Post Updated...")
-                return redirect("user_post", current_post.id)
-        return render(request, "update_post.html", {"form": form})
-    else:
-        messages.success(request, "Your Must Be Logged In...")
-        return redirect("home")
+	if request.user.is_authenticated:
+		user_id = request.user.userprofile
+		current_post = Post.objects.get(id=pk)
+		form = PostForm(request.POST or None, user_id=user_id, instance=current_post)
+		if request.method == "POST":
+			if form.is_valid():
+				add_post = form.save()
+				messages.success(request, "Post Updated...")
+				return redirect("user_post", current_post.id)
+		return render(request, "update_post.html", {"form": form})
+	else:
+		messages.success(request, "Your Must Be Logged In...")
+		return redirect("home")
 
 def delete_post(request, pk):
-    if request.user.is_authenticated:
-        deletePost = Post.objects.get(id=pk)
-        deletePost.delete()
-        messages.success(request, "Post Was Deleted...")
-        return redirect("home")
-    else:
-        messages.success(request, "You Must Be Logged In To Do That...")
-        return redirect("home")
+	if request.user.is_authenticated:
+		deletePost = Post.objects.get(id=pk)
+		deletePost.delete()
+		messages.success(request, "Post Was Deleted...")
+		return redirect("home")
+	else:
+		messages.success(request, "You Must Be Logged In To Do That...")
+		return redirect("home")
 
 def like_view(request, pk):
-    post = get_object_or_404(Post, id=request.POST.get('post_id'))
-    #post.likes.add(request.user)
-    liked = False
-    if post.likes.filter(id=request.user.id).exists():
-        post.likes.remove(request.user)
-        liked = False
-    else:
-        post.likes.add(request.user)
-        liked = True
-    return redirect('user_post',post.id)
+	post = get_object_or_404(Post, id=request.POST.get('post_id'))
+	#post.likes.add(request.user)
+	liked = False
+	if post.likes.filter(id=request.user.id).exists():
+		post.likes.remove(request.user)
+		liked = False
+	else:
+		post.likes.add(request.user)
+		liked = True
+	return redirect('user_post',post.id)
 # --------------------------------------------------------------------#
 
 def edit_profile(request):
-    profile = request.user.userprofile
-    if request.method == "POST":
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()  # Save directly without handling file manually
-            return redirect("profile", username=request.user.username)
-    else:
-        form = ProfileForm(instance=profile)
-    return render(request, "edit_profile.html", {"form": form})
+	profile = request.user.userprofile
+	if request.method == "POST":
+		form = ProfileForm(request.POST, request.FILES, instance=profile)
+		if form.is_valid():
+			form.save()  # Save directly without handling file manually
+			return redirect("profile", username=request.user.username)
+	else:
+		form = ProfileForm(instance=profile)
+	return render(request, "edit_profile.html", {"form": form})
 
 
 # -----------------------Comment Code-----------------------#
 class CreateCommentView(CreateView):
-    model = Comment
-    form_class = CommentForm
-    template_name = "create_comment.html"
+	model = Comment
+	form_class = CommentForm
+	template_name = "create_comment.html"
 
 def create_comment(request, pk):
-    if request.user.is_authenticated:
-        current_post = Post.objects.get(id=pk)
-        userProfile_id = request.user.userprofile
-        form = CommentForm(request.POST or None, userProfile_id=userProfile_id)
-        if request.method == "POST":
-            if form.is_valid():
-                add_comment = form.save()
-                messages.success(request, "Comment Created...")
-                return redirect("user_post", current_post.id)
-        return render(
-            request, "create_comment.html", {"form": form, "current_post": current_post}
-        )
-    else:
-        messages.success(request, "Your Must Be Logged In...")
-        return redirect("home")
+	if request.user.is_authenticated:
+		current_post = Post.objects.get(id=pk)
+		userProfile_id = request.user.userprofile
+		form = CommentForm(request.POST or None, userProfile_id=userProfile_id)
+		if request.method == "POST":
+			if form.is_valid():
+				add_comment = form.save()
+				messages.success(request, "Comment Created...")
+				return redirect("user_post", current_post.id)
+		return render(
+			request, "create_comment.html", {"form": form, "current_post": current_post}
+		)
+	else:
+		messages.success(request, "Your Must Be Logged In...")
+		return redirect("home")
 
 def comments(request, pk):
-    if request.user.is_authenticated:
-        # Look Up Posts
-        userComments = Comment.objects.filter(posts=pk)
-        user_post = Post.objects.get(id=pk)
-        return render(
-            request,
-            "comments.html",
-            {"userComments": userComments, "user_post": user_post},
-        )
-    else:
-        messages.success(request, "You Must Be Logged In To Do That...")
-        return redirect("home")
+	if request.user.is_authenticated:
+		# Look Up Posts
+		userComments = Comment.objects.filter(posts=pk)
+		user_post = Post.objects.get(id=pk)
+		return render(
+			request,
+			"comments.html",
+			{"userComments": userComments, "user_post": user_post},
+		)
+	else:
+		messages.success(request, "You Must Be Logged In To Do That...")
+		return redirect("home")
 
 def comment_detail(request, pk):
-    if request.user.is_authenticated:
-        user_comment = Comment.objects.get(id=pk)
-        return render(request, "comment_detail.html", {"user_comment": user_comment})
-    else:
-        messages.success(request, "Your Must Be Logged In...")
-        return redirect("home")
+	if request.user.is_authenticated:
+		user_comment = Comment.objects.get(id=pk)
+		return render(request, "comment_detail.html", {"user_comment": user_comment})
+	else:
+		messages.success(request, "Your Must Be Logged In...")
+		return redirect("home")
 
 def update_comment(request, pk):
-    if request.user.is_authenticated:
-        userProfile_id = request.user.userprofile
-        current_comment = Comment.objects.get(id=pk)
-        form = CommentForm(request.POST or None,userProfile_id=userProfile_id, instance=current_comment)
-        if request.method == "POST":
-            if form.is_valid():
-                add_comment = form.save()
-                messages.success(request, "Comment Updated...")
-                return redirect("user_post", current_comment.posts.id)
-        return render(request, "update_comment.html", {"form": form})
-    else:
-        messages.success(request, "Your Must Be Logged In...")
-        return redirect("home")
+	if request.user.is_authenticated:
+		userProfile_id = request.user.userprofile
+		current_comment = Comment.objects.get(id=pk)
+		form = CommentForm(request.POST or None,userProfile_id=userProfile_id, instance=current_comment)
+		if request.method == "POST":
+			if form.is_valid():
+				add_comment = form.save()
+				messages.success(request, "Comment Updated...")
+				return redirect("user_post", current_comment.posts.id)
+		return render(request, "update_comment.html", {"form": form})
+	else:
+		messages.success(request, "Your Must Be Logged In...")
+		return redirect("home")
 
 def delete_comment(request, pk):
-    if request.user.is_authenticated:
-        deleteComment = Comment.objects.get(id=pk)
-        deleteComment.delete()
-        messages.success(request, "Comment Was Deleted...")
-        return redirect("user_post", deleteComment.posts.id)
-    else:
-        messages.success(request, "You Must Be Logged In To Do That...")
-        return redirect("home")
+	if request.user.is_authenticated:
+		deleteComment = Comment.objects.get(id=pk)
+		deleteComment.delete()
+		messages.success(request, "Comment Was Deleted...")
+		return redirect("user_post", deleteComment.posts.id)
+	else:
+		messages.success(request, "You Must Be Logged In To Do That...")
+		return redirect("home")
 
 
 # ---------------------------------Delete Account-----------------------------------#
 def delete_account(request):
-    if request.method == "POST":
-        request.user.delete()
-        messages.success(request, "Your account has been deleted. ")
-        return redirect("home")
-    return render(request, "confirm_delete_account.html")
+	if request.method == "POST":
+		request.user.delete()
+		messages.success(request, "Your account has been deleted. ")
+		return redirect("home")
+	return render(request, "confirm_delete_account.html")
 # --------------------------------------------------------------------#
 
 #--------------------Start Chat code---------------------------
@@ -673,16 +742,16 @@ def add_message(request, chat_id):
 #------------------------ download code-------------------------#
 
 def download_sample(request, pk):
-      current_sample = get_object_or_404(Sample, id=pk)
-      file_path = current_sample.audioFile.path 
-      response = FileResponse(open(file_path, 'rb'))
-      response['Content-Type'] = 'application/octet-stream'
-      stringFilePath = str(current_sample.audioFile)
-      # if the audio file location ends with a 3 we can assume its an .mp3 file
-      # else we will assume its a .wav file
-      if stringFilePath[-1] == "3":
-            response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}.mp3"'
-      else:
-            response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}.wav"'
+	current_sample = get_object_or_404(Sample, id=pk)
+	file_path = current_sample.audioFile.path 
+	response = FileResponse(open(file_path, 'rb'))
+	response['Content-Type'] = 'application/octet-stream'
+	stringFilePath = str(current_sample.audioFile)
+	# if the audio file location ends with a 3 we can assume its an .mp3 file
+	# else we will assume its a .wav file
+	if stringFilePath[-1] == "3":
+		response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}.mp3"'
+	else:
+		response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}.wav"'
 
-      return response
+	return response
