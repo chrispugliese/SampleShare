@@ -60,7 +60,6 @@
             background-color: #362d4b; /* Light background on hover */
         }
     </style>
-    <script src="{% static 'js/genre_autocomplete.js' %}"></script>
 </head>
 <body>
 
@@ -82,10 +81,9 @@
             <!-- Container for displaying selected genres inline -->
             <div id="selected-genres-inline" class="selected-genres" style="display: flex; align-items: center; margin-left: 8px;"></div>
         </div>
-
         <!-- Suggestions for genres -->
         <div id="genre-suggestions" class="suggestions-box"></div>
-
+        <br>
         <button type="button" id="submit-btn">Upload</button>
         <button type="button" onclick="window.location.href='/'">Cancel</button>
     </form>
@@ -167,64 +165,11 @@
             element.parentElement.remove();
         }
 
-        // Genre Autocomplete Logic
-        const genreInput = document.getElementById('id_genres');
-        const genreSuggestions = document.getElementById('genre-suggestions');
-        const selectedGenresInline = document.getElementById('selected-genres-inline');
-        const genreSet = new Set(); // To track selected genres
-
-        document.getElementById('add-genre-btn').addEventListener('click', async function() {
-            const genre = genreInput.value.trim();
-            if (genre && !genreSet.has(genre)) {
-                const response = await fetch('/create-genre/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                    },
-                    body: JSON.stringify({ name: genre })
-                });
-                if (response.ok) {
-                    addGenre(genre); // Add genre tag after creation
-                    genreInput.value = ''; // Clear input
-                    genreSuggestions.innerHTML = ''; // Clear suggestions
-                } else {
-                    alert("Failed to create genre.");
-                }
-            }
-        });
-
-        function addGenre(genre) {
-            genreSet.add(genre);
-            const genreTag = document.createElement('span');
-            genreTag.className = 'genre-tag';
-            genreTag.textContent = genre;
-            const removeBtn = document.createElement('button');
-            removeBtn.textContent = '×';
-            removeBtn.onclick = () => {
-                genreSet.delete(genre);
-                genreTag.remove();
-            };
-            genreTag.appendChild(removeBtn);
-            selectedGenresInline.appendChild(genreTag);
-        }
-
         document.getElementById('submit-btn').addEventListener('click', function (e) {
+            event.preventDefault(); // Prevent form submission on genre add
             if (fileQueue.length === 0) {
                 alert("You must add a file to submit.");
                 return;
-            }
-
-            // Add selected genres to form data
-            const selectedGenreNames = Array.from(genreSet);
-            if (selectedGenreNames.length > 0) {
-                document.getElementById('SampleUploadForm').append(...selectedGenreNames.map(genre => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'genres'; // Make sure this matches your server-side logic
-                    input.value = genre;
-                    return input;
-                }));
             }
 
             // Confirm before submission
@@ -247,6 +192,134 @@
             }
         });
 
+        async function uploadFiles(files) {
+            const newGenres = Array.from(genreSet); // Collect all genres to be created
+
+            // Create a new set to track existing genres to avoid duplicates
+            const existingGenres = new Set();
+
+            // First, upload the files
+            for (let file of files) {
+                const formData = new FormData();
+                formData.append('audioFile', file);
+                const sampleName = document.querySelector(`[name="sampleName_${file.name}"]`).value || file.name;
+                formData.append('sampleName', sampleName);
+                formData.append('isPublic', document.querySelector(`[name="isPublic_${file.name}"]`).checked);
+                formData.append('userProfiles', document.getElementById('userProfiles').value);
+
+                 // Add selected genres to FormData before submission
+                formData.append('genres', JSON.stringify(Array.from(genreSet))); // Include genres as an array
+       
+                try {
+                    const response = await fetch('/upload/', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    });
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(`Failed to upload file: ${err.error}`);
+                    }
+                } catch (error) {
+                    alert(`An error occurred while uploading ${file.name}: ${error.message}`);
+                    console.error('Upload error:', error);
+                    return; // Exit if there was an error
+                }
+            }
+
+            // After successful uploads, send a request to create new genres
+            if (newGenres.length) {
+                try {
+                    const response = await fetch('/create-genres/', { // Replace with your actual endpoint
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        },
+                        body: JSON.stringify({ genres: newGenres })
+                    });
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(`Failed to create genres: ${err.error}`);
+                    }
+                    alert("All files uploaded successfully, and new genres created!");
+                } catch (error) {
+                    alert(`An error occurred while creating genres: ${error.message}`);
+                    console.error('Genre creation error:', error);
+                }
+            } else {
+                alert("All files uploaded successfully!");
+            }
+
+            fileQueue = [];
+            fileList.innerHTML = "";
+            selectedGenresInline.innerHTML = "";
+            genreSet.clear();
+            genreInput.value = ''; // Clear input
+            genreSuggestions.innerHTML = ''; // Clear suggestions
+
+            // Debugging: Check if genreSet is cleared
+            console.log("Genres after clearing:", Array.from(genreSet));
+        }
+
+    </script>
+    <!-- Genre submission -->
+    <script>
+        // Genre submission logic
+        const genreInput = document.getElementById('id_genres');
+        const genreSuggestions = document.getElementById('genre-suggestions');
+        const selectedGenresInline = document.getElementById('selected-genres-inline');
+        const genreSet = new Set(); // To track selected genres
+
+        // Function to add genre
+        function addGenre(genre) {
+            if (!genreSet.has(genre)) {
+                genreSet.add(genre);
+                
+                // Create a tag element
+                const genreTag = document.createElement('span');
+                genreTag.className = 'genre-tag';
+                genreTag.textContent = genre;
+
+                // Remove button for the tag
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = '×';
+                removeBtn.onclick = () => {
+                    genreSet.delete(genre);
+                    genreTag.remove();
+                };
+                
+                genreTag.appendChild(removeBtn);
+                selectedGenresInline.appendChild(genreTag);
+                
+                // Clear the input
+                genreInput.value = '';
+                genreSuggestions.innerHTML = ''; // Clear suggestions
+            }
+        }
+
+        // Event listeners
+        document.getElementById('add-genre-btn').addEventListener('click', function() {
+            const genre = genreInput.value.trim();
+            if (genre) {
+                addGenre(genre);
+            }
+        });
+
+        // Pressing Enter to add genre
+        genreInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission
+                const genre = genreInput.value.trim();
+                if (genre) {
+                    addGenre(genre);
+                }
+            }
+        });
+
+        // Fetch existing genres and display suggestions
         genreInput.addEventListener('input', async function() {
             const query = genreInput.value.trim();
             if (query.length < 2) {
@@ -254,25 +327,32 @@
                 genreSuggestions.style.display = 'none'; // Hide suggestions
                 return;
             }
+
             const response = await fetch(`/search-genres/?query=${query}`);
             const suggestions = await response.json();
-            genreSuggestions.innerHTML = suggestions.map(g => `<div class="suggestion-item">${g.name}</div>`).join('');
-            genreSuggestions.style.display = suggestions.length > 0 ? 'block' : 'none'; // Show suggestions if there are results
 
-            // Add click handler for suggestions
+            // Clear previous suggestions
+            genreSuggestions.innerHTML = suggestions.map(g => `<div class="suggestion-item">${g.name}</div>`).join('');
+            genreSuggestions.style.display = suggestions.length ? 'block' : 'none'; // Show suggestions only if there are any
+
+            // Show suggestions and add click handlers
             const suggestionItems = document.querySelectorAll('.suggestion-item');
             suggestionItems.forEach(item => {
                 item.addEventListener('click', function() {
                     const selectedGenre = this.textContent;
-                    if (!genreSet.has(selectedGenre)) {
-                        addGenre(selectedGenre); // Add genre to inline display
-                        genreInput.value = ''; // Clear input
-                        genreSuggestions.innerHTML = ''; // Clear suggestions
-                    }
+                    addGenre(selectedGenre); // Add genre to inline display
                 });
             });
         });
-    </script>
 
+        // Prepare to submit genres with the form
+        document.getElementById('SampleUploadForm').addEventListener('submit', function(e) {
+            const hiddenGenresInput = document.createElement('input');
+            hiddenGenresInput.type = 'hidden';
+            hiddenGenresInput.name = 'genres'; // Ensure this matches your model field
+            hiddenGenresInput.value = Array.from(genreSet).join(','); // Join selected genres with commas
+            this.appendChild(hiddenGenresInput);
+        });
+    </script>
 </body>
 {% endblock %}

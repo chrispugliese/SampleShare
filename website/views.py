@@ -315,54 +315,55 @@ def search_user(request):
 		'filter_type': ['username', 'sample']  # Default filter shows all initially
 	})
 
-class SearchGenresView(View):
-	def get(self, request):
-		search_query = request.GET.get('q', '')  # Get the search query from the request
-		response_data = {
-			'genres': []
-		}
-
-		# Filter genres that match the search query (case insensitive)
-		if search_query:
-			matching_genres = Genre.objects.filter(genreName__icontains=search_query)
-			response_data['genres'] = [{'id': genre.id, 'name': genre.genreName} for genre in matching_genres]
-
-		return JsonResponse(response_data)
+def search_genres(request):
+	query = request.GET.get('query', '')
+	if query:
+		genres = Genre.objects.filter(genreName__icontains=query)  # Adjust based on your model field
+		genre_list = [{'name': genre.genreName} for genre in genres]  # Ensure this returns a list of dictionaries
+		return JsonResponse(genre_list, safe=False)  # Return the list as JSON
+	return JsonResponse([], safe=False)  # Return an empty list if no query
 
 class CreateGenreView(View):
 	def post(self, request):
 		data = json.loads(request.body)
-		genre_name = data.get('name')
-		response_data = {}
+		genre_names = data.get('genres', [])  # Expecting a list of genre names
+		response_data = {
+			'success': True,
+			'created_genres': [],
+			'existing_genres': []
+		}
 
-		# Log the received genre name
+		# Log the received genre names
 		logger.debug("CreateGenreView post method called.")
 		logger.debug(f"Request POST data: {data}")
 
-		# Validate that genre_name is not empty
-		if not genre_name:
+		# Validate that genre_names is a list
+		if not isinstance(genre_names, list) or not genre_names:
 			response_data['success'] = False
-			response_data['message'] = 'Genre name cannot be empty.'
+			response_data['message'] = 'Genre names must be a non-empty list.'
 			return JsonResponse(response_data)
 
-		formatted_genre_name = genre_name.capitalize()  # Capitalize 1st letter & make rest lowercase
+		for genre_name in genre_names:
+			# Capitalize the first letter & make the rest lowercase
+			formatted_genre_name = genre_name.capitalize()
 
-		# Check if the genre already exists
-		if not Genre.objects.filter(genreName=formatted_genre_name).exists():
-			try:
-				new_genre = Genre.objects.create(genreName=formatted_genre_name)  # Use formatted genre name here
-				response_data['success'] = True
-				response_data['genreId'] = new_genre.id
-				response_data['genreName'] = new_genre.genreName
-			except Exception as e:
-				logger.error(f"Error creating genre: {e}")
-				response_data['success'] = False
-				response_data['message'] = 'An error occurred while creating the genre.'
-		else:
-			response_data['success'] = False
-			response_data['message'] = 'Genre already exists.'
+			# Check if the genre already exists
+			if not Genre.objects.filter(genreName=formatted_genre_name).exists():
+				try:
+					new_genre = Genre.objects.create(genreName=formatted_genre_name)
+					response_data['created_genres'].append({
+						'genreId': new_genre.id,
+						'genreName': new_genre.genreName
+					})
+				except Exception as e:
+					logger.error(f"Error creating genre '{formatted_genre_name}': {e}")
+					response_data['success'] = False
+					response_data['message'] = 'An error occurred while creating some genres.'
+			else:
+				response_data['existing_genres'].append(formatted_genre_name)
 
 		return JsonResponse(response_data)
+
 
 
 #Used for auto-populating drop-down lists

@@ -20,8 +20,8 @@ urlpatterns = [
     path("edit_samples/", views.update_user_samples, name="edit_samples"),
     path("delete_user_sample/<int:sample_id>/", views.delete_user_sample, name="delete_user_sample",),
     path("sample/", views.sample_player, name="sample_player"),
-    path('create-genre/', views.CreateGenreView.as_view(), name='create_genre'),
-    path('search-genres/', views.SearchGenresView.as_view(), name='search-genres'),
+    path('create-genres/', views.CreateGenreView.as_view(), name='create_genres'),
+    path('search-genres/', views.search_genres, name='search_genres'),
     # -------Posts Links------------#
     #path("posts/", views.posts, name="posts"),
     path("user_post/<int:pk>", views.user_post, name="user_post"),

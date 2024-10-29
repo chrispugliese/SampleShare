@@ -24,8 +24,12 @@ document.addEventListener("DOMContentLoaded", function () {
 	            const suggestion = document.createElement("button"); // Changed to button
 	            suggestion.classList.add("suggestion-item", "btn", "btn-outline-primary"); // Added Bootstrap button classes
 	            suggestion.textContent = genre.name;
-	            suggestion.addEventListener("click", () => addGenreTag(genre.name));
-	            suggestionsBox.appendChild(suggestion);
+				suggestion.addEventListener("click", (event) => {
+	                event.preventDefault(); // Prevent default action
+	                event.stopPropagation(); // Stop propagation to avoid form submission
+	                addGenreTag(genre.name); // Call function to add genre tag
+	            });	            
+				suggestionsBox.appendChild(suggestion);
 	        });
 	        suggestionsBox.style.display = "block"; // Show suggestions
 	    } else {
@@ -61,6 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	// Add a new genre if it doesn't exist
 	addGenreBtn.addEventListener("click", function () {
+		event.preventDefault();  // Prevent any default submission action
 		const newGenre = genreInput.value.trim();
 		if (newGenre && !selectedGenres.includes(newGenre)) {
 			fetch("/create-genre/", { // Updated URL to match the new endpoint
@@ -86,12 +91,24 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	// Event listener for input to fetch suggestions dynamically
-	genreInput.addEventListener("input", async function () {
-		const query = genreInput.value.trim();
-		if (query.length > 0) {
-			searchGenres(query);
-		} else {
-			suggestionsBox.style.display = "none";
-		}
-	});
+	genreInput.addEventListener('input', async function() {
+    const query = genreInput.value.trim();
+    if (query.length < 2) {
+        genreSuggestions.innerHTML = ''; // Clear suggestions if too short
+        return;
+    }
+
+    const response = await fetch(`/search-genres/?query=${query}`);
+    const suggestions = await response.json();
+    console.log(suggestions); // Log suggestions to check the format
+    
+    // Ensure suggestions is an array
+    if (Array.isArray(suggestions)) {
+        genreSuggestions.innerHTML = suggestions.map(g => `<div class="suggestion-item">${g.name}</div>`).join('');
+    } else {
+        console.error('Expected an array but received:', suggestions);
+        genreSuggestions.innerHTML = ''; // Clear suggestions on error
+    }
+});
+
 });
