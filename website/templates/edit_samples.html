@@ -50,13 +50,16 @@
         <h5 class="modal-title">Edit Sample</h5>
         <div class="form-check form-switch" style="margin-left: auto;">
           <input type="checkbox" id="edit_sample_privacy" class="form-check-input" name="isPublic">
-          <label class="form-check-label" for="edit_sample_privacy">Private</label>
+          <label class="form-check-label" for="edit_sample_privacy">
+            <span id="privacyStatusText">Private</span>
+          </label>
       </div>
       </div>
       <div class="modal-body">
-        <form id="editSampleForm" method="POST" enctype="multipart/form-data">
+        <form id="editSampleForm" method="POST" action="{% url 'edit_samples' %}" enctype="multipart/form-data">
           {% csrf_token %}
           <input type="hidden" id="edit_sample_id" name="sample_id" value="">
+          <input type="hidden" id="is_public_hidden" name="isPublic" value="">
           
           <div class="form-group">
             <label for="edit_sample_name">Sample Name:</label>
@@ -92,10 +95,15 @@
       document.getElementById('edit_sample_name').value = sampleName;
       document.getElementById('edit_sample_privacy').checked = isPublic; // Toggle checkbox (private when checked)
 
+       // Update the privacy status text based on checkbox state
+      const privacyStatusText = document.getElementById('privacyStatusText');
+      privacyStatusText.textContent = isPublic ? "Public" : "Private";
+
       // Show the modal
       $('#editSampleModal').modal('show');
     });
   });
+
 
   document.getElementById('cancelEdit').addEventListener('click', function() {
     // Clear the form fields
@@ -105,10 +113,17 @@
     $('#editSampleModal').modal('hide');
   });
 
-  document.getElementById('saveChanges').addEventListener('click', function() {
     // Submit the form
-    document.getElementById('editSampleForm').submit();
-  });
+  document.getElementById('saveChanges').addEventListener('click', function() {
+      const isPublicCheckbox = document.getElementById('edit_sample_privacy');
+      const isPublicHidden = document.getElementById('is_public_hidden');
+        
+      // Set hidden input value to match the checkbox state
+      isPublicHidden.value = isPublicCheckbox.checked ? "True" : "False";
+
+        // Submit the form
+        document.getElementById('editSampleForm').submit();
+    });
 
   // Handling the genre selection
   const genreInput = document.getElementById('edit_sample_genres');
@@ -141,6 +156,10 @@
       });
   }
 
+document.getElementById('edit_sample_privacy').addEventListener('change', function() {
+    const privacyStatusText = document.getElementById('privacyStatusText');
+    privacyStatusText.textContent = this.checked ? "Public" : "Private";
+});
 </script>
 
 {% endblock %}

@@ -221,7 +221,7 @@ def update_user_samples(request):
 					Sample, pk=sample_id_to_update, userProfiles__user=request.user
 				)
 				# Debugging: Log the incoming isPublic value
-				is_public_value = request.POST.get('isPublic') == 'on'
+				is_public_value = request.POST.get('isPublic') == 'True'
 				if is_public_value:
 					print("Is Public!!")
 				else:
