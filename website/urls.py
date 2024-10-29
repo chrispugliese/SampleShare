@@ -7,9 +7,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("", views.home, name="home"),
-    path(
-        "user/<int:user_id>/", views.user_detail, name="user_detail"
-    ),  # Dynamic user page
+    path("user/<int:user_id>/", views.user_detail, name="user_detail"),  # Dynamic user page
     path("user/", views.page_not_found),
     path("login/", views.login_user, name="login"),
     path("logout/", views.logout_user, name="logout"),
@@ -20,12 +18,10 @@ urlpatterns = [
     # -------Samples/Uploads Links------------#
     path("upload/", views.upload, name="upload"),
     path("edit_samples/", views.update_user_samples, name="edit_samples"),
-    path(
-        "delete_user_sample/<int:sample_id>/",
-        views.delete_user_sample,
-        name="delete_user_sample",
-    ),
+    path("delete_user_sample/<int:sample_id>/", views.delete_user_sample, name="delete_user_sample",),
     path("sample/", views.sample_player, name="sample_player"),
+    path('create-genres/', views.CreateGenreView.as_view(), name='create_genres'),
+    path('search-genres/', views.search_genres, name='search_genres'),
     # -------Posts Links------------#
     #path("posts/", views.posts, name="posts"),
     path("user_post/<int:pk>", views.user_post, name="user_post"),

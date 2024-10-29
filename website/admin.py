@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Chat, Message
+from .models import UserProfile, Chat, Message, Genre
 from .models import *
 
 
@@ -13,6 +13,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 admin.site.register(Post)
 admin.site.register(UserProfile)
 admin.site.register(Sample)
+admin.site.register(Genre)
 
 class MessageInline(admin.TabularInline):  # Use TabularInline for a table-like display, or StackedInline for a stacked display
     model = Message
