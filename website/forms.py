@@ -64,17 +64,10 @@ def validate_audio_file(file):
 class SampleEditForm(forms.ModelForm):
 	class Meta:
 		model = Sample
-		fields = ["sampleName", "isPublic", "userProfiles"]
+		fields = ["sampleName", "isPublic"]
 		labels = {"isPublic": "Make Sample Public?"}
 		widgets = {
-			"userProfiles": forms.TextInput(
-				attrs={
-					"class": "form-control",
-					"value": "",
-					"id": "user",
-					"type": "hidden",
-				}
-			)
+			"isPublic": forms.CheckboxInput(),  # Optional: Customize the checkbox if needed
 		}
 
 class SignUpForm(UserCreationForm):

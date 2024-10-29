@@ -220,14 +220,25 @@ def update_user_samples(request):
 				sample = get_object_or_404(
 					Sample, pk=sample_id_to_update, userProfiles__user=request.user
 				)
+				# Debugging: Log the incoming isPublic value
+				is_public_value = request.POST.get('isPublic') == 'on'
+				if is_public_value:
+					print("Is Public!!")
+				else:
+					print("Not public!")
+
 				form = SampleEditForm(request.POST, instance=sample)
-				form.instance.audioFile = sample.audioFile
+
+				# Update the isPublic field based on the checkbox
+				sample.isPublic = is_public_value  # This will be True if the checkbox is checked
+
+				# Debugging: Log the sample's isPublic status before saving
+				logging.debug(f"Sample ID: {sample.id}, isPublic before save: {sample.isPublic}")
 
 				if form.is_valid():
-					form.save()
-					messages.success(
-						request, f"{sample.sampleName} updated successfully!"
-					)
+					form.save()  # Save the form fields first
+					sample.save()  # Then save the updated privacy status
+					messages.success(request, f"{sample.sampleName} updated successfully!")
 					return redirect("edit_samples")
 		else:
 			sample_id_to_update = request.GET.get("update")
@@ -245,6 +256,7 @@ def update_user_samples(request):
 	else:
 		messages.error(request, "You need to be logged in to access this page.")
 		return redirect("login")
+
 
 
 def delete_user_sample(request, sample_id):
