@@ -196,7 +196,6 @@ def upload(request):
 				if genres_data:
 					genres_list = json.loads(genres_data)
 					for genreName in genres_list:
-						print (genreName)
 						genreName = genreName.capitalize()  # Format each genre
 						genre, created = Genre.objects.get_or_create(genreName=genreName)
 						sample.genres.add(genre)  # Associate genre with sample
@@ -211,7 +210,7 @@ def upload(request):
 
 def update_user_samples(request):
 	if request.user.is_authenticated:
-		user_samples = Sample.objects.filter(userProfiles__user=request.user)
+		user_samples = Sample.objects.filter(userProfiles__user=request.user).prefetch_related('genres')
 		form = None
 
 		if request.method == "POST":
@@ -220,14 +219,32 @@ def update_user_samples(request):
 				sample = get_object_or_404(
 					Sample, pk=sample_id_to_update, userProfiles__user=request.user
 				)
+				# Debugging: Log the incoming isPublic value
+				is_public_value = request.POST.get('isPublic') == 'True'
 				form = SampleEditForm(request.POST, instance=sample)
-				form.instance.audioFile = sample.audioFile
+
+				# Update the isPublic field based on the checkbox
+				sample.isPublic = is_public_value  # This will be True if the checkbox is checked
+
+				# Debugging: Log the sample's isPublic status before saving
+				logging.debug(f"Sample ID: {sample.id}, isPublic before save: {sample.isPublic}")
+
+				 # Handle the genres
+				if 'genres' in request.POST:
+					genre_names = request.POST['genres'].split(',')
+					# Clear existing genres
+					sample.genres.clear()  
+					# Add new genres
+					for genre_name in genre_names:
+						genre_name = genre_name.strip()  # Remove any leading/trailing whitespace
+						if genre_name:  # Check if it's not an empty string
+							genre, created = Genre.objects.get_or_create(genreName=genre_name)
+							sample.genres.add(genre)
 
 				if form.is_valid():
-					form.save()
-					messages.success(
-						request, f"{sample.sampleName} updated successfully!"
-					)
+					form.save()  # Save the form fields first
+					sample.save()  # Then save the updated privacy status
+					messages.success(request, f"{sample.sampleName} updated successfully!")
 					return redirect("edit_samples")
 		else:
 			sample_id_to_update = request.GET.get("update")
@@ -245,6 +262,7 @@ def update_user_samples(request):
 	else:
 		messages.error(request, "You need to be logged in to access this page.")
 		return redirect("login")
+
 
 
 def delete_user_sample(request, sample_id):
