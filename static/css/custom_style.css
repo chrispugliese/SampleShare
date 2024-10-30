@@ -43,6 +43,10 @@ body {
     color: white;
     border: none;
   }
+
+  .btn-primary:active {
+    background-color: #6a1b9a !important;
+  }
   
   .btn-primary:hover {
     background-color: darkviolet;
