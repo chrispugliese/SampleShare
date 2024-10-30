@@ -15,6 +15,10 @@
     <br/>
     <strong>Sample: </strong>{{ user_post.samples.sampleName }}
     </p> 
+    <div class="player-container"> 
+        <button onclick="playPause('{{ user_post.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
+      </div>
+      <br/>
     <!-- Download Code -->
      <p>
         <a href="{% url 'download_sample' user_post.samples.id %}" class="btn btn-primary">Download Sample</a>
@@ -59,7 +63,10 @@
     <!-- Comment Display Code -->
     {% if comments %}
     {% for comment in comments %}
-    <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{ comment.userProfile.user.username }} </a>
+    <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+        <img src="{{ comment.posts.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+        {{ comment.userProfile.user.username }} 
+    </a>
         <p> {{ comment.commentMessage }}</p>
         {% if comment.samples != None %}
         <p>{{ comment.samples.sampleName }}
