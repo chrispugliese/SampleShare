@@ -22,20 +22,6 @@ class SampleForm(forms.ModelForm):
             )
         }
 
-class SampleForm(forms.ModelForm):
-	class Meta:
-		model = Sample
-		fields = ["sampleName", "audioFile", "isPublic", "userProfiles"]
-		widgets = {
-			"userProfiles": forms.HiddenInput(
-				attrs={
-					"class": "form-control",
-					"id": "user",
-					"type": "hidden",
-				}
-			)
-		}
-
 class SampleEditForm(forms.ModelForm):
 	class Meta:
 		model = Sample
