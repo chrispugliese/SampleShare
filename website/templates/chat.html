@@ -47,6 +47,8 @@
 			border-color: #494949; /* Border changes to dark grey */
 			border-radius: 50px; /* Border radius expands to make the button more circular */
 			transition: all 0.4s ease; /* Smooth transition */
+			box-shadow: 0 0 10px #8099ff;
+			text-shadow: 0 0 3px #8099ff; /* Increase the blur radius for a more diffused effect */
 		}
 		.chat-users .user .avatar {
 			top: 12px;
@@ -255,7 +257,6 @@
 		   color: #fff;  
 		}
 		.chat input {
-			-webkit-appearance: none;
 			border-radius: 0;
 		}
         
@@ -284,7 +285,8 @@
 			background-color: #32273b !important;
 			min-height: 50px;
 			border-color: #494949;
-			border-radius: 50px;
+			border-radius: 20px;
+			transition: all 0.4s ease; /* Smooth transition */
 		}
 	</style>
     <title>Your Chat</title>
