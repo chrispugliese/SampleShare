@@ -309,8 +309,8 @@ def search_user(request):
 		if not filter_type or 'all' in filter_type:
 			filter_type = ['username', 'sample', 'genre']
 
-		matching_users = []
-		matching_samples = []
+		matching_users = User.objects.none()
+		matching_samples = Sample.objects.none()
 		matching_genres = [] 
 
 		# Apply the filters based on the selected checkboxes
@@ -322,9 +322,25 @@ def search_user(request):
 				matching_samples = Sample.objects.filter(sampleName__icontains=query, isPublic=True)
 
 			if 'genre' in filter_type:
-				matching_genres = Genre.objects.filter(genreName=query)
-				matching_samples = Sample.objects.filter(genres__in=matching_genres).distinct()
+				matching_genres = Genre.objects.filter(genreName__icontains=query)  # Use icontains for partial matching
+				# Find samples that are linked to the matched genres
+				genre_matching_samples = Sample.objects.filter(genres__in=matching_genres).distinct()
+				
+				if genre_matching_samples.exists():
+					matching_samples = matching_samples.union(genre_matching_samples)
 
+			# If the filter type includes 'all', combine results without using distinct()
+		if 'all' in filter_type:
+			# Combine all matching users, samples, and genres
+			users = matching_users
+			samples = matching_samples
+			genres = matching_genres
+		else:
+			# Handle specific filters
+			users = matching_users if 'username' in filter_type else []
+			samples = matching_samples if 'sample' in filter_type else []
+			genres = matching_genres if 'genre' in filter_type else []
+			
 		# Render the template with the filtered results
 		return render(request, 'search_results.html', {
 			'users': matching_users,
@@ -731,6 +747,7 @@ def create_chat(request):
 @login_required  # Ensure user is logged in
 def add_message(request, chat_id):
 	chat = get_object_or_404(Chat, id=chat_id)  # Retrieve the chat instance
+	chatMessages = list(chat.message_set.all().order_by('created_at'))  # Get messages for the chat
 
 	if request.method == 'POST':
 		form = MessageForm(request.POST)

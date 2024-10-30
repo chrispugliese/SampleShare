@@ -362,6 +362,14 @@
             hiddenGenresInput.value = Array.from(genreSet).join(','); // Join selected genres with commas
             this.appendChild(hiddenGenresInput);
         });
+        
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(event) {
+            const isClickInside = genreInput.contains(event.target) || genreSuggestions.contains(event.target);
+            if (!isClickInside) {
+                genreSuggestions.style.display = 'none'; // Hide suggestions if the click is outside
+            }
+        });
     </script>
 </body>
 {% endblock %}
