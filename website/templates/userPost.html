@@ -5,7 +5,8 @@
 
 <div class="card">
     <div class="card-header"><strong>
-          Post
+        <img src="{{ user_post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+        <a href ="{% url 'profile' user_post.userProfiles.user.username %}">{{ user_post.userProfiles.user.username }} </a>
           </strong>
     </div>
     <div class="card-body">
