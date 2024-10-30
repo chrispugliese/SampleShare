@@ -196,7 +196,6 @@ def upload(request):
 				if genres_data:
 					genres_list = json.loads(genres_data)
 					for genreName in genres_list:
-						print (genreName)
 						genreName = genreName.capitalize()  # Format each genre
 						genre, created = Genre.objects.get_or_create(genreName=genreName)
 						sample.genres.add(genre)  # Associate genre with sample
@@ -211,7 +210,7 @@ def upload(request):
 
 def update_user_samples(request):
 	if request.user.is_authenticated:
-		user_samples = Sample.objects.filter(userProfiles__user=request.user)
+		user_samples = Sample.objects.filter(userProfiles__user=request.user).prefetch_related('genres')
 		form = None
 
 		if request.method == "POST":
@@ -220,14 +219,32 @@ def update_user_samples(request):
 				sample = get_object_or_404(
 					Sample, pk=sample_id_to_update, userProfiles__user=request.user
 				)
+				# Debugging: Log the incoming isPublic value
+				is_public_value = request.POST.get('isPublic') == 'True'
 				form = SampleEditForm(request.POST, instance=sample)
-				form.instance.audioFile = sample.audioFile
+
+				# Update the isPublic field based on the checkbox
+				sample.isPublic = is_public_value  # This will be True if the checkbox is checked
+
+				# Debugging: Log the sample's isPublic status before saving
+				logging.debug(f"Sample ID: {sample.id}, isPublic before save: {sample.isPublic}")
+
+				 # Handle the genres
+				if 'genres' in request.POST:
+					genre_names = request.POST['genres'].split(',')
+					# Clear existing genres
+					sample.genres.clear()  
+					# Add new genres
+					for genre_name in genre_names:
+						genre_name = genre_name.strip()  # Remove any leading/trailing whitespace
+						if genre_name:  # Check if it's not an empty string
+							genre, created = Genre.objects.get_or_create(genreName=genre_name)
+							sample.genres.add(genre)
 
 				if form.is_valid():
-					form.save()
-					messages.success(
-						request, f"{sample.sampleName} updated successfully!"
-					)
+					form.save()  # Save the form fields first
+					sample.save()  # Then save the updated privacy status
+					messages.success(request, f"{sample.sampleName} updated successfully!")
 					return redirect("edit_samples")
 		else:
 			sample_id_to_update = request.GET.get("update")
@@ -245,6 +262,7 @@ def update_user_samples(request):
 	else:
 		messages.error(request, "You need to be logged in to access this page.")
 		return redirect("login")
+
 
 
 def delete_user_sample(request, sample_id):
@@ -291,8 +309,8 @@ def search_user(request):
 		if not filter_type or 'all' in filter_type:
 			filter_type = ['username', 'sample', 'genre']
 
-		matching_users = []
-		matching_samples = []
+		matching_users = User.objects.none()
+		matching_samples = Sample.objects.none()
 		matching_genres = [] 
 
 		# Apply the filters based on the selected checkboxes
@@ -304,9 +322,25 @@ def search_user(request):
 				matching_samples = Sample.objects.filter(sampleName__icontains=query, isPublic=True)
 
 			if 'genre' in filter_type:
-				matching_genres = Genre.objects.filter(genreName=query)
-				matching_samples = Sample.objects.filter(genres__in=matching_genres).distinct()
+				matching_genres = Genre.objects.filter(genreName__icontains=query)  # Use icontains for partial matching
+				# Find samples that are linked to the matched genres
+				genre_matching_samples = Sample.objects.filter(genres__in=matching_genres).distinct()
+				
+				if genre_matching_samples.exists():
+					matching_samples = matching_samples.union(genre_matching_samples)
 
+			# If the filter type includes 'all', combine results without using distinct()
+		if 'all' in filter_type:
+			# Combine all matching users, samples, and genres
+			users = matching_users
+			samples = matching_samples
+			genres = matching_genres
+		else:
+			# Handle specific filters
+			users = matching_users if 'username' in filter_type else []
+			samples = matching_samples if 'sample' in filter_type else []
+			genres = matching_genres if 'genre' in filter_type else []
+			
 		# Render the template with the filtered results
 		return render(request, 'search_results.html', {
 			'users': matching_users,
@@ -713,6 +747,7 @@ def create_chat(request):
 @login_required  # Ensure user is logged in
 def add_message(request, chat_id):
 	chat = get_object_or_404(Chat, id=chat_id)  # Retrieve the chat instance
+	chatMessages = list(chat.message_set.all().order_by('created_at'))  # Get messages for the chat
 
 	if request.method == 'POST':
 		form = MessageForm(request.POST)
