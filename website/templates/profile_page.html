@@ -28,12 +28,13 @@
           {% if received_requests %}
           <ul>
             {% for frequest in received_requests %}
-              <li style="display: flex; align-items: center; gap: 20px;">
+                <li style="display: flex; align-items: center; gap: 20px; margin-bottom: 10px;">
+                <a href="{% url 'profile' frequest.from_user.user.username %}">
                 <!-- Display sender's profile picture -->
                 <img src="{{ frequest.from_user.userPhoto.url }}" alt="Profile Picture" style="width:50px; height:50px; border-radius: 50%;">
-
                 <!-- Display sender's username -->
                 <span>{{ frequest.from_user.user.username }}</span>
+                </a>
                 <!-- Display how long ago the request was sent -->
                 <span>{{ frequest.created_at|timesince }} ago</span>
 
