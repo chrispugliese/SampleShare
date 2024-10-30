@@ -784,7 +784,7 @@ def download_sample(request, pk):
 	stringFilePath = str(current_sample.audioFile)
 	# if the audio file location ends with a 3 we can assume its an .mp3 file
 	# else we will assume its a .wav file
-	if stringFilePath[-1] == "3":
+	if stringFilePath.endswith(".mp3"):
 		response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}.mp3"'
 	else:
 		response['Content-Disposition'] = f'"attachment; filename="{current_sample.sampleName}.wav"'
