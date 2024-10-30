@@ -65,7 +65,7 @@
     {% if comments %}
     {% for comment in comments %}
     <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
-        <img src="{{ comment.posts.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+        <img src="{{ comment.userProfile.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
         {{ comment.userProfile.user.username }} 
     </a>
         <p> {{ comment.commentMessage }}</p>
