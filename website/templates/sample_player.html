@@ -2,29 +2,47 @@
 {% load static %}
 {% block content %}
 
-<h2> Uploaded Samples </h2>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="{% static 'css/player_style.css' %}"
+
+<h2></h2>
 
 {% if query_all_sample %}
 <table class="table table-hover">
   <thead> 
     <tr> 
-      <th scope="col">Sample Names</th>
+      <th scope="col">Uploaded Samples</th>
     </tr>
   </thead>
   <tbody>
   {% for sample in query_all_sample %}
     <tr>
-      <td scope="row">{{ sample.sampleName }}</td>
-      <td scope="row"> 
-        <div class="player-container"> 
-          <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
-          <input type="hidden" class="sample-url" value="{{ sample.audioFile.url }}">
+      <td scope="row">
+        <div class="sample-details">
+          <!-- Profile picture placeholder -->
+          <div class="profile-pic">
+            <a href="{% url 'profile' sample.userProfiles.user.username %}">
+              <img src="{{ sample.userProfiles.userPhoto.url }}" alt="Profile Picture">
+            </a>
+          </div>
+          <!-- Play button -->
+            <button class="play-button">
+              <i class="fa-solid fa-play"></i>
+            </button>
+          <!-- Sample name and player -->
+          <div class="sample-info">
+            <div class="sample-name">{{ sample.sampleName }}</div>
+            <div class="player-container"> 
+              <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
+              <input type="hidden" class="sample-url" value="{{ sample.audioFile.url }}">
+            </div>
+          </div>
         </div>
       </td>
     </tr>
+  {% endfor %}
   </tbody>
-{% endfor %}
-
+</table>
 {%else%}
   <p>No Samples Uploaded!</p>
 {%endif%}

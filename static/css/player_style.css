@@ -1,0 +1,78 @@
+.table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+}
+
+.table th {
+  background-color: #1e232e;
+  font-size: 20px;
+  color: #fff;
+  text-align: left;
+  padding: 10px;
+  font-size: 1.1em;
+  border-bottom: 1px solid #362d4b;
+}
+
+.table td {
+  padding: 15px;
+  background-color: #1e232e;
+  border-bottom: 1px solid #1e232e;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #1e232e;
+}
+
+.profile-pic img {
+  border-radius: 50%;
+  width: 140px;
+  height: 140px;
+  margin-right: 10px;
+}
+
+.sample-details {
+  display: flex;
+  align-items: center;
+}
+
+.sample-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 25px;
+}
+
+.sample-name {
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.play-button {
+  background-color: #362d4b;
+  color: #00ffcc;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-button:hover {
+  background-color: #1e232e;
+}
+
+.player-container {
+  width: 100%;
+  padding-left: -10px;
+}
+
+.waveform {
+  height: 50px;
+  margin-left: 2px;
+}
