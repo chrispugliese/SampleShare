@@ -325,7 +325,7 @@
         // Fetch existing genres and display suggestions
         genreInput.addEventListener('input', async function() {
             const query = genreInput.value.trim();
-            if (query.length < 2) {
+            if (query.length < 1) {
                 genreSuggestions.innerHTML = ''; // Clear suggestions if too short
                 genreSuggestions.style.display = 'none'; // Hide suggestions
                 return;
@@ -334,9 +334,15 @@
             const response = await fetch(`/search-genres/?query=${query}`);
             const suggestions = await response.json();
 
-            // Clear previous suggestions
-            genreSuggestions.innerHTML = suggestions.map(g => `<div class="suggestion-item">${g.name}</div>`).join('');
-            genreSuggestions.style.display = suggestions.length ? 'block' : 'none'; // Show suggestions only if there are any
+            // Filter out genres that are already in the genreSet
+            const filteredSuggestions = suggestions.filter(g => !genreSet.has(g.name));
+
+            // Populate the suggestions box only with unselected genres
+            genreSuggestions.innerHTML = filteredSuggestions
+                .map(g => `<div class="suggestion-item">${g.name}</div>`)
+                .join('');
+            genreSuggestions.style.display = filteredSuggestions.length ? 'block' : 'none'; // Show if suggestions are available
+
 
             // Show suggestions and add click handlers
             const suggestionItems = document.querySelectorAll('.suggestion-item');
@@ -355,6 +361,14 @@
             hiddenGenresInput.name = 'genres'; // Ensure this matches your model field
             hiddenGenresInput.value = Array.from(genreSet).join(','); // Join selected genres with commas
             this.appendChild(hiddenGenresInput);
+        });
+        
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(event) {
+            const isClickInside = genreInput.contains(event.target) || genreSuggestions.contains(event.target);
+            if (!isClickInside) {
+                genreSuggestions.style.display = 'none'; // Hide suggestions if the click is outside
+            }
         });
     </script>
 </body>

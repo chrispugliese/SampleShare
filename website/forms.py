@@ -24,35 +24,13 @@ class SampleForm(forms.ModelForm):
         }
 
 
-class SampleForm(forms.ModelForm):
-    class Meta:
-        model = Sample
-        fields = ["sampleName", "audioFile", "isPublic", "userProfiles"]
-        widgets = {
-            "userProfiles": forms.HiddenInput(
-                attrs={
-                    "class": "form-control",
-                    "id": "user",
-                    "type": "hidden",
-                }
-            )
-        }
-
-
 class SampleEditForm(forms.ModelForm):
     class Meta:
         model = Sample
-        fields = ["sampleName", "isPublic", "userProfiles"]
+        fields = ["sampleName", "isPublic"]
         labels = {"isPublic": "Make Sample Public?"}
         widgets = {
-            "userProfiles": forms.TextInput(
-                attrs={
-                    "class": "form-control",
-                    "value": "",
-                    "id": "user",
-                    "type": "hidden",
-                }
-            )
+            "isPublic": forms.CheckboxInput(),  # Optional: Customize the checkbox if needed
         }
 
 
@@ -94,9 +72,16 @@ class SignUpForm(UserCreationForm):
         self.fields["password1"].widget.attrs["class"] = "form-control"
         self.fields["password1"].widget.attrs["placeholder"] = "Password"
         self.fields["password1"].label = ""
-        self.fields["password1"].help_text = (
-            "<ul class=\"form-text text-muted small\"><li>Your password can't be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can't be a commonly used password.</li><li>Your password can't be entirely numeric.</li></ul>"
-        )
+        self.fields[
+            "password1"
+        ].help_text = """
+			<ul class="form-text text-muted small" id="password-requirements">
+				<li id="requirement-1" style="color: red;">Your password can't be too similar to your other personal information.</li>
+				<li id="requirement-2" style="color: red;">Your password must contain at least 8 characters.</li>
+				<li id="requirement-3" style="color: red;">Your password can't be a commonly used password.</li>
+				<li id="requirement-4" style="color: red;">Your password can't be entirely numeric.</li>
+			</ul>
+		"""
 
         self.fields["password2"].widget.attrs["class"] = "form-control"
         self.fields["password2"].widget.attrs["placeholder"] = "Confirm Password"

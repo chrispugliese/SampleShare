@@ -43,6 +43,10 @@ body {
     color: white;
     border: none;
   }
+
+  .btn-primary:active {
+    background-color: #6a1b9a !important;
+  }
   
   .btn-primary:hover {
     background-color: darkviolet;
@@ -82,20 +86,34 @@ body {
   .wave-btn:hover {
     animation: waveColor 2s linear infinite; /* 2-second color wave, looping infinitely */
   }
-
+      
 
   /* Base button styling */
-.animated-border-btn {
-    background-color: #6a1b9a; /* Dark purple background */
-    color: white;
+.animated-border-btn-purple {
+    background-color: #492d5e; /* Dark purple background */
+    color: e0e0e0;
     padding: 10px 20px;
-    border: 2px solid transparent; /* Start with a transparent border */
-    border-radius: 5px;
-    transition: all 0.3s ease; /* Smooth transition for background and padding */
+    border: 4px solid #2D5E49; /* Start with a transparent border */
+    border-radius: 6px;
+    text-transform: uppercase;
+    transition: all 0.4s ease; /* Smooth transition for background and padding */
     position: relative;
+    display: inline-block;
     z-index: 1;
     overflow: hidden; /* To prevent the border from going outside the button */
+    cursor: pointer;
   }
+   /* Hover state with changes to border radius and border color */
+   .animated-border-btn-purple:hover {
+    box-shadow: 0 0 10px #bd59fb;
+    text-shadow: 0 0 10px #bd59fb;
+    color: #e0e0e0;
+    border-color: #2D5E49;
+    border-radius: 50px; /* Border radius expands to make the button more circular */
+    background-color: #643E80; /* Keep the background white */
+    transition: all 0.3s ease; /* Smooth transition */
+  }
+  
   
 /* Base button styling */
 .animated-border-btn {
