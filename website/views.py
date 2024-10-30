@@ -15,8 +15,8 @@ from django.http import (
 )
 from django.http.request import is_same_domain
 from django.shortcuts import render, get_object_or_404, redirect
-from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.views import View
 from django.views.generic import CreateView
 from typing import AsyncGenerator
 from .forms import (
@@ -28,9 +28,20 @@ from .forms import (
     MessageForm,
     ProfileForm,
 )
-from .models import Sample, UserProfile, Post, Comment, Chat, Message, FriendRequest
-import asyncio, json, os, mimetypes
+from .models import (
+    Sample,
+    UserProfile,
+    Post,
+    Comment,
+    Chat,
+    Message,
+    FriendRequest,
+    Genre,
+)
+import asyncio, json, os, mimetypes, logging
 from django.http import FileResponse
+
+logger = logging.getLogger(__name__)
 
 
 # Create your views here.
@@ -228,6 +239,16 @@ def upload(request):
                 sample = sample_form.save(commit=False)
                 sample.userProfiles = user_profile  # Assign logged-in user
                 sample.save()  # This should handle both the file and other field
+
+                genres_data = request.POST.get("genres")
+                if genres_data:
+                    genres_list = json.loads(genres_data)
+                    for genreName in genres_list:
+                        genreName = genreName.capitalize()  # Format each genre
+                        genre, created = Genre.objects.get_or_create(
+                            genreName=genreName
+                        )
+                        sample.genres.add(genre)  # Associate genre with sample
             else:
                 messages.error(request, "Your file is not safe to upload.")
 
@@ -239,7 +260,9 @@ def upload(request):
 
 def update_user_samples(request):
     if request.user.is_authenticated:
-        user_samples = Sample.objects.filter(userProfiles__user=request.user)
+        user_samples = Sample.objects.filter(
+            userProfiles__user=request.user
+        ).prefetch_related("genres")
         form = None
 
         if request.method == "POST":
@@ -248,11 +271,39 @@ def update_user_samples(request):
                 sample = get_object_or_404(
                     Sample, pk=sample_id_to_update, userProfiles__user=request.user
                 )
+                # Debugging: Log the incoming isPublic value
+                is_public_value = request.POST.get("isPublic") == "True"
                 form = SampleEditForm(request.POST, instance=sample)
-                form.instance.audioFile = sample.audioFile
+
+                # Update the isPublic field based on the checkbox
+                sample.isPublic = (
+                    is_public_value  # This will be True if the checkbox is checked
+                )
+
+                # Debugging: Log the sample's isPublic status before saving
+                logging.debug(
+                    f"Sample ID: {sample.id}, isPublic before save: {sample.isPublic}"
+                )
+
+                # Handle the genres
+                if "genres" in request.POST:
+                    genre_names = request.POST["genres"].split(",")
+                    # Clear existing genres
+                    sample.genres.clear()
+                    # Add new genres
+                    for genre_name in genre_names:
+                        genre_name = (
+                            genre_name.strip()
+                        )  # Remove any leading/trailing whitespace
+                        if genre_name:  # Check if it's not an empty string
+                            genre, created = Genre.objects.get_or_create(
+                                genreName=genre_name
+                            )
+                            sample.genres.add(genre)
 
                 if form.is_valid():
-                    form.save()
+                    form.save()  # Save the form fields first
+                    sample.save()  # Then save the updated privacy status
                     messages.success(
                         request, f"{sample.sampleName} updated successfully!"
                     )
@@ -321,10 +372,11 @@ def search_user(request):
 
         # Default to showing both usernames and samples if no filter is selected
         if not filter_type or "all" in filter_type:
-            filter_type = ["username", "sample"]
+            filter_type = ["username", "sample", "genre"]
 
-        matching_users = []
-        matching_samples = []
+        matching_users = User.objects.none()
+        matching_samples = Sample.objects.none()
+        matching_genres = []
 
         # Apply the filters based on the selected checkboxes
         if query:
@@ -336,6 +388,30 @@ def search_user(request):
                     sampleName__icontains=query, isPublic=True
                 )
 
+            if "genre" in filter_type:
+                matching_genres = Genre.objects.filter(
+                    genreName__icontains=query
+                )  # Use icontains for partial matching
+                # Find samples that are linked to the matched genres
+                genre_matching_samples = Sample.objects.filter(
+                    genres__in=matching_genres
+                ).distinct()
+
+                if genre_matching_samples.exists():
+                    matching_samples = matching_samples.union(genre_matching_samples)
+
+            # If the filter type includes 'all', combine results without using distinct()
+        if "all" in filter_type:
+            # Combine all matching users, samples, and genres
+            users = matching_users
+            samples = matching_samples
+            genres = matching_genres
+        else:
+            # Handle specific filters
+            users = matching_users if "username" in filter_type else []
+            samples = matching_samples if "sample" in filter_type else []
+            genres = matching_genres if "genre" in filter_type else []
+
         # Render the template with the filtered results
         return render(
             request,
@@ -343,6 +419,7 @@ def search_user(request):
             {
                 "users": matching_users,
                 "samples": matching_samples,
+                "genres": matching_genres,
                 "query": query,
                 "filter_type": filter_type,  # Passing filter_type back to the template to maintain checkbox state
             },
@@ -355,10 +432,67 @@ def search_user(request):
         {
             "users": None,
             "samples": None,
+            "genres": None,
             "query": None,
-            "filter_type": ["username", "sample"],  # Default filter shows all initially
+            "filter_type": [
+                "username",
+                "sample",
+                "genre",
+            ],  # Default filter shows all initially
         },
     )
+
+
+def search_genres(request):
+    query = request.GET.get("query", "")
+    if query:
+        genres = Genre.objects.filter(
+            genreName__icontains=query
+        )  # Adjust based on your model field
+        genre_list = [
+            {"name": genre.genreName} for genre in genres
+        ]  # Ensure this returns a list of dictionaries
+        return JsonResponse(genre_list, safe=False)  # Return the list as JSON
+    return JsonResponse([], safe=False)  # Return an empty list if no query
+
+
+class CreateGenreView(View):
+    def post(self, request):
+        data = json.loads(request.body)
+        genre_names = data.get("genres", [])  # Expecting a list of genre names
+        response_data = {"success": True, "created_genres": [], "existing_genres": []}
+
+        # Log the received genre names
+        logger.debug("CreateGenreView post method called.")
+        logger.debug(f"Request POST data: {data}")
+
+        # Validate that genre_names is a list
+        if not isinstance(genre_names, list) or not genre_names:
+            response_data["success"] = False
+            response_data["message"] = "Genre names must be a non-empty list."
+            return JsonResponse(response_data)
+
+        for genre_name in genre_names:
+            # Capitalize the first letter & make the rest lowercase
+            formatted_genre_name = genre_name.capitalize()
+
+            # Check if the genre already exists
+            if not Genre.objects.filter(genreName=formatted_genre_name).exists():
+                try:
+                    new_genre = Genre.objects.create(genreName=formatted_genre_name)
+                    response_data["created_genres"].append(
+                        {"genreId": new_genre.id, "genreName": new_genre.genreName}
+                    )
+                except Exception as e:
+                    logger.error(f"Error creating genre '{formatted_genre_name}': {e}")
+                    response_data["success"] = False
+                    response_data["message"] = (
+                        "An error occurred while creating some genres."
+                    )
+            else:
+                response_data["existing_genres"].append(formatted_genre_name)
+
+        return JsonResponse(response_data)
 
 
 # Used for auto-populating drop-down lists
@@ -775,6 +909,9 @@ def create_chat(request):
 @login_required  # Ensure user is logged in
 def add_message(request, chat_id):
     chat = get_object_or_404(Chat, id=chat_id)  # Retrieve the chat instance
+    chatMessages = list(
+        chat.message_set.all().order_by("created_at")
+    )  # Get messages for the chat
 
     if request.method == "POST":
         form = MessageForm(request.POST)

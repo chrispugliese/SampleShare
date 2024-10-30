@@ -4,7 +4,7 @@ from mutagen import File as MutagenFile
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Sample, UserProfile, Post, Comment
+from .models import Sample, UserProfile, Post, Comment, Genre
 import os, mimetypes
 
 
@@ -23,67 +23,14 @@ class SampleForm(forms.ModelForm):
             )
         }
 
-    def clean_audioFile(self):
-        file = self.cleaned_data.get("audioFile")
-
-        if file:
-            # Validate file size and type
-            validate_audio_file(file)
-
-            # Sanitize file name (remove dangerous characters and format the name)
-            file.name = sanitize_filename(file.name)
-
-        return file
-
-
-def sanitize_filename(file_name):
-    """
-    This function removes any special characters from the filename and slugifies it.
-    """
-    base_name, extension = os.path.splitext(file_name)
-    safe_name = slugify(
-        base_name
-    )  # Slugify the base name to remove unwanted characters
-    return f"{safe_name}{extension}"
-
-
-def validate_audio_file(file):
-    allowed_extensions = ["mp3", "wav"]
-    mime_type, _ = mimetypes.guess_type(file.name)
-
-    if mime_type not in ["audio/mpeg", "audio/wav"]:
-        raise ValidationError(
-            "Invalid file type. Only .mp3 and .wav files are allowed."
-        )
-
-    # Validate file size (e.g., 10 MB limit)
-    max_file_size = 10 * 1024 * 1024  # 10 MB
-    if file.size > max_file_size:
-        raise ValidationError("File size exceeds the limit of 10MB.")
-
-    # Validate file content (ensure it's a valid audio file)
-    try:
-        audio = MutagenFile(file, easy=True)
-        if audio is None:
-            raise ValidationError("Invalid audio file content.")
-    except Exception as e:
-        raise ValidationError(f"Error processing audio file: {str(e)}")
-
 
 class SampleEditForm(forms.ModelForm):
     class Meta:
         model = Sample
-        fields = ["sampleName", "isPublic", "userProfiles"]
+        fields = ["sampleName", "isPublic"]
         labels = {"isPublic": "Make Sample Public?"}
         widgets = {
-            "userProfiles": forms.TextInput(
-                attrs={
-                    "class": "form-control",
-                    "value": "",
-                    "id": "user",
-                    "type": "hidden",
-                }
-            )
+            "isPublic": forms.CheckboxInput(),  # Optional: Customize the checkbox if needed
         }
 
 
@@ -125,9 +72,16 @@ class SignUpForm(UserCreationForm):
         self.fields["password1"].widget.attrs["class"] = "form-control"
         self.fields["password1"].widget.attrs["placeholder"] = "Password"
         self.fields["password1"].label = ""
-        self.fields["password1"].help_text = (
-            "<ul class=\"form-text text-muted small\"><li>Your password can't be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can't be a commonly used password.</li><li>Your password can't be entirely numeric.</li></ul>"
-        )
+        self.fields[
+            "password1"
+        ].help_text = """
+			<ul class="form-text text-muted small" id="password-requirements">
+				<li id="requirement-1" style="color: red;">Your password can't be too similar to your other personal information.</li>
+				<li id="requirement-2" style="color: red;">Your password must contain at least 8 characters.</li>
+				<li id="requirement-3" style="color: red;">Your password can't be a commonly used password.</li>
+				<li id="requirement-4" style="color: red;">Your password can't be entirely numeric.</li>
+			</ul>
+		"""
 
         self.fields["password2"].widget.attrs["class"] = "form-control"
         self.fields["password2"].widget.attrs["placeholder"] = "Confirm Password"

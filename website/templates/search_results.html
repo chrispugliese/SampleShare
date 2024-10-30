@@ -1,21 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Search Results for "{{ query }}"</h2>
-
 <div style="display: flex;">
     <!-- Sidebar Filter Form (far left) -->
-    <div style="width: 150px; margin-right: 60px;">
+    <div style="width: 200px; margin-right: 30px;">
+        <h3>Search Results</h3>
+        <hr>
+        <h4>Filters</h4>
         <form method="GET" action="{% url 'search_user' %}">
-            <div style="display: flex; flex-direction: column;">
-                <label>
-                    <input type="checkbox" name="filter" value="username" {% if 'username' in filter_type %}checked{% endif %}> Usernames
-                </label>
-                <label>
-                    <input type="checkbox" name="filter" value="sample" {% if 'sample' in filter_type %}checked{% endif %}> Samples
-                </label>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button type="submit" name="filter" value="all" class="animated-border-btn-purple"
+                        {% if filter_type|length == 3 %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>
+                        All</button>
+                <button type="submit" name="filter" value="username" class="animated-border-btn-purple" {% if 'username' in filter_type and filter_type|length != 3 %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>
+                    Users</button>
+                <button type="submit" name="filter" value="sample" class="animated-border-btn-purple" {% if 'sample' in filter_type and filter_type|length != 3 %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>Samples</button>
+                <button type="submit" name="filter" value="genre" class="animated-border-btn-purple" {% if 'genre' in filter_type and filter_type|length != 3 %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>Tags</button>
             </div>
-            <button type="submit" name="q" value="{{ query }}">Search</button>
+            <input type="hidden" name="q" value="{{ query }}"> <!-- Preserve the search query -->
         </form>
     </div>
 
@@ -31,7 +33,6 @@
                         <li><a href="{% url 'profile' user.username %}">{{ user.username }}</a></li>
                     {% endfor %}
                 </ul>
-          
             {% endif %}
 
             <!-- Sample Results -->
@@ -49,7 +50,6 @@
                         </li>
                     {% endfor %}
                 </ul>
-            
             {% endif %}
         </div>
     </div>
