@@ -1,3 +1,25 @@
+//NOTE: howler js library
+let sound = null;
+let currentUrl = ''
+
+const playPause = (url) => {
+	if (url !== currentUrl) {
+		if (sound) {
+			sound.stop();
+		}
+		sound = new Howl({
+			src: [url],
+			autoplay: false,
+			loop: false,
+			html5: true,
+			format: ['mp3', 'wav'],
+		});
+		currentUrl = url;
+	}
+	sound.playing() ? sound.pause() : sound.play();
+};
+
+//NOTE: wavesurfers js library
 document.addEventListener('DOMContentLoaded', () => {
 	const sampleElements = document.querySelectorAll('.sample-url');
 	const playButtons = document.querySelectorAll('.play-button');
@@ -79,5 +101,9 @@ const initWaveSurfer = (url, containerId) => {
 		wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
 	});
 	return wavesurfer
+};
+
+const playerControls = {
+	playBtn: document.getElementById('playBtn'),
 };
 
