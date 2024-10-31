@@ -1,26 +1,97 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 <br/>
 
 <div class="card">
     <div class="card-header"><strong>
-          Post
+        <a href ="{% url 'profile' user_post.userProfiles.user.username %}">
+        <img src="{{ user_post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+        {{ user_post.userProfiles.user.username }} </a>
           </strong>
     </div>
     <div class="card-body">
 
     <p class="card-text">
-    <strong>Text: </strong>{{ user_post.postText }}</p> 
-    <!-- This is where the sample would be displayed -->
+    <strong>Text: </strong>{{ user_post.postText }}
+    <br/>
+    <strong>Sample: </strong>{{ user_post.samples.sampleName }}
+    </p> 
+    <div class="player-container"> 
+        <button onclick="playPause('{{ user_post.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
+      </div>
+      <br/>
+    <!-- Download Code -->
+     <p>
+        <a href="{% url 'download_sample' user_post.samples.id %}" class="btn btn-primary">Download Sample</a>
+     </p>
+     <!-- End of Download Code -->
 
 
 </div>
 </div>
 {% if user.userprofile.id == user_post.userProfiles.id %}
 <br/><br/>
-<a href="{% url 'delete_post' user_post.id %}" class="btn btn-danger">Delete</a>
+<a href="{% url 'delete_post' user_post.id %}" onclick="return confirm('Are you sure you want to delete this post?');"class="btn btn-danger">Delete</a>
 <a href="{% url 'update_post' user_post.id %}" class="btn btn-secondary">Update</a>
 {% endif %}
-<a href="{% url 'posts' %}" class="btn btn-secondary">Back</a>
-<a href="{% url 'comments' user_post.id %}" class="btn btn-secondary">Comments</a>
+<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+<a href="{% url 'create_comment' user_post.id %}" class="btn btn-primary"> Make A Comment</a>
+
+
+<!------------------- Like Code --------------------->
+<form action = "{% url 'like_post' user_post.id %}" method="POST">
+    {% csrf_token %}
+
+    {% if liked %}
+    <button type="submit", name="post_id", value="{{ user_post.id }}", class="btn btn-danger btn-sm">Unlike</button>
+    {% else %}
+    <button type="submit", name="post_id", value="{{ user_post.id }}", class="btn btn-primary btn-sm">Like</button>
+
+    {% endif %}
+    - {{total_likes }} Likes
+</form>
+<!------------------- End of Like Code --------------------->
+
+<!-- COMMENT SECTION -->
+<div class="card">
+    <div class="card-header"><strong>
+          Comments
+          </strong>
+    </div>
+    <div class="card-body">
+
+   
+    <!-- Comment Display Code -->
+    {% if comments %}
+    {% for comment in comments %}
+    <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+        <img src="{{ comment.userProfile.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+        {{ comment.userProfile.user.username }} 
+    </a>
+        <p> {{ comment.commentMessage }}</p>
+        {% if comment.samples != None %}
+        <p>{{ comment.samples.sampleName }}
+            <!-- Download Code -->
+            <p>
+                <a href="{% url 'download_sample' comment.samples.id %}" class="btn btn-primary">Download Sample</a>
+            </p>
+            <!-- End of Download Code --> 
+            <div class="player-container"> 
+                <button onclick="playPause('{{ comment.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
+              </div>
+        </p>
+        {% endif %}
+        <p>
+        {% if user.userprofile.id == comment.userProfile.id %}
+        <a href="{% url 'update_comment' comment.id %}" class="btn btn-primary btn-sm">Update Comment</a>
+        <a href="{% url 'delete_comment' comment.id %}" onclick="return confirm('Are you sure you want to delete this comment?');"class="btn btn-danger btn-sm">Delete Comment</a>
+        {% endif %}
+        </p>
+
+    {% endfor %}
+    {% endif %}
+<!-- ----------End of Comment Section------------- -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="{% static 'js/sample_player.js' %}"></script>
 {% endblock %}

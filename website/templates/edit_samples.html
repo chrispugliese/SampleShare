@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>    
+  <style>
+      .genre-tag {
+        padding: 5px 10px; /* Padding inside the tags */
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        margin-right: 5px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .genre-tag span {
+        font-weight: bold; /* Make the X button bold */
+        background: none;
+    }
+    .genre-tag {
+            border-radius: 12px;
+            padding: 4px 8px;
+            margin: 0 4px;
+            display: flex;
+            align-items: center;
+            color: #e0e0e0; /* Light text color for visibility */
+            background-color: #202830; /* Dark background matching profile card */
+        }
+        .genre-tag button {
+            background: none;
+            border: none;
+            font-size: 12px;
+            margin-left: 4px;
+            cursor: pointer;
+            color: #e0e0e0; /* Ensure the remove button text is also legible */
+        }
+        #genre-suggestions {
+            border-radius: 8px;
+            padding: 8px;
+            margin: 4px 0; /* Spacing between suggestions */
+            color: #e0e0e0; /* Light text color */
+            cursor: pointer; /* Change cursor to indicate interactivity */
+            transition: background-color 0.3s; /* Smooth background color change */
+            width: 150px; /* Set a fixed width for narrowness */
+            text-align: center; /* Center the text within the suggestion */
+                        background-color: #202830; /* Dark background matching profile card */
+
+        }
+
+        .suggestion-item {
+            display: block; /* Each suggestion takes a full line */
+            width: 100%; /* Full width */
+            text-align: left; /* Align text to the left */
+            padding: 10px; /* Padding for better clickability */
+                        background-color: #202830; /* Dark background matching profile card */
+
+        }
+
+        .suggestion-item:hover {
+            background-color: #362d4b; /* Light background on hover */
+        }
+  </style>
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<!-- users uploaded samples -->
+<h1>Your Uploaded Samples</h1>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Sample Name</th>
+      <th scope="col">Privacy Status</th>
+      <th scope="col">Edit/Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sample in user_samples %}
+    <tr>
+      <th scope="row">{{ forloop.counter }}</th>
+      <td>{{ sample.sampleName }}</td>
+      <td>
+        {% if sample.isPublic %}
+        <span class="test-success">Public</span>
+        {% else %}
+        <span class="text-danger">Private</span>
+        {% endif %}
+      </td>
+      <td>
+        <button type="button" class="btn btn-primary edit-btn" data-sample-id="{{ sample.id }}" data-sample-name="{{ sample.sampleName }}" data-is-public="{{ sample.isPublic }}" data-genres="{{ sample.genres.all|join:', ' }}">Edit</button>
+        <a href="{% url 'delete_user_sample' sample.id %}" class="btn btn-danger"
+          onclick="return confirm('Are you sure you want to permanently delete this sample?');">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Edit Sample Modal -->
+<div id="editSampleModal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Sample</h5>
+        <div class="form-check form-switch" style="margin-left: auto;">
+          <input type="checkbox" id="edit_sample_privacy" class="form-check-input" name="isPublic">
+          <label class="form-check-label" for="edit_sample_privacy">
+            <span id="privacyStatusText">Private</span>
+          </label>
+      </div>
+      </div>
+      <div class="modal-body">
+        <form id="editSampleForm" method="POST" action="{% url 'edit_samples' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" id="edit_sample_id" name="sample_id" value="">
+          <input type="hidden" id="is_public_hidden" name="isPublic" value="">
+          
+          <div class="form-group">
+            <label for="edit_sample_name">Sample Name:</label>
+            <input type="text" id="edit_sample_name" name="sampleName" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit_sample_genres">Genres:</label>
+            <input type="text" id="edit_sample_genres" placeholder="Search genres..." class="form-control">
+            <div id="genre-suggestions" class="suggestions" style="border: 1px solid #ccc; display: none; position: absolute; z-index: 1000; max-height: 150px; overflow-y: auto;">
+                <!-- Suggestions will be populated here -->
+            </div>
+            <div id="selected-genres-inline" class="selected-genres" style="display: flex; align-items: center; margin-top: 8px;">
+                <!-- Selected genres will be displayed here -->
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+        <button type="submit" class="btn btn-success" id="saveChanges" form="editSampleForm">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript to handle modal functionality -->
+<script>
+  document.querySelectorAll('.edit-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const sampleId = this.getAttribute('data-sample-id');
+      const sampleName = this.getAttribute('data-sample-name');
+      const isPublic = this.getAttribute('data-is-public') === 'True'; // Convert string to boolean
+      const genres = this.getAttribute('data-genres').split(", "); // Split the genres into an array
+
+      document.getElementById('edit_sample_id').value = sampleId;
+      document.getElementById('edit_sample_name').value = sampleName;
+      document.getElementById('edit_sample_privacy').checked = isPublic; // Toggle checkbox (private when checked)
+
+       // Update the privacy status text based on checkbox state
+      const privacyStatusText = document.getElementById('privacyStatusText');
+      privacyStatusText.textContent = isPublic ? "Public" : "Private";
+
+      // Clear and populate the genres
+      genreSet.clear(); // Clear existing genres
+      genres.forEach(genre => {
+        if (genre.trim()) { // Check if the genre is not empty
+          genreSet.add(genre.trim()); // Add genres to the set
+        }
+      });
+      updateGenreDisplay();
+
+      // Show the modal
+      $('#editSampleModal').modal('show');
+    });
+  });
+
+
+  document.getElementById('cancelEdit').addEventListener('click', function() {
+    // Clear the form fields
+    document.getElementById('editSampleForm').reset();
+    
+    // Hide the modal
+    $('#editSampleModal').modal('hide');
+  });
+
+    // Submit the form
+  document.getElementById('saveChanges').addEventListener('click', function() {
+      const isPublicCheckbox = document.getElementById('edit_sample_privacy');
+      const isPublicHidden = document.getElementById('is_public_hidden');
+        
+      // Set hidden input value to match the checkbox state
+      isPublicHidden.value = isPublicCheckbox.checked ? "True" : "False";
+
+     // Add selected genres to a hidden input
+      const selectedGenresInput = document.createElement('input');
+      selectedGenresInput.type = 'hidden';
+      selectedGenresInput.name = 'genres'; // Ensure this matches the name expected in your view
+      selectedGenresInput.value = Array.from(genreSet).join(','); // Join genres as a comma-separated string
+      document.getElementById('editSampleForm').appendChild(selectedGenresInput);
+
+      // Submit the form
+      document.getElementById('editSampleForm').submit();
+    });
+
+  // Handling the genre selection
+  const genreInput = document.getElementById('edit_sample_genres');
+  const genreSuggestions = document.getElementById('genre-suggestions');
+  const selectedGenresInline = document.getElementById('selected-genres-inline');
+  const genreSet = new Set(); // Set to hold selected genres
+
+
+
+// Fetch existing genres and display suggestions
+            
+
+            
+
+            
+  // Fetch suggestions from the server
+genreInput.addEventListener('input', async function() {
+    const query = genreInput.value.trim();
+
+    if (query.length < 1) {
+                genreSuggestions.innerHTML = ''; // Clear suggestions if too short
+                genreSuggestions.style.display = 'none'; // Hide suggestions
+                return;
+            }
+    const response = await fetch(`/search-genres/?query=${query}`);
+    const suggestions = await response.json();
+    // Filter out genres that are already in the genreSet
+            const filteredSuggestions = suggestions.filter(g => !genreSet.has(g.name));
+
+            // Populate the suggestions box only with unselected genres
+            genreSuggestions.innerHTML = filteredSuggestions
+                .map(g => `<div class="suggestion-item">${g.name}</div>`)
+                .join('');
+            genreSuggestions.style.display = filteredSuggestions.length ? 'block' : 'none'; // Show if suggestions are available
+
+
+            // Show suggestions and add click handlers
+            const suggestionItems = document.querySelectorAll('.suggestion-item');
+            suggestionItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const selectedGenre = this.textContent;
+                    addGenre(selectedGenre); // Add genre to inline display
+                });
+            });
+        });
+
+// Function to add selected genre
+function addGenre(genre) {
+    if (!genreSet.has(genre)) {
+        genreSet.add(genre);
+        genreInput.value = ''; // Clear input
+        updateGenreDisplay();
+    }
+    genreSuggestions.style.display = 'none'; // Hide suggestions
+}
+
+  genreInput.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+          event.preventDefault(); // Prevent form submission
+          const genre = genreInput.value.trim();
+          if (genre && !genreSet.has(genre)) {
+              genreSet.add(genre);
+              genreInput.value = ''; // Clear input
+              updateGenreDisplay();
+          }
+      }
+  });
+
+function updateGenreDisplay() {
+    selectedGenresInline.innerHTML = '';
+    genreSet.forEach(genre => {
+        const genreTag = document.createElement('span');
+        genreTag.textContent = genre;
+        genreTag.className = 'genre-tag'; // You can style this with CSS
+        genreTag.style.border = '1px solid #ccc'; // Example style
+        genreTag.style.borderRadius = '3px';
+        genreTag.style.padding = '2px 5px';
+        genreTag.style.marginRight = '5px';
+        genreTag.style.display = 'inline-flex'; // Use inline-flex to position the X
+        genreTag.style.alignItems = 'center'; // Center the text and X vertically
+        genreTag.style.position = 'relative'; // For absolute positioning of the X
+
+        // Create the X button
+        const deleteBtn = document.createElement('span');
+        deleteBtn.textContent = 'X';
+        deleteBtn.style.color = 'red'; // Color for the delete button
+        deleteBtn.style.marginLeft = '5px'; // Space between genre name and X
+        deleteBtn.style.cursor = 'pointer';
+        deleteBtn.onclick = () => {
+            genreSet.delete(genre);
+            updateGenreDisplay();
+        };
+
+        // Append the X button to the genre tag
+        genreTag.appendChild(deleteBtn);
+        selectedGenresInline.appendChild(genreTag);
+    });
+}
+
+
+document.getElementById('edit_sample_privacy').addEventListener('change', function() {
+    const privacyStatusText = document.getElementById('privacyStatusText');
+    privacyStatusText.textContent = this.checked ? "Public" : "Private";
+});
+
+// Close suggestions when clicking outside
+document.addEventListener('click', function(event) {
+    const isClickInside = genreInput.contains(event.target) || genreSuggestions.contains(event.target);
+    if (!isClickInside) {
+        genreSuggestions.style.display = 'none'; // Hide suggestions if the click is outside
+    }
+});
+</script>
+
+{% endblock %}
