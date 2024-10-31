@@ -1,10 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const sampleElements = document.querySelectorAll('.sample-url');
+	const playButtons = document.querySelectorAll('.play-button');
+
+	const waveSurfersMapObject = {};
 
 	sampleElements.forEach((sampleEle, index) => {
 		const sampleUrl = sampleEle.value;
 		const containerId = `waveform-${index + 1}`;
-		initWaveSurfer(sampleUrl, containerId);
+		const wavesurfer = initWaveSurfer(sampleUrl, containerId);
+
+		waveSurfersMapObject[index] = wavesurfer
+
+		playButtons[index].addEventListener('click', () => {
+			if (wavesurfer.isPlaying()) {
+				wavesurfer.pause();
+				playButtons[index].querySelector('i').classList.replace('fa-pause', 'fa-play');
+			} else {
+				wavesurfer.play();
+				playButtons[index].querySelector('i').classList.replace('fa-play', 'fa-pause')
+			}
+		});
 	});
 });
 
@@ -63,5 +78,6 @@ const initWaveSurfer = (url, containerId) => {
 	wavesurfer.on('interaction', () => {
 		wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
 	});
+	return wavesurfer
 };
 

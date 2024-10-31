@@ -3,12 +3,13 @@
 {% block content %}
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 <link rel="stylesheet" href="{% static 'css/player_style.css' %}"
 
 <h2></h2>
 
 {% if query_all_sample %}
-<table class="table table-hover">
+<table class="table table">
   <thead> 
     <tr> 
       <th scope="col">Uploaded Samples</th>
@@ -19,22 +20,44 @@
     <tr>
       <td scope="row">
         <div class="sample-details">
-          <!-- Profile picture placeholder -->
-          <div class="profile-pic">
-            <a href="{% url 'profile' sample.userProfiles.user.username %}">
-              <img src="{{ sample.userProfiles.userPhoto.url }}" alt="Profile Picture">
-            </a>
+          <div class="profile-container"> 
+            <div class="user-name"> 
+              <a href="{% url 'profile' sample.userProfiles.user.username %}"> 
+                {{ sample.userProfiles.user.username}}
+              </a>
+            </div>
+            <!-- Profile picture placeholder -->
+            <div class="profile-pic">
+              <a href="{% url 'profile' sample.userProfiles.user.username %}">
+                <img src="{{ sample.userProfiles.userPhoto.url }}" alt="Profile Picture">
+              </a>
+            </div>
           </div>
-          <!-- Play button -->
-            <button class="play-button">
-              <i class="fa-solid fa-play"></i>
-            </button>
           <!-- Sample name and player -->
           <div class="sample-info">
             <div class="sample-name">{{ sample.sampleName }}</div>
             <div class="player-container"> 
+              <!-- Player buttons -->
+                <button class="play-button">
+                  <i class="fa-solid fa-play"></i>
+                </button>
               <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
               <input type="hidden" class="sample-url" value="{{ sample.audioFile.url }}">
+              <div class="sample-options-container">
+                <div class="sample-download"> 
+                 <a href="{% url 'download_sample' sample.id %}">
+                  <i class="fa-solid fa-arrow-down"></i>
+                 </a>
+                </div>
+                <!-- edit sample button here -->
+                {% if user.userprofile.id == sample.userProfiles.user.id %}
+                <div class="sample-edit"> 
+                  <a href="{% url 'edit_samples' %}"> 
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </a>
+                </div>
+                {% endif %}
+              </div>
             </div>
           </div>
         </div>
