@@ -11,7 +11,10 @@
     {% for post in userPosts %}
     <ul class="list-group">
         <li class="list-group-item">
-            <a href ="{% url 'profile' post.userProfiles.user.username %}">{{ post.userProfiles.user.username }} </a>
+            <a href ="{% url 'profile' post.userProfiles.user.username %}">
+            <img src="{{ post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+           {{ post.userProfiles.user.username }} </a>
+
         </li>
         <li class="list-group-item">{{ post.postText }}</li>
         <li class="list-group-item">
