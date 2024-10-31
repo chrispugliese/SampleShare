@@ -1,6 +1,6 @@
 .table {
   table-layout: fixed;
-  width: 100%;
+  width: auto;
   border-collapse: collapse;
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
 }
