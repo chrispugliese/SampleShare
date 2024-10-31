@@ -1,4 +1,8 @@
 //NOTE: howler js library
+const playerControls = {
+	playBtn: document.getElementById('playBtn'),
+};
+
 let sound = null;
 let currentUrl = ''
 
@@ -101,9 +105,5 @@ const initWaveSurfer = (url, containerId) => {
 		wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
 	});
 	return wavesurfer
-};
-
-const playerControls = {
-	playBtn: document.getElementById('playBtn'),
 };
 
