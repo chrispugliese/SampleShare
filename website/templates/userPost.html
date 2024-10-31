@@ -1,14 +1,43 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<br/>
+<style>
+    .dropdown{
+    margin-left: 0;
+    }
 
+    .left-button{
+        float: right;
+    }
+    .download-btn{
+        float:right;
+    }
+
+  </style>
+  <body>
 <div class="card">
     <div class="card-header"><strong>
         <a href ="{% url 'profile' user_post.userProfiles.user.username %}">
         <img src="{{ user_post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
         {{ user_post.userProfiles.user.username }} </a>
           </strong>
+
+ <!------ Edit Button Drop Down------>
+{% if user.userprofile.id == user_post.userProfiles.id %}
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle left-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Edit
+    
+    </button>
+    <ul class="dropdown-menu">
+    <li><a href="{% url 'delete_post' user_post.id %}" onclick="return confirm('Are you sure you want to delete this post?');"class="btn btn-danger">Delete</a>
+        <br/>
+    <li><a href="{% url 'update_post' user_post.id %}" class="btn btn-secondary">Update</a>
+    </ul>
+</div>
+<br/><br/>
+{% endif %}
+<!--------------------------------->
     </div>
     <div class="card-body">
 
@@ -23,18 +52,14 @@
       <br/>
     <!-- Download Code -->
      <p>
-        <a href="{% url 'download_sample' user_post.samples.id %}" class="btn btn-primary">Download Sample</a>
+        <a href="{% url 'download_sample' user_post.samples.id %}" class="btn btn-primary download-btn">Download Sample</a>
      </p>
      <!-- End of Download Code -->
 
 
 </div>
 </div>
-{% if user.userprofile.id == user_post.userProfiles.id %}
-<br/><br/>
-<a href="{% url 'delete_post' user_post.id %}" onclick="return confirm('Are you sure you want to delete this post?');"class="btn btn-danger">Delete</a>
-<a href="{% url 'update_post' user_post.id %}" class="btn btn-secondary">Update</a>
-{% endif %}
+
 <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
 <a href="{% url 'create_comment' user_post.id %}" class="btn btn-primary"> Make A Comment</a>
 
@@ -91,6 +116,7 @@
 
     {% endfor %}
     {% endif %}
+</body>
 <!-- ----------End of Comment Section------------- -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 <script src="{% static 'js/sample_player.js' %}"></script>
