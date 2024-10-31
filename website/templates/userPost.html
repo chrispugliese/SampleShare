@@ -5,7 +5,9 @@
 
 <div class="card">
     <div class="card-header"><strong>
-          Post
+        <a href ="{% url 'profile' user_post.userProfiles.user.username %}">
+        <img src="{{ user_post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+        {{ user_post.userProfiles.user.username }} </a>
           </strong>
     </div>
     <div class="card-body">
@@ -15,6 +17,10 @@
     <br/>
     <strong>Sample: </strong>{{ user_post.samples.sampleName }}
     </p> 
+    <div class="player-container"> 
+        <button onclick="playPause('{{ user_post.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
+      </div>
+      <br/>
     <!-- Download Code -->
      <p>
         <a href="{% url 'download_sample' user_post.samples.id %}" class="btn btn-primary">Download Sample</a>
@@ -26,7 +32,7 @@
 </div>
 {% if user.userprofile.id == user_post.userProfiles.id %}
 <br/><br/>
-<a href="{% url 'delete_post' user_post.id %}" class="btn btn-danger">Delete</a>
+<a href="{% url 'delete_post' user_post.id %}" onclick="return confirm('Are you sure you want to delete this post?');"class="btn btn-danger">Delete</a>
 <a href="{% url 'update_post' user_post.id %}" class="btn btn-secondary">Update</a>
 {% endif %}
 <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
@@ -59,7 +65,10 @@
     <!-- Comment Display Code -->
     {% if comments %}
     {% for comment in comments %}
-    <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{ comment.userProfile.user.username }} </a>
+    <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+        <img src="{{ comment.userProfile.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+        {{ comment.userProfile.user.username }} 
+    </a>
         <p> {{ comment.commentMessage }}</p>
         {% if comment.samples != None %}
         <p>{{ comment.samples.sampleName }}
@@ -76,7 +85,7 @@
         <p>
         {% if user.userprofile.id == comment.userProfile.id %}
         <a href="{% url 'update_comment' comment.id %}" class="btn btn-primary btn-sm">Update Comment</a>
-        <a href="{% url 'delete_comment' comment.id %}" class="btn btn-danger btn-sm">Delete Comment</a>
+        <a href="{% url 'delete_comment' comment.id %}" onclick="return confirm('Are you sure you want to delete this comment?');"class="btn btn-danger btn-sm">Delete Comment</a>
         {% endif %}
         </p>
 
