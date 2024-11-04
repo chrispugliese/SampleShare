@@ -23,7 +23,10 @@ body {
   color: #e0e0e0;
   /* Text color */
   margin-top: 20px;
+  margin-bottom: 20px;
   /* Space from the top */
+  align-items: center;
+  justify-content: center;
 }
 
 /* Profile Info container: Flexbox for left alignment */
