@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="{% static 'css/player_style.css' %}"/>
 
 <style>
     .dropdown{
@@ -62,11 +63,18 @@
     <strong>Text: </strong>{{ user_post.postText }}
     <br/>
     <strong>Sample: </strong>{{ user_post.samples.sampleName }}
-    </p> 
+    </p>
+    {% for sample in samples %} 
     <div class="player-container"> 
-        <button onclick="playPause('{{ user_post.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
-      </div>
+        <!-- Player buttons -->
+          <button class="play-button">
+            <i class="fa-solid fa-play"></i>
+          </button>
+        <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
+        <input type="hidden" class="sample-url" value="{{ sample.audioFile.url }}">
       <br/>
+      </div>
+      {% endfor %}
     <!-- Download Code -->
         <a href="{% url 'download_sample' user_post.samples.id %}" class="btn btn-primary download-btn fa-solid fa-download"></a>
      <!-- End of Download Code -->
@@ -130,8 +138,9 @@
         <div class ="download-player">
         {{ comment.samples.sampleName }}
             <!-- Download Code -->
-             
+                <div class="download-comment-sample">
                 <a href="{% url 'download_sample' comment.samples.id %}" class="btn btn-primary btn-sm">Download Sample</a>
+                </div>
                 <br/><br/>
                 <div class="player-container"> 
                     <button onclick="playPause('{{ comment.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary btn-sm"> Play </button>
@@ -148,6 +157,7 @@
 </ul>
 </body>
 <!-- ----------End of Comment Section------------- -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script> -->>
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script src="{% static 'js/sample_player.js' %}"></script>
 {% endblock %}
