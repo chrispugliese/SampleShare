@@ -32,6 +32,11 @@
         display: flex;
         gap: 10px;
     }
+    .download-sample-comments{
+        width: 50px;
+        height: 30px;
+        font-size: 16px;
+    }
 
   </style>
   <body>
@@ -138,13 +143,20 @@
         <div class ="download-player">
         {{ comment.samples.sampleName }}
             <!-- Download Code -->
-                <div class="download-comment-sample">
-                <a href="{% url 'download_sample' comment.samples.id %}" class="btn btn-primary btn-sm">Download Sample</a>
+                <div class="download-sample-comments">
+                <a href="{% url 'download_sample' comment.samples.id %}" class="btn btn-primary download-btn fa-solid fa-download"></a>
                 </div>
                 <br/><br/>
-                <div class="player-container"> 
-                    <button onclick="playPause('{{ comment.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary btn-sm"> Play </button>
-                  </div>
+               sample: {{ comment.samples.audioFile.url }}
+            <div class="player-container"> 
+                <!-- Player buttons -->
+                <button class="play-button">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+                <div id="waveform-{{ forloop.counter0 }}" class="waveform"></div>
+                <input type="hidden" class="sample-url" value="{{ comment.samples.audioFile.url }}">
+            <br/>
+            </div>
             </div>
             <br/>
             <!-- End of Download Code --> 

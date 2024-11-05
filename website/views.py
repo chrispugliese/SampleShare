@@ -523,7 +523,8 @@ def user_post(request, pk):
     if request.user.is_authenticated:
         user_post = Post.objects.get(id=pk)
         comments = Comment.objects.filter(posts=pk)
-        samples = Sample.objects.filter(id=pk).select_related("userProfiles")
+        samples = Sample.objects.filter(id=pk)
+        comment_samples = Comment.objects.filter(posts=pk).select_related("samples")
         likes = get_object_or_404(Post, id=pk)
         total_likes = likes.total_likes()
 
@@ -539,6 +540,7 @@ def user_post(request, pk):
                 "liked": liked,
                 "comments": comments,
                 "samples":samples,
+                "comment_samples":comment_samples,
             },
         )
     else:
