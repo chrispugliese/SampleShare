@@ -69,14 +69,14 @@
     <br/>
     <strong>Sample: </strong>{{ user_post.samples.sampleName }}
     </p>
-    {% for sample in samples %} 
+    {% for sample in post_samples %} 
     <div class="player-container"> 
         <!-- Player buttons -->
           <button class="play-button">
             <i class="fa-solid fa-play"></i>
           </button>
         <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
-        <input type="hidden" class="sample-url" value="{{ sample.audioFile.url }}">
+        <input type="hidden" class="sample-url" value="{{ sample.samples.audioFile.url }}">
       <br/>
       </div>
       {% endfor %}
@@ -140,23 +140,24 @@
         <!---------------------------------------------------->
         <p> {{ comment.commentMessage }}</p>
         {% if comment.samples != None %}
+        <!--{{ comment_samples }}-->
         <div class ="download-player">
-        {{ comment.samples.sampleName }}
             <!-- Download Code -->
                 <div class="download-sample-comments">
                 <a href="{% url 'download_sample' comment.samples.id %}" class="btn btn-primary download-btn fa-solid fa-download"></a>
                 </div>
                 <br/><br/>
-               sample: {{ comment.samples.audioFile.url }}
-            <div class="player-container"> 
-                <!-- Player buttons -->
-                <button class="play-button">
-                    <i class="fa-solid fa-play"></i>
-                </button>
-                <div id="waveform-{{ forloop.counter0 }}" class="waveform"></div>
-                <input type="hidden" class="sample-url" value="{{ comment.samples.audioFile.url }}">
-            <br/>
-            </div>
+ 
+                <div class="player-container"> 
+                    <!-- Player buttons -->
+                      <button class="play-button">
+                        <i class="fa-solid fa-play"></i>
+                      </button>
+                    <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
+                    <input type="hidden" class="sample-url" value="{{ comment.samples.audioFile.url }}">
+                  <br/>
+                  </div>
+
             </div>
             <br/>
             <!-- End of Download Code --> 
