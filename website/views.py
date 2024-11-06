@@ -524,6 +524,7 @@ def user_post(request, pk):
         user_post = Post.objects.get(id=pk)
         comments = Comment.objects.filter(posts=pk)
         samples = Sample.objects.filter(id=pk)
+        #comment_samples = Post.objects.all.prefetch_related("userProfile","samples")
         comment_samples = Comment.objects.filter(posts=pk).select_related("samples")
         likes = get_object_or_404(Post, id=pk)
         total_likes = likes.total_likes()
