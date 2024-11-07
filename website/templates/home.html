@@ -2,6 +2,10 @@
 {% load static %}
 {% block content%}
 
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="{% static 'css/player_style.css' %}"/>
+
 <div class="col-md-6 offset-md-3">      
     <h1>WELCOME TO SAMPLE SHARE</h1>
     </div>
@@ -21,8 +25,14 @@
             <strong>Sample:</strong>
             {{ post.samples.sampleName }} 
             <div class="player-container"> 
-            <button onclick="playPause('{{ post.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
-          </div></li>
+                <!-- Player buttons -->
+                  <button class="play-button">
+                    <i class="fa-solid fa-play"></i>
+                  </button>
+                <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
+                <input type="hidden" class="sample-url" value="{{ post.samples.audioFile.url }}">
+              <br/>
+              </div></li>
         
     </ul>
     <a href="{%url 'user_post' post.id%}" class="btn btn-secondary"> View Post </a>
@@ -33,5 +43,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 <script src="{% static 'js/sample_player.js' %}"></script>
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
 
 {% endblock %}

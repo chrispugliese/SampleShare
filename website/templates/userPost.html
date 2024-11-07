@@ -37,6 +37,36 @@
         height: 30px;
         font-size: 16px;
     }
+    .comment-player-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    }
+    .comment-play-button {
+    background-color: #362d4b;
+    color: #00ffcc;
+    border: none;
+    padding: 8px 12px;
+    margin-left: -25px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.comment-play-button:hover {
+  box-shadow: 0 0 10px 4px rgba(106, 27, 154, 0.6), 0 0 20px rgba(106, 27, 154, 0.4);
+  transform: scale(1.1);
+  background-color: #1e232e;
+}
+
+.comment-play-button i {
+  transition: transform 0.2s;
+}
 
   </style>
   <body>
@@ -148,23 +178,29 @@
                 <a href="{% url 'download_sample' comment.samples.id %}" class="btn btn-primary download-btn fa-solid fa-download"></a>
                 </div>
                 <br/><br/>
-                {% for comment_sample in comment_samples %}
-                <div class="player-container"> 
-                    <!-- Player buttons -->
-                      <button class="play-button">
-                        <i class="fa-solid fa-play"></i>
-                      </button>
-                    <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
-                    <input type="hidden" class="sample-url" value="{{ comment.samples.audioFile.url }}">
-                  <br/>
-                  </div>
-                  {% endfor %}
+                sample = {{comment.samples.audioFile.url}}
             </div>
-            
-            <br/>
+        
             <!-- End of Download Code --> 
             
         {% endif %}
+        <div class="comment-player-container"> 
+            <!-- Player buttons -->
+             {% if comment.samples == None %}
+              <button type="button" class="comment-play-button" hidden>
+                <i class="fa-solid fa-play"></i>
+              </button>
+            {% else %}
+            <button class="comment-play-button">
+                <i class="fa-solid fa-play"></i>
+              </button>
+            {% endif %}
+            <div id="comment-waveform-{{ forloop.counter }}" class="comment-waveform"></div>
+            <input type="hidden" class="comment-sample-url" value="{{ comment.samples.audioFile.url }}">
+          <br/>
+          </div>
+    
+    <br/>
         
     </li>
     {% endfor %}
@@ -175,4 +211,5 @@
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script> -->
 <script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script src="{% static 'js/sample_player.js' %}"></script>
+<script src="{% static 'js/sample_playerPC.js' %}"></script>
 {% endblock %}
