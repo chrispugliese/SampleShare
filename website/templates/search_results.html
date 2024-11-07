@@ -33,7 +33,7 @@
     <div class="sidebar">
         <h3>Search Results</h3>
         <hr>
-        <h4>Search By:</h4>
+        <h4>Search By:</h4><br>
         <form method="GET" action="{% url 'search_user' %}">
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <button type="submit" name="filter" value="all" class="animated-border-btn-purple"
@@ -43,7 +43,7 @@
                     Users</button>
                 <button type="submit" name="filter" value="sample" class="animated-border-btn-purple" {% if 'sample' in filter_type and filter_type|length != 3 and not show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>Samples</button>
                 <button type="submit" name="filter" value="genre" class="animated-border-btn-purple" {% if 'genre' in filter_type and filter_type|length != 3 and not show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>Tags</button>
-                <br>
+                <hr>
                 <button type="submit" name="show_all_genres" value="true" class="animated-border-btn-purple" {% if show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>Show All Tags</button>
             </div>
             <input type="hidden" name="q" value="{{ query }}"> <!-- Preserve the search query -->
