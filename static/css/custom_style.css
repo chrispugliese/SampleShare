@@ -186,3 +186,26 @@ h2 {
   transition: all 0.3s ease;
   /* Smooth transition */
 }
+
+/* Base styling for danger button */
+.danger-btn {
+  color: #ffffff; /* White text color */
+  background-color: #d32f2f; /* Red background color */
+  padding: 10px 15px;
+  border: 4px solid #b71c1c; /* Darker red border */
+  border-radius: 6px;
+  text-transform: uppercase;
+  display: inline-block;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Hover state with slight expansion and deeper color */
+.danger-btn:hover {
+  color: #ffffff; /* Keep text color white */
+  background-color: #b71c1c; /* Darker red background on hover */
+  border-color: #9e1b1b; /* Darker shade for the border */
+  border-radius: 50px; /* Rounded appearance on hover */
+  transition: all 0.3s ease;
+}
