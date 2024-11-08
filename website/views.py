@@ -366,9 +366,12 @@ def sample_player(request):
 def search_user(request):
     if request.method == "GET":
         query = request.GET.get("q")
-        filter_type = request.GET.getlist(
-            "filter"
-        )  # This allows for multiple filters to be selected
+        filter_type = request.GET.getlist("filter")
+        show_all_genres = request.GET.get("show_all_genres", "false") == "true"
+
+        if show_all_genres:
+            genres = Genre.objects.all()
+            return render(request, "search_results.html", {"all_genres": genres, "show_all_genres": show_all_genres})
 
         # Default to showing both usernames and samples if no filter is selected
         if not filter_type or "all" in filter_type:
@@ -391,8 +394,7 @@ def search_user(request):
             if "genre" in filter_type:
                 matching_genres = Genre.objects.filter(
                     genreName__icontains=query
-                )  # Use icontains for partial matching
-                # Find samples that are linked to the matched genres
+                )
                 genre_matching_samples = Sample.objects.filter(
                     genres__in=matching_genres
                 ).distinct()
@@ -400,19 +402,15 @@ def search_user(request):
                 if genre_matching_samples.exists():
                     matching_samples = matching_samples.union(genre_matching_samples)
 
-            # If the filter type includes 'all', combine results without using distinct()
         if "all" in filter_type:
-            # Combine all matching users, samples, and genres
             users = matching_users
             samples = matching_samples
             genres = matching_genres
         else:
-            # Handle specific filters
             users = matching_users if "username" in filter_type else []
             samples = matching_samples if "sample" in filter_type else []
             genres = matching_genres if "genre" in filter_type else []
 
-        # Render the template with the filtered results
         return render(
             request,
             "search_results.html",
@@ -421,11 +419,11 @@ def search_user(request):
                 "samples": matching_samples,
                 "genres": matching_genres,
                 "query": query,
-                "filter_type": filter_type,  # Passing filter_type back to the template to maintain checkbox state
+                "filter_type": filter_type,
+                "show_all_genres": show_all_genres,
             },
         )
 
-    # Default state: show all
     return render(
         request,
         "search_results.html",
@@ -434,11 +432,8 @@ def search_user(request):
             "samples": None,
             "genres": None,
             "query": None,
-            "filter_type": [
-                "username",
-                "sample",
-                "genre",
-            ],  # Default filter shows all initially
+            "filter_type": ["username", "sample", "genre"],
+            "show_all_genres": False,
         },
     )
 
