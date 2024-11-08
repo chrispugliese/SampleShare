@@ -7,12 +7,11 @@
     <div class="col-md-8">
       <!-- Card container for the profile -->
       <div class="profile-card">
-        <!-- Left-align the profile picture and information -->
-        <div class="profile-info">
+        <div class="profile-info" style="text-align: center;">
+          <h2>{{ profile_user.username }}</h2>
           <div style="display: flex; align-items: center; gap: 20px;">
               <!-- Display the uploaded profile photo -->
-              <img src="{{ profile_user.userprofile.userPhoto.url }}" alt="Profile Photo" style="width:150px; height:150px; border-radius: 50%;">
-            <h2>{{ profile_user.username }}</h2>
+              <img src="{{ profile_user.userprofile.userPhoto.url }}" alt="Profile Photo" style="width:200px; height:200px; border-radius: 50%;">
           </div>
           <div class="profile-details">
             <p>Email: {{ profile_user.email }}</p>
