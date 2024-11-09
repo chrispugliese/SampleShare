@@ -604,7 +604,7 @@ def like_view(request, pk):
 
 # --------------------------------------------------------------------#
 
-
+@login_required
 def edit_profile(request):
     profile = request.user.userprofile
     if request.method == "POST":
@@ -614,7 +614,7 @@ def edit_profile(request):
             return redirect("profile", username=request.user.username)
     else:
         form = ProfileForm(instance=profile)
-    return render(request, "edit_profile.html", {"form": form})
+    return render(request, "edit_profile.html", {"form": form, "profile_user": profile})
 
 
 # -----------------------Comment Code-----------------------#
