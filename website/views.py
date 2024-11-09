@@ -98,6 +98,8 @@ def profile_page(request, username):
     )
     received_requests = FriendRequest.objects.filter(to_user=request.user.userprofile)
 
+    query_all_sample = Sample.objects.filter(userProfiles=profile)
+
     context = {
         "profile": profile,
         "is_owner": is_owner,
@@ -106,8 +108,10 @@ def profile_page(request, username):
         "received_request": received_request,
         "profile_user": profile_user,
         "received_requests": received_requests,
+        "query_all_sample": query_all_sample,
     }
     return render(request, "profile_page.html", context)
+
 
 
 # --------------------------------------------------------------------#
