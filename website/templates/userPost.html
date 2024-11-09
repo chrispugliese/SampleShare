@@ -3,72 +3,8 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{% static 'css/player_style.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/post_comment_style.css' %}"/>
 
-<style>
-    .dropdown{
-    margin-left: 0;
-    }
-
-    .left-button{
-        float: right;
-    }
-    .download-btn{
-        float:right;
-    }
-    .comment-btn-dropdown{
-        float:right;
-    }
-    .download-player{
-        display: flex;
-        gap: 10px;
-    }
-    .like-unlike-btn{
-        width: 50px;
-        height: 30px;
-        font-size: 16px;
-    }
-
-    .back-comment-like-buttons{
-        display: flex;
-        gap: 10px;
-    }
-    .download-sample-comments{
-        width: 50px;
-        height: 30px;
-        font-size: 16px;
-    }
-    .comment-player-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    }
-    .comment-play-button {
-    background-color: #362d4b;
-    color: #00ffcc;
-    border: none;
-    padding: 8px 12px;
-    margin-left: -25px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
-}
-
-.comment-play-button:hover {
-  box-shadow: 0 0 10px 4px rgba(106, 27, 154, 0.6), 0 0 20px rgba(106, 27, 154, 0.4);
-  transform: scale(1.1);
-  background-color: #1e232e;
-}
-
-.comment-play-button i {
-  transition: transform 0.2s;
-}
-
-  </style>
   <body>
 <div class="card">
     <div class="card-header"><strong>
@@ -80,7 +16,8 @@
  <!------ Edit Button Drop Down------>
 {% if user.userprofile.id == user_post.userProfiles.id %}
 <div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle left-button fa-solid fa-pencil" type="button" data-bs-toggle="dropdown" aria-expanded="false">    
+    <button class="btn btn-secondary dropdown-toggle post-drop-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class =" fa-solid fa-pencil"></i>    
     </button>
     <ul class="dropdown-menu">
     <li><a href="{% url 'update_post' user_post.id %}" class="btn btn-secondary">Edit Post</a>
@@ -111,7 +48,9 @@
       </div>
       {% endfor %}
     <!-- Download Code -->
-        <a href="{% url 'download_sample' user_post.samples.id %}" class="btn btn-primary download-btn fa-solid fa-download"></a>
+        <a href="{% url 'download_sample' user_post.samples.id %}" class="btn btn-primary download-btn">
+          <i class="fa-solid fa-download"></i>
+        </a>
      <!-- End of Download Code -->
 
 
@@ -128,12 +67,16 @@
     {% csrf_token %}
 
     {% if liked %}
-    <button type="submit", name="post_id", value="{{ user_post.id }}", class="btn btn-danger fa-solid fa-thumbs-up like-unlike-btn"></button>
+    <button type="submit", name="post_id", value="{{ user_post.id }}", class="btn btn-danger  like-unlike-btn">
+      <i class="fa-solid fa-thumbs-up"></i>
+    </button>
     
     {% else %}
-    <button type="submit", name="post_id", value="{{ user_post.id }}", class="btn btn-primary fa-regular fa-thumbs-up like-unlike-btn"></button>
+    <button type="submit", name="post_id", value="{{ user_post.id }}", class="btn btn-primary like-unlike-btn">
+      <i class="fa-regular fa-thumbs-up"></i>
+    </button>
     {% endif %}
-    - {{total_likes }} Likes
+    - {{ total_likes }} Likes
 </form>
 <!------------------- End of Like Code --------------------->
 </div>
@@ -159,7 +102,8 @@
     <!----------------- Comment Dropdown ------------------>
         {% if user.userprofile.id == comment.userProfile.id %}
         <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle comment-btn-dropdown btn-sm fa-solid fa-pencil" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-secondary dropdown-toggle comment-btn-dropdown btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa-solid fa-pencil"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-dark">
               <li><a href="{% url 'update_comment' comment.id %}" class="btn btn-primary btn-sm">Edit Comment</a></li>
@@ -172,15 +116,11 @@
         {% if comment.samples != None %}
         <!--{{ comment_samples }}-->
          
-        <div class ="download-player">
             <!-- Download Code -->
-                <div class="download-sample-comments">
-                <a href="{% url 'download_sample' comment.samples.id %}" class="btn btn-primary download-btn fa-solid fa-download"></a>
-                </div>
-                <br/><br/>
-                sample = {{comment.samples.audioFile.url}}
-            </div>
-        
+                <a href="{% url 'download_sample' comment.samples.id %}" class="btn btn-primary download-btn-comment">
+                  <i class="fa-solid fa-download"></i>
+                </a>
+                <br/><br/>       
             <!-- End of Download Code --> 
             
         {% endif %}

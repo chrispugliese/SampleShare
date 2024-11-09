@@ -6,6 +6,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{% static 'css/player_style.css' %}"/>
 
+<style>
+  .view-post-btn{
+    float: right;
+  }
+
+</style>
+
 <div class="col-md-6 offset-md-3">      
     <h1>WELCOME TO SAMPLE SHARE</h1>
     </div>
@@ -18,7 +25,7 @@
             <a href ="{% url 'profile' post.userProfiles.user.username %}">
             <img src="{{ post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
            {{ post.userProfiles.user.username }} </a>
-
+           <a href="{%url 'user_post' post.id%}" class="btn btn-primary view-post-btn"> View Post </a>
         </li>
         <li class="list-group-item">{{ post.postText }}</li>
         <li class="list-group-item">
@@ -35,7 +42,6 @@
               </div></li>
         
     </ul>
-    <a href="{%url 'user_post' post.id%}" class="btn btn-secondary"> View Post </a>
     <br/>
     {% endfor %}
 {% endif %}

@@ -1,0 +1,68 @@
+.dropdown{
+    margin-left: 0;
+    }
+
+    .post-drop-button, .comment-btn-dropdown{
+        color: #00FFCC;
+        float: right;
+        background-color: transparent;
+        border: none;
+        padding: 0;
+    }
+
+    .post-drop-button:hover, .comment-btn-dropdown:hover{
+      background-color: transparent;
+        border:none;
+        padding:0;
+    }
+
+    .download-btn,.download-btn-comment, .download-btn-comment:hover,.download-btn:hover{
+        float:right;
+        background-color: transparent;
+        border:none;
+        padding:0;
+    }
+
+    .download-btn i{
+      font-size: 30px;
+    }
+    .download-btn-comment i{
+      font-size: 30px;
+      height: 10px;
+      align-items: center;
+      justify-items:center;
+    }
+
+    .download-player{
+        display: flex;
+        gap: 10px;
+    }
+    .like-unlike-btn{
+        color: #00FFCC;
+        width: 50px;
+        height: 30px;
+        font-size: 16px;
+        background-color: transparent;
+        border:none;
+        padding:0;
+        cursor: pointer;
+    }
+
+    .like-unlike-btn:hover{
+      background-color: transparent;
+        border:none;
+        padding:0;
+    }
+    .like-unlike-btn i{
+        font-size: 30px;
+    }
+
+    .back-comment-like-buttons{
+        display: flex;
+        gap: 10px;
+    }
+    .download-sample-comments{
+        width: 50px;
+        height: 30px;
+        font-size: 16px;
+    }
