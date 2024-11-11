@@ -4,14 +4,23 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{% static 'css/player_style.css' %}"/>
 <link rel="stylesheet" href="{% static 'css/post_comment_style.css' %}"/>
-
+<link rel="stylesheet" href="{% static 'css/custom_style.css' %}"/>
   <body>
 <div class="card">
     <div class="card-header"><strong>
-        <a href ="{% url 'profile' user_post.userProfiles.user.username %}">
+      <div class="post-profile-info">
+        <div class="post-profile-pic">
+          <a href ="{% url 'profile' user_post.userProfiles.user.username %}">
         <img src="{{ user_post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
-        {{ user_post.userProfiles.user.username }} </a>
-          </strong>
+          </a>
+        </div>
+      <div class ="post-user-name">
+        <a href ="{% url 'profile' user_post.userProfiles.user.username %}">
+          {{ user_post.userProfiles.user.username }}
+        </a>
+        </div>
+      </div>    
+      </strong>
 
  <!------ Edit Button Drop Down------>
 {% if user.userprofile.id == user_post.userProfiles.id %}
@@ -48,7 +57,7 @@
       </div>
       {% endfor %}
     <!-- Download Code -->
-        <a href="{% url 'download_sample' user_post.samples.id %}" class="btn btn-primary download-btn">
+        <a href="{% url 'download_sample' user_post.samples.id %}" class="btn download-btn">
           <i class="fa-solid fa-download"></i>
         </a>
      <!-- End of Download Code -->
@@ -57,29 +66,34 @@
 </div>
 </div>
 <div class="back-comment-like-buttons">
-<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
-<a href="{% url 'create_comment' user_post.id %}" class="btn btn-primary"> Make A Comment</a>
+<a href="{% url 'home' %}" class="btn btn-secondary back-btn">Back</a>
+<a href="{% url 'create_comment' user_post.id %}" class="btn btn-primary make-comment-btn animated-border-btn"> Make A Comment</a>
 
 
 <!------------------- Like Code --------------------->
-<br/><br/>
 <form action = "{% url 'like_post' user_post.id %}" method="POST">
+  <div class="card">
+  <div class="like-container">
     {% csrf_token %}
 
     {% if liked %}
-    <button type="submit", name="post_id", value="{{ user_post.id }}", class="btn btn-danger  like-unlike-btn">
+    <button type="submit", name="post_id", value="{{ user_post.id }}", class="btn like-unlike-btn">
       <i class="fa-solid fa-thumbs-up"></i>
     </button>
     
     {% else %}
-    <button type="submit", name="post_id", value="{{ user_post.id }}", class="btn btn-primary like-unlike-btn">
+    <button type="submit", name="post_id", value="{{ user_post.id }}", class="btn  like-unlike-btn">
       <i class="fa-regular fa-thumbs-up"></i>
     </button>
     {% endif %}
-    - {{ total_likes }} Likes
+    <div class="like-number">
+    {{ total_likes }}
+    </div>
+  </div>
+</div>
+</div>
 </form>
 <!------------------- End of Like Code --------------------->
-</div>
 <br/>
 <!-- COMMENT SECTION -->
 <div class="card">
@@ -95,10 +109,19 @@
     {% if comments %}
     {% for comment in comments %}
     <li class="list-group-item">
-    <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
-        <img src="{{ comment.userProfile.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
-        {{ comment.userProfile.user.username }} 
-    </a>
+      <div class="comment-profile-info">
+        <div class="comment-profile-pic">
+          <a href ="{% url 'profile' comment.userProfile.user.username %}" class = "link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+            <img src="{{ comment.userProfile.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+          </a>
+        </div>
+      <div class="comment-user-name">
+        <a href ="{% url 'profile' comment.userProfile.user.username %}">
+          {{ comment.userProfile.user.username }}  
+        </a> 
+      </div>
+    
+  </div>
     <!----------------- Comment Dropdown ------------------>
         {% if user.userprofile.id == comment.userProfile.id %}
         <div class="dropdown">
@@ -115,9 +138,9 @@
         <p> {{ comment.commentMessage }}</p>
         {% if comment.samples != None %}
         <!--{{ comment_samples }}-->
-         
+          <strong>Sample:</strong> {{ comment.samples.sampleName }}
             <!-- Download Code -->
-                <a href="{% url 'download_sample' comment.samples.id %}" class="btn btn-primary download-btn-comment">
+                <a href="{% url 'download_sample' comment.samples.id %}" class="btn download-btn-comment">
                   <i class="fa-solid fa-download"></i>
                 </a>
                 <br/><br/>       

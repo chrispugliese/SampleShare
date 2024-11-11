@@ -10,10 +10,18 @@
         padding: 0;
     }
 
+    .post-drop-button i, .comment-btn-dropdown i{
+        color:#00FFCC;
+    }
+
     .post-drop-button:hover, .comment-btn-dropdown:hover{
       background-color: transparent;
         border:none;
         padding:0;
+    }
+
+    .post-drop-button i:hover, .comment-btn-dropdown i:hover{
+        color:#6A1B9A;
     }
 
     .download-btn,.download-btn-comment, .download-btn-comment:hover,.download-btn:hover{
@@ -24,13 +32,24 @@
     }
 
     .download-btn i{
+      color:#00FFCC;
       font-size: 30px;
     }
+
+    .download-btn i:hover{
+        color: #6A1B9A;
+    }
+
     .download-btn-comment i{
+      color: #00FFCC;
       font-size: 30px;
       height: 10px;
       align-items: center;
       justify-items:center;
+    }
+
+    .download-btn-comment i:hover {
+        color: #6A1B9A;
     }
 
     .download-player{
@@ -57,6 +76,10 @@
         font-size: 30px;
     }
 
+    .like-unlike-btn i:hover{
+        color: #6A1B9A;
+    }
+    
     .back-comment-like-buttons{
         display: flex;
         gap: 10px;
@@ -66,3 +89,35 @@
         height: 30px;
         font-size: 16px;
     }
+
+    .like-container{
+        text-align: center;
+    }
+
+    .like-number{
+        font-size: 20px;
+        gap: 10px;
+    }
+
+    .make-comment-btn, .back-btn{
+        height: 45px;
+    }
+
+    .post-profile-info, .comment-profile-info{
+        display: flex;
+        color:#00FFCC;
+        gap:5px;
+    }
+
+    .post-user-name a, .comment-user-name a{
+        text-decoration: none;
+        color: #fff;
+        font-weight: bold;
+    }
+    .post-user-name a:hover, .comment-user-name a:hover{
+        color:#00FFCC;
+    }
+
+    
+
+    
