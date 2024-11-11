@@ -577,7 +577,7 @@ def update_post(request, pk):
                 add_post = form.save()
                 messages.success(request, "Post Updated...")
                 return redirect("user_post", current_post.id)
-        return render(request, "update_post.html", {"form": form})
+        return render(request, "update_post.html", {"form": form, "current_post":current_post})
     else:
         messages.success(request, "Your Must Be Logged In...")
         return redirect("home")
@@ -675,6 +675,7 @@ def update_comment(request, pk):
     if request.user.is_authenticated:
         userProfile_id = request.user.userprofile
         current_comment = Comment.objects.get(id=pk)
+        current_post = current_comment.posts.id
         form = CommentForm(
             request.POST or None,
             userProfile_id=userProfile_id,
@@ -685,7 +686,7 @@ def update_comment(request, pk):
                 add_comment = form.save()
                 messages.success(request, "Comment Updated...")
                 return redirect("user_post", current_comment.posts.id)
-        return render(request, "update_comment.html", {"form": form})
+        return render(request, "update_comment.html", {"form": form, "current_post": current_post})
     else:
         messages.success(request, "Your Must Be Logged In...")
         return redirect("home")

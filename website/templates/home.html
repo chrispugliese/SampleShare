@@ -8,10 +8,23 @@
 <link rel="stylesheet" href="{% static 'css/player_style.css' %}"/>
 
 <style>
-  .view-post-btn{
+  .home-profile-container{
+        display: flex;
+        color:#00FFCC;
+        gap:5px;
+    }
+
+    .home-user-name a{
+        text-decoration: none;
+        color: #fff;
+        font-weight: bold;
+    }
+    .home-user-name a:hover{
+        color:#00FFCC;
+    }
+    .view-post-btn{
     float: right;
   }
-
 </style>
 
 <div class="col-md-6 offset-md-3">      
@@ -23,11 +36,20 @@
     {% for post in userPosts %}
     <ul class="list-group">
         <li class="list-group-item">
+          <div class="home-profile-container">
+            <div class ="home-profile-pic">
+              <a href ="{% url 'profile' post.userProfiles.user.username %}">
+              <img src="{{ post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+             </a>
+            </div>
+              <div class="home-user-name">
             <a href ="{% url 'profile' post.userProfiles.user.username %}">
-            <img src="{{ post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
-           {{ post.userProfiles.user.username }} </a>
-           <a href="{%url 'user_post' post.id%}" class="btn btn-primary view-post-btn animated-border-btn"> View Post </a>
-        </li>
+              {{ post.userProfiles.user.username }}
+            </a>
+            </div>
+        </div>
+        <a href="{%url 'user_post' post.id%}" class="btn btn-primary view-post-btn animated-border-btn"> View Post </a>
+          </li>
         <li class="list-group-item">{{ post.postText }}</li>
         <li class="list-group-item">
             <strong>Sample:</strong>
