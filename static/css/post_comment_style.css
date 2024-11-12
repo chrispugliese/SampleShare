@@ -1,8 +1,19 @@
-.dropdown{
-    margin-left: 0;
+    .post-dropdown{
+    width: 2000px;
     }
 
-    .post-drop-button, .comment-btn-dropdown{
+    .comment-dropdown{
+        width: 2000px;
+    }
+
+    .comment-btn-dropdown{
+        color: #00FFCC;
+        float: right;
+        background-color: transparent;
+        border: none;
+        padding: 0;
+    }
+    .post-drop-button{
         color: #00FFCC;
         float: right;
         background-color: transparent;
@@ -46,6 +57,7 @@
       height: 10px;
       align-items: center;
       justify-items:center;
+      margin-left: 100px;
     }
 
     .download-btn-comment i:hover {
@@ -74,6 +86,7 @@
     }
     .like-unlike-btn i{
         font-size: 30px;
+        padding: 5px 0 0 0;
     }
 
     .like-unlike-btn i:hover{
@@ -91,14 +104,18 @@
     }
 
     .like-container{
-        text-align: center;
+        display: flex;
     }
 
     .like-number{
         font-size: 20px;
         gap: 10px;
+        padding: 5px 10px 0 10px;
     }
-
+    .like-card{
+        display:flex;
+        height: 45px;
+    }
     .make-comment-btn, .back-btn{
         height: 45px;
     }
@@ -118,6 +135,21 @@
         color:#00FFCC;
     }
 
-    
+    .post-card-header{
+        display: flex;
+    }
+
+    .post-sample-text{
+        font-weight: bold;
+        font-size: 20px;
+        margin-bottom: 10px;
+        margin-left: 250px;
+    }
+    .comment-sample-text{
+        font-weight: bold;
+        font-size: 20px;
+        margin-left: 240px;
+    }
+
 
     

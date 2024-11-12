@@ -155,7 +155,7 @@ class MessageForm(forms.Form):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ["bio", "userPhoto"]
+        fields = ["userPhoto", "bio"]
 
 
 # ----------------------Comment Code------------------#\

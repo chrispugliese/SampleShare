@@ -25,6 +25,12 @@
     .view-post-btn{
     float: right;
   }
+  .post-sample-text{
+        font-weight: bold;
+        font-size: 20px;
+        margin-bottom: 10px;
+        margin-left: 250px;
+    }
 </style>
 
 <div class="col-md-6 offset-md-3">      
@@ -48,12 +54,15 @@
             </a>
             </div>
         </div>
+        <div class="view-post-btn">
         <a href="{%url 'user_post' post.id%}" class="btn btn-primary view-post-btn animated-border-btn"> View Post </a>
+          </div>
           </li>
         <li class="list-group-item" style="word-wrap:break-word;">{{ post.postText }}</li>
         <li class="list-group-item">
-            <strong>Sample:</strong>
+          <div class="post-sample-text">
             {{ post.samples.sampleName }} 
+            </div>
             <div class="player-container"> 
                 <!-- Player buttons -->
                   <button class="play-button">
