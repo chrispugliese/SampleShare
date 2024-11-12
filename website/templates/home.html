@@ -50,7 +50,7 @@
         </div>
         <a href="{%url 'user_post' post.id%}" class="btn btn-primary view-post-btn animated-border-btn"> View Post </a>
           </li>
-        <li class="list-group-item">{{ post.postText }}</li>
+        <li class="list-group-item" style="word-wrap:break-word;">{{ post.postText }}</li>
         <li class="list-group-item">
             <strong>Sample:</strong>
             {{ post.samples.sampleName }} 
