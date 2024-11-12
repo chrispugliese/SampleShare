@@ -86,6 +86,7 @@
     }
     .like-unlike-btn i{
         font-size: 30px;
+        padding: 5px 0 0 0;
     }
 
     .like-unlike-btn i:hover{
@@ -103,14 +104,18 @@
     }
 
     .like-container{
-        text-align: center;
+        display: flex;
     }
 
     .like-number{
         font-size: 20px;
         gap: 10px;
+        padding: 5px 10px 0 10px;
     }
-
+    .like-card{
+        display:flex;
+        height: 45px;
+    }
     .make-comment-btn, .back-btn{
         height: 45px;
     }
