@@ -188,13 +188,13 @@
                   <div class="post-sample-text">
                     {{ post.samples.sampleName }} 
                   </div>
-                  <div class="player-container"> 
+                  <div class="comment-player-container"> 
                   <!-- Player buttons -->
-                    <button class="play-button">
+                    <button class="comment-play-button">
                       <i class="fa-solid fa-play"></i>
                     </button>
-                    <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
-                    <input type="hidden" class="sample-url" value="{{ post.samples.audioFile.url }}">
+                    <div id="comment-waveform-{{ forloop.counter }}" class="comment-waveform"></div>
+                    <input type="hidden" class="comment-sample-url" value="{{ post.samples.audioFile.url }}">
                   </div>
                 </div>
                 <br>
@@ -348,5 +348,6 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 <script src="{% static 'js/sample_player.js' %}"></script>
+<script src="{% static 'js/sample_playerPC.js' %}"></script>
 <script src="https://unpkg.com/wavesurfer.js@7"></script>
 {% endblock %}
