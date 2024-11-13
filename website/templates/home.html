@@ -29,7 +29,7 @@
         font-weight: bold;
         font-size: 20px;
         margin-bottom: 10px;
-        margin-left: 250px;
+        margin-left: 20px;
     }
 </style>
 
@@ -60,6 +60,7 @@
           </li>
         <li class="list-group-item" style="word-wrap:break-word;">{{ post.postText }}</li>
         <li class="list-group-item">
+          <div class="sample-info">
           <div class="post-sample-text">
             {{ post.samples.sampleName }} 
             </div>
@@ -70,8 +71,10 @@
                   </button>
                 <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
                 <input type="hidden" class="sample-url" value="{{ post.samples.audioFile.url }}">
-              <br/>
-              </div></li>
+            </div>
+          </div>
+          <br>
+        </li>
         
     </ul>
     <br/>
