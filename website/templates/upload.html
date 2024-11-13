@@ -178,7 +178,7 @@
             fileItem.className = 'file-item';
             fileItem.innerHTML = `
                 <span>${file.name}</span>
-                <input type="text" name="sampleName_${file.name}" placeholder="Rename">
+                <input type="text" maxlength="50" name="sampleName_${file.name}" placeholder="Rename">
                 <label>Public? <input type="checkbox" name="isPublic_${file.name}"></label>
                 <button type="button" onclick="removeFile('${file.name}', this)">Remove</button>
             `;

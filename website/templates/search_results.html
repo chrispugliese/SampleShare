@@ -9,51 +9,55 @@
             font-size: 1.2em; /* Increase the font size */
             padding: 10px 15px; /* Add padding to make the badges larger */
         }
-        .sidebar {
+        .filterbar {
+            display: flex;
+            align-items: center; /* Center items vertically */
+            justify-content: space-between;
             background-color: #202830;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
             color: #e0e0e0;
-            margin-top: 20px;
-            width: 250px;
-            margin-right: 50px; /* Move sidebar further to the left */
         }
-        .sidebar h3, .sidebar h4 {
+        .filterbar h4 {
             color: #e0e0e0;
+            margin-right: 20px; /* Add margin to the right of the heading */
+            align-self: center; /* Center the heading vertically */
         }
-        .sidebar button {
-            margin-bottom: 10px;
+        .filterbar button {
+            margin: 0 10px; /* Add margin to the left and right of buttons */
         }
     </style>
     <script src="{% static 'js/badgeColor.js' %}"></script> <!-- Include the new JavaScript file -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{% static 'css/custom_style.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/player_style.css' %}"/>
 </head>
-<div style="display: flex;">
-    <!-- Sidebar Filter Form (far left) -->
-    <div class="sidebar">
-        <h3>Search Results</h3>
-        <hr>
-        <h4>Search By:</h4><br>
-        <form method="GET" action="{% url 'search_user' %}">
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button type="submit" name="filter" value="all" class="animated-border-btn-purple"
-                        {% if filter_type|length == 3 and not show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>
-                        All</button>
-                <button type="submit" name="filter" value="username" class="animated-border-btn-purple" {% if 'username' in filter_type and filter_type|length != 3 and not show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>
-                    Users</button>
-                <button type="submit" name="filter" value="sample" class="animated-border-btn-purple" {% if 'sample' in filter_type and filter_type|length != 3 and not show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>Samples</button>
-                <button type="submit" name="filter" value="genre" class="animated-border-btn-purple" {% if 'genre' in filter_type and filter_type|length != 3 and not show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>Tags</button>
-                <hr>
-                <button type="submit" name="show_all_genres" value="true" class="animated-border-btn-purple" {% if show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>Show All Tags</button>
-            </div>
-            <input type="hidden" name="q" value="{{ query }}"> <!-- Preserve the search query -->
-        </form>
+<!-- Sidebar Filter Form (top of the page) -->
+<div class="filterbar">
+    <div>
+    <form method="GET" action="{% url 'search_user' %}">
+        <div style="display: inline-flex; gap: 15px;">
+            <h4>Search By:</h4>
+            <button type="submit" name="filter" value="all" class="animated-border-btn-purple"
+                    {% if filter_type|length == 3 and not show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>
+                    All</button>
+            <button type="submit" name="filter" value="username" class="animated-border-btn-purple" {% if 'username' in filter_type and filter_type|length != 3 and not show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>
+                Username</button>
+            <button type="submit" name="filter" value="sample" class="animated-border-btn-purple" {% if 'sample' in filter_type and filter_type|length != 3 and not show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>Sample Title</button>
+            <button type="submit" name="filter" value="genre" class="animated-border-btn-purple" {% if 'genre' in filter_type and filter_type|length != 3 and not show_all_genres %}style="color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80;"{% endif %}>Tags</button>
+        </div>
+        <input type="hidden" name="q" value="{{ query }}"> <!-- Preserve the search query -->
     </div>
-
+    <button type="submit" name="show_all_genres" value="true" class="animated-border-btn-purple" {% if show_all_genres %}style="right: 0; color: #e0e0e0; border-color: #2D5E49; border-radius: 50px; background-color: #643E80; margin-right: 10px;"{% endif %}>Show All Tags</button>
+    </form>
+</div>
+<div style="display: flex;">
     <!-- Main Content (normal layout for search results) -->
     <div style="flex-grow: 1;">
         <!-- Results Container -->
         <div id="results-container">
+            <!-- All Genres -->
             {% if all_genres %}
                 <h3>All Genres</h3>
                 <div id="genres-container">
@@ -75,21 +79,92 @@
             <!-- Sample Results -->
             {% if samples %}
                 <h3>Samples</h3>
-                <ul>
-                    {% for sample in samples %}
-                        <li>
-                            {{ sample.sampleName }}
-                            <!-- Audio Player -->
-                            <audio controls>
-                                <source src="{{ sample.audioFile.url }}" type="audio/mpeg">
-                                Your browser does not support the audio element.
-                            </audio>
-                        </li>
-                    {% endfor %}
-                </ul>
+                {% for sample in samples %}
+                <tr>
+                    <td scope="row">
+                        <div class="card">
+                      <div class="sample-details">
+                        <div class="profile-container"> 
+                            <div class="user-name"> 
+                                <a href="{% url 'profile' sample.userProfiles.user.username %}"> 
+                                    {{ sample.userProfiles.user.username}}
+                                </a>
+                            </div>
+                            <!-- Profile picture placeholder -->
+                            <div class="profile-pic">
+                                <a href="{% url 'profile' sample.userProfiles.user.username %}">
+                                    <img src="{{ sample.userProfiles.userPhoto.url }}" alt="Profile Picture">
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Sample name and player -->
+                        <div class="sample-info">
+                            <div class="sample-name">{{ sample.sampleName }}</div>
+                            <div class="player-container"> 
+                                <!-- Player buttons -->
+                                <button class="play-button">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                                <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
+                                <input type="hidden" class="sample-url" value="{{ sample.audioFile.url }}">
+                                <div class="sample-options-container">
+                                <div class="sample-download"> 
+                                    <a href="{% url 'download_sample' sample.id %}">
+                                    <i class="fa-solid fa-download"></i>
+                                    </a>
+                                </div>
+                                <br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    </td>
+                    </tr>
+                    <br>
+                {% endfor %}
             {% endif %}
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="{% static 'js/sample_player.js' %}"></script>
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
+<style>
+    /* Card Styling */
+    .card {
+        background-color: #212529;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+        text-align: center;
+    }
 
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    /* Title Styling */
+    .card-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+        margin: 0 0 15px;
+    }
+
+    /* Audio Player Styling */
+    .audio-player audio {
+        width: 100%;
+        border-radius: 8px;
+        outline: none;
+    }
+
+    /* Overall Layout */
+    #results-container h3 {
+        grid-column: 1 / -1; /* Make headings span across the entire grid */
+        font-size: 1.5em;
+        margin-top: 20px;
+    }
+</style>
 {% endblock %}
