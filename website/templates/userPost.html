@@ -173,11 +173,12 @@
             <div id="comment-waveform-{{ forloop.counter }}" class="comment-waveform"></div>
             <input type="hidden" class="comment-sample-url" value="{{ comment.samples.audioFile.url }}">
             <div class="sample-options-container">
-              <div class="sample-download"> 
-                <a href="{% url 'download_sample' comment.samples.id %}">
-                  <i class="fa-solid fa-download"></i>
-                </a>
-              </div>
+              {% if comment.samples != None %}
+              <!-- Download Code -->
+              <a href="{% url 'download_sample' comment.samples.id %}" class="btn download-btn-comment">
+                <i class="fa-solid fa-download"></i>
+              </a> 
+              {% endif %}
             </div>
           <br/>
           </div>
