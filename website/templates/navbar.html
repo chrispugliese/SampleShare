@@ -96,11 +96,11 @@
     box-shadow: 0 0 2px 1px #bd59fb;
     border-color: #bd59fb;
   }
+
   .search-input:focus {
     box-shadow: 0 0 8px 2px #bd59fb;
     border-color: #bd59fb;
   }
-  
 </style>
 
 <div class="sidebar">
@@ -112,10 +112,7 @@
     <div id="navbarSupportedContent">
       {% if user.is_authenticated %}
       <form class="d-flex me-auto mb-2 mb-lg-0" method="get" action="{% url 'search_user' %}">
-        <!-- Search input with custom styling -->
         <input class="form-control me-2 search-input" type="text" name="q" placeholder="Search">
-        
-        <!-- Magnifying glass icon button -->
         <button class="btn btn-search-icon" type="submit">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-search" viewBox="-2 -1 20 20">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
@@ -153,9 +150,7 @@
             </svg>
             Samples
           </a>
-        </li>
-        
-        <!-------------------------------------------------->
+        </li>        
         <li class="nav-item" style="margin-top: 0px;">
           <a class="nav-link" href="{% url 'recent_chat_redirect' %}">
             <span style="display: inline-block; width: 10px;"></span>
@@ -188,6 +183,7 @@
           </a>
         </li>
         {% else %}
+        <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link" style="margin-top: 10px;" href="{% url 'register' %}">
             <span style="display: inline-block; width: 10px;"></span>
@@ -195,10 +191,11 @@
               <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
               <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
             </svg>
-            Register</a>
+            Register
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" style="margin-top: 0px;" href="{% url 'login' %}">
+          <a class="nav-link" style="margin-top: 10px;" href="{% url 'login' %}">
             <span style="display: inline-block; width: 10px;"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-closed" viewBox="-2 -2 20 20">
               <path d="M3 2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3zm1 13h8V2H4z"/>
@@ -207,6 +204,7 @@
             Log In
           </a>
         </li>
+        </ul>
       {% endif %}
       </ul>
     </div>
