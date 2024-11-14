@@ -20,11 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
 				playButtons[index].querySelector('i').classList.replace('fa-pause', 'fa-play');
 			} else {
 				wavesurfer.play();
-				playButtons[index].querySelector('i').classList.replace('fa-play', 'fa-pause')
+				playButtons[index].querySelector('i').classList.replace('fa-play', 'fa-pause');
 			}
 		});
 	});
-    console.log("map of samples:", waveSurfersMapObject)
+	console.log("map of samples:", waveSurfersMapObject)
 });
 
 const initCommentWaveSurfer = (url, containerId) => {
