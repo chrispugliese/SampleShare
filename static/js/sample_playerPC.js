@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 		});
 	});
-	console.log("map of samples:", waveSurfersMapObject)
 });
 
 const initCommentWaveSurfer = (url, containerId) => {
@@ -75,6 +74,7 @@ const initCommentWaveSurfer = (url, containerId) => {
 			ctx.closePath()
 		},
 	});
+
 	wavesurfer.load(url);
 	wavesurfer.on('interaction', () => {
 		wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();

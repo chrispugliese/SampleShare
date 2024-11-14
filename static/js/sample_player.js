@@ -83,9 +83,9 @@ const initWaveSurfer = (url, containerId) => {
 
 	document.addEventListener('keydown', (event) => {
 		if (event.key === 'ArrowLeft' && wavesurfer.isPlaying()) {
-			wavesurfer.seekTo(0)
+			wavesurfer.seekTo(0);
 		}
-	})
+	});
 	return wavesurfer
 };
 
