@@ -6,7 +6,7 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    width: 250px;
+    width: 18%;
     background-color: #202830; /* Dark background */
     color: silver;
     padding-top: 20px;
@@ -17,10 +17,6 @@
 
   .nav {
     flex-grow: 1; /* Pushes items to top */
-  }
-
-  .bottom-link {
-    margin-top: auto; /* Pushes this link to the bottom */
   }
 
   .sidebar .navbar-brand {
@@ -42,7 +38,7 @@
 
   /* Main Content Styling */
   .main-content {
-    margin-left: 250px; /* Space for sidebar */
+    margin-left: 18%; /* Space for sidebar */
     padding: 20px;
   }
 
@@ -78,12 +74,23 @@
     border-radius: 50px;
   }
 
+  .nav-link:hover svg, .btn-search-icon:hover svg {
+    filter: url(#glow-effect);
+    transition: all 0.3s ease
+  }
+
   .nav-link:active, .btn-search-icon:active {
     box-shadow: 0 0 10px #ff7f50;
     text-shadow: 0 0 10px #ff7f50;
     color: silver;
-    background-color: #29103b;
+    background-color: #3c1856;
     border-color: #2D5E49;
+  }
+
+  .nav-link:active svg,
+  .btn-search-icon:active svg {
+    filter: url(#dimmed-glow-effect);
+    transition: all 0.3s ease
   }
 
   .search-input {
@@ -104,6 +111,35 @@
 </style>
 
 <div class="sidebar">
+  <svg width="0" height="0">
+    <defs>
+      <filter id="glow-effect" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur" />
+        <feOffset dx="0" dy="0" result="offsetblur" />
+        <feFlood flood-color="cyan" result="color" />
+        <feComposite in2="offsetblur" operator="in" />
+        <feMerge>
+          <feMergeNode in="coloredBlur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+  <svg width="0" height="0">
+    <defs>
+      <filter id="dimmed-glow-effect" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur" />
+        <feOffset dx="0" dy="0" result="offsetblur" />
+        <feFlood flood-color="orange" result="color" />
+        <feComposite in2="offsetblur" operator="in" />
+        <feMerge>
+          <feMergeNode in="coloredBlur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+
   <a class="navbar-brand" href="{% url 'home' %}">
     <span style="display: inline-block; width: 10px;"></span>
     <img src="{% static 'images/Navbar Icon.png' %}" alt="SampleShare" height="30">
@@ -119,6 +155,7 @@
           </svg>
         </button>
       </form>
+      <hr>
       <br>
       <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item" style="margin-top: 0px">
