@@ -25,11 +25,6 @@
     margin-bottom: 20px;
     font-size: 24px;
   }
-  
-  .sidebar .nav-link{
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
 
   .sidebar ul li {
     margin-left: 5px;
@@ -56,14 +51,32 @@
     transition: all 0.3s ease;
   }
 
-  .nav-link:hover{
+    /* General Sidebar Nav Link Styles */
+  .sidebar .nav-link {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    /* Any unique styles specific to sidebar nav links */
+  }
+
+  /* Sidebar Nav Link Hover */
+  .sidebar .nav-link.sidebar-nav-link:hover {
     box-shadow: 0 0 10px #00FFCC;
-    text-shadow: 0 0 10px #00FFCC;
+    text-shadow: 0 0 10px white;
     color: white;
     background-color: #3c1856;
     border-color: #2D5E49;
     border-radius: 50px;
   }
+
+  /* Sidebar Nav Link Active */
+  .sidebar .nav-link.sidebar-nav-link:active {
+    box-shadow: 0 0 10px #ff7f50;
+    text-shadow: 0 0 10px #ff7f50;
+    color: silver;
+    background-color: #3c1856;
+    border-color: #2D5E49;
+  }
+
 
   .btn-search-icon:hover{
     box-shadow: 0 0 10px rgb(224, 2, 224);
@@ -79,7 +92,7 @@
     transition: all 0.3s ease
   }
 
-  .nav-link:active, .btn-search-icon:active {
+  .btn-search-icon:active {
     box-shadow: 0 0 10px #ff7f50;
     text-shadow: 0 0 10px #ff7f50;
     color: silver;
@@ -116,7 +129,7 @@
       <filter id="glow-effect" x="-50%" y="-50%" width="200%" height="200%">
         <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur" />
         <feOffset dx="0" dy="0" result="offsetblur" />
-        <feFlood flood-color="#00FFCC" result="color" />
+        <feFlood flood-color="white" result="color" />
         <feComposite in2="offsetblur" operator="in" />
         <feMerge>
           <feMergeNode in="coloredBlur" />
@@ -158,7 +171,7 @@
       <br>
       <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item" style="margin-top: 0px">
-          <a class="nav-link" href="{% url 'create_post' user.userprofile.id%}">
+          <a class="nav-link sidebar-nav-link" href="{% url 'create_post' user.userprofile.id%}">
             <span style="display: inline-block; width: 10px;"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-plus-square" viewBox="-2 -2 20 20">
               <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
@@ -168,7 +181,7 @@
             </a>
         </li>
         <li class="nav-item" style="margin-top: 0px;">
-          <a class="nav-link" href="{% url 'upload' %}">
+          <a class="nav-link sidebar-nav-link" href="{% url 'upload' %}">
             <span style="display: inline-block; width: 10px;"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-upload" viewBox="-2 0 20 20">
               <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
@@ -178,7 +191,7 @@
           </a>
         </li>
         <li class="nav-item" style="margin-top: 0px;">
-          <a class="nav-link" href="{% url 'sample_player' %}">
+          <a class="nav-link sidebar-nav-link" href="{% url 'sample_player' %}">
             <span style="display: inline-block; width: 10px;"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-play-circle" viewBox="0 0 16 16">
               <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
@@ -188,7 +201,7 @@
           </a>
         </li>        
         <li class="nav-item" style="margin-top: 0px;">
-          <a class="nav-link" href="{% url 'recent_chat_redirect' %}">
+          <a class="nav-link sidebar-nav-link" href="{% url 'recent_chat_redirect' %}">
             <span style="display: inline-block; width: 10px;"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chat-left-text" viewBox="-2 -3 20 20">
               <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
@@ -198,7 +211,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'profile' username=request.user.username %}">
+          <a class="nav-link sidebar-nav-link" href="{% url 'profile' username=request.user.username %}">
             <span style="display: inline-block; width: 10px;"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person" viewBox="-2 -2 20 20">
               <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
@@ -208,7 +221,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" style="position: absolute; bottom: 0;" href="{% url 'logout' %}">
+          <a class="nav-link sidebar-nav-link" style="position: absolute; bottom: 0;" href="{% url 'logout' %}">
             <span style="display: inline-block; width: 10px;"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-door-open" viewBox="-2 -2 20 20">
               <path d="M8.5 10c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
@@ -221,7 +234,7 @@
         {% else %}
         <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" style="margin-top: 10px;" href="{% url 'register' %}">
+          <a class="nav-link sidebar-nav-link" style="margin-top: 10px;" href="{% url 'register' %}">
             <span style="display: inline-block; width: 10px;"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-clipboard" viewBox="-2 -2 20 20">
               <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
@@ -231,7 +244,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" style="margin-top: 10px;" href="{% url 'login' %}">
+          <a class="nav-link sidebar-nav-link" style="margin-top: 10px;" href="{% url 'login' %}">
             <span style="display: inline-block; width: 10px;"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-closed" viewBox="-2 -2 20 20">
               <path d="M3 2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3zm1 13h8V2H4z"/>

@@ -62,7 +62,7 @@
         }
 
         /* Upload, Browse, and Cancel buttons */
-        .submit-btn, .file-browser, .cancel-btn {
+        .file-browser {
             color: white; /* Default text color */
             background-color: #32273B; /* Button background color */
             border: 2px solid black; /* Border color */
@@ -72,74 +72,19 @@
             font-weight: bold; /* Bold text */
         }
 
-        /* Hover effects for the buttons */
-        .submit-btn:hover, .file-browse:hover{
-            background-color: #5c2a7a; /* Darker purple on hover */
-            border: 2px solid black; /* Border color */
-            box-shadow: 0 0 10px cyan; /* Cyan glow effect */
-            text-shadow: 0 0 5px cyan;
-            transition: all 0.3s ease; /* Smooth transition for effects */
-        }
-
-        /* Active (pressed) effect for buttons */
-        .submit-btn:active, .file-browse:active{
-            background-color: #29103b; /* Darker background on click */
-            box-shadow: 0 0 5px #ff7f50; /* Orange glow effect */
-            color: silver; /* Text color when active */
-            transition: all 0.3s ease; /* Smooth transition for effects */
-        }
-
-        .file-browse{
-            background-color: #5c2a7a; /* Darker purple*/
-            border: 2px solid green; /* Border color */
-            border-radius: 8px; /* Rounded corners */
-        }
-
-        .submit-btn{
-            border: 2px solid green;
-        }
-        .submit-btn:hover{
-            border: 2px solid cyan; /* Border color */
-        }
-
-        .submit-btn:active{
-            color:silver;
-            text-shadow: none;
-            border: 2px solid black;
-        }
-
-        /* Cancel button specific styling */
-        .cancel-btn {
-            background-color: #8B0000; /* Red color for cancel */
-            border-color: #660000; /* Darker red border */
-        }
-
-        .cancel-btn:hover {
-            background-color: #A52A2A; /* Dark red on hover */
-            box-shadow: 0 0 10px #FF4500; /* Orange glow for cancel button */
-        }
-
-        .cancel-btn:active{
-            background-color: #800000; /* Darker red on click */
-            box-shadow: 0 0 5px #FF4500; /* Orange glow on click */
-            color: black;
-        }
-
         /* Add genre button specific styling */
         #add-genre-btn {
             margin-left: -28px;
-            padding: 0 8px;
+            border: 2px solid silver;
+            padding: 0 7px;
             font-size: 18px;
-            background-color: rgb(0, 90, 0);
             color: silver;
             border: none;
         }
 
         #id_genres {
             width: 150px; 
-            padding-right: 24px; 
-            background-color: #5c2a7a; 
-            color: #FFFFFF; border: 2px solid green;
+            padding-right: 24px;
         }
 
         
@@ -181,8 +126,8 @@
         <!-- Suggestions for genres -->
         <div id="genre-suggestions" class="suggestions-box"></div>
         <br>
-        <button type="button" id="submit-btn" class="submit-btn">Upload</button>
-        <button type="button" id="cancel-btn" class="cancel-btn" onclick="window.location.href='/'">Cancel</button>
+        <button type="button" id="submit-btn" class="btn btn-primary animated-border-btn">Upload</button>
+        <button type="button" id="cancel-btn" class="btn btn-danger danger-btn" onclick="window.location.href='/'">Cancel</button>
     </form>
 
     <script>
