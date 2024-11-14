@@ -57,8 +57,8 @@
   }
 
   .nav-link:hover{
-    box-shadow: 0 0 10px cyan;
-    text-shadow: 0 0 10px cyan;
+    box-shadow: 0 0 10px #00FFCC;
+    text-shadow: 0 0 10px #00FFCC;
     color: white;
     background-color: #3c1856;
     border-color: #2D5E49;
@@ -116,7 +116,7 @@
       <filter id="glow-effect" x="-50%" y="-50%" width="200%" height="200%">
         <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur" />
         <feOffset dx="0" dy="0" result="offsetblur" />
-        <feFlood flood-color="cyan" result="color" />
+        <feFlood flood-color="#00FFCC" result="color" />
         <feComposite in2="offsetblur" operator="in" />
         <feMerge>
           <feMergeNode in="coloredBlur" />
