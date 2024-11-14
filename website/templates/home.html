@@ -12,11 +12,12 @@
         display: flex;
         color:#00FFCC;
         gap:5px;
+        align-items: center;
     }
 
     .home-user-name a{
         text-decoration: none;
-        color: #fff;
+        color: #ffffff;
         font-weight: bold;
     }
     .home-user-name a:hover{
@@ -41,7 +42,7 @@
 {% if userPosts %}
     {% for post in userPosts %}
     <ul class="list-group">
-        <li class="list-group-item">
+        <li class="list-group-item" style="display: flex; justify-content: space-between;">
           <div class="home-profile-container">
             <div class ="home-profile-pic">
               <a href ="{% url 'profile' post.userProfiles.user.username %}">
