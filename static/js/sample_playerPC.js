@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				playButtons[index].querySelector('i').classList.replace('fa-pause', 'fa-play');
 			} else {
 				wavesurfer.play();
-				playButtons[index].querySelector('i').classList.replace('fa-play', 'fa-pause')
+				playButtons[index].querySelector('i').classList.replace('fa-play', 'fa-pause');
 			}
 		});
 	});

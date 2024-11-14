@@ -5,20 +5,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import (
-    Http404,
-    HttpRequest,
-    StreamingHttpResponse,
-    HttpResponse,
-    HttpResponseRedirect,
-    JsonResponse,
-)
+from django.http import Http404, JsonResponse
 from django.http.request import is_same_domain
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView
-from typing import AsyncGenerator
 from .forms import (
     SampleEditForm,
     SampleForm,
@@ -38,7 +30,7 @@ from .models import (
     FriendRequest,
     Genre,
 )
-import asyncio, json, os, mimetypes, logging
+import json, os, logging
 from django.http import FileResponse
 
 logger = logging.getLogger(__name__)
@@ -99,6 +91,9 @@ def profile_page(request, username):
     received_requests = FriendRequest.objects.filter(to_user=request.user.userprofile)
 
     query_all_sample = Sample.objects.filter(userProfiles=profile)
+    sorted_friends = profile.get_sorted_friends()
+
+    userPosts = Post.objects.filter(userProfiles=profile).order_by('-postTimeStamp')
 
     context = {
         "profile": profile,
@@ -109,6 +104,8 @@ def profile_page(request, username):
         "profile_user": profile_user,
         "received_requests": received_requests,
         "query_all_sample": query_all_sample,
+        'sorted_friends': sorted_friends,
+        'userPosts': userPosts,
     }
     return render(request, "profile_page.html", context)
 
@@ -978,3 +975,8 @@ def download_sample(request, pk):
         )
 
     return response
+
+@login_required
+def get_received_requests_count(request):
+    count = request.user.userprofile.received_requests.count()
+    return JsonResponse({'count': count})
