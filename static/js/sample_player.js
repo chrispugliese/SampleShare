@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				playButtons[index].querySelector('i').classList.replace('fa-pause', 'fa-play');
 			} else {
 				wavesurfer.play();
-				playButtons[index].querySelector('i').classList.replace('fa-play', 'fa-pause')
+				playButtons[index].querySelector('i').classList.replace('fa-play', 'fa-pause');
 			}
 		});
 	});
@@ -54,6 +54,7 @@ const initWaveSurfer = (url, containerId) => {
 	const wavesurfer = WaveSurfer.create({
 		container: `#${containerId}`,
 		height: 50,
+		width: 800,
 		normalize: false,
 		waveColor: '#00FFCC',
 		progressColor: ' #6A1B9A',
