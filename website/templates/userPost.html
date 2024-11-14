@@ -154,36 +154,38 @@
         {% if comment.samples != None %}
         <!--{{ comment_samples }}-->
         <div class="sample-info">
-         <div class="comment-sample-text">
-          {{ comment.samples.sampleName }}
-        </div>
+         <div class="comment-sample-text"> {{ comment.samples.sampleName }} </div>
             
+          <div class="comment-player-container"> 
+        {% else %} 
+          <div class="comment-player-container" hidden="true"> 
         {% endif %}
-        <div class="comment-player-container"> 
-            <!-- Player buttons -->
-             {% if comment.samples == None %}
-              <button type="button" class="comment-play-button" hidden>
-                <i class="fa-solid fa-play"></i>
-              </button>
-            {% else %}
-            <button class="comment-play-button">
-                <i class="fa-solid fa-play"></i>
-              </button>
-            {% endif %}
-            <div id="comment-waveform-{{ forloop.counter }}" class="comment-waveform"></div>
-            <input type="hidden" class="comment-sample-url" value="{{ comment.samples.audioFile.url }}">
-            <div class="sample-options-container">
-              {% if comment.samples != None %}
-              <!-- Download Code -->
-              <a href="{% url 'download_sample' comment.samples.id %}" class="btn download-btn-comment">
-                <i class="fa-solid fa-download"></i>
-              </a> 
+              <!-- Player buttons -->
+              {% if comment.samples == None %}
+                <button type="button" class="comment-play-button" hidden>
+                  <i class="fa-solid fa-play"></i>
+                </button>
+              {% else %}
+              <button class="comment-play-button">
+                  <i class="fa-solid fa-play"></i>
+                </button>
               {% endif %}
-            </div>
-          <br/>
+              <div id="comment-waveform-{{ forloop.counter }}" class="comment-waveform"></div>
+              <input type="hidden" class="comment-sample-url" value="{{ comment.samples.audioFile.url }}">
+              <div class="sample-options-container">
+                {% if comment.samples != None %}
+                <!-- Download Code -->
+                <a href="{% url 'download_sample' comment.samples.id %}" class="btn download-btn-comment">
+                  <i class="fa-solid fa-download"></i>
+                </a> 
+                {% endif %}
+              </div>
+            <br/>
           </div>
         </div>
-        </div>
+        {% if comment.samples != None %}
+          </div>
+        {% endif %}
   </div>
 <br>
 
