@@ -1,6 +1,8 @@
 ## **SampleShare**
 SampleShare is an audio sample sharing social media web application in development. 
 
+*maybe some pics?*
+
 ## **What is it?**
 SampleShare is a web application that uses Pythons famous open-source Django web framework, MySQL for its backend database, and Docker for containerizing the project for easy deployement. 
 
@@ -28,7 +30,7 @@ git clone git@github.com:SampleShare/SampleShare.git
 ```
 cd SampleShare
 ```
-3. The project needs a .env file for correctly setting up the containers to run the web application and database. Run the create_en.py file to auto generate one for you.
+3. The project needs a .env file for correctly setting up the containers to run the web application and database. Run the create_env.py file to auto generate one for you.
 ```
 python create_env.py
 ```
@@ -47,6 +49,10 @@ upon a successful run, open up a browser and type in
 `
 0.0.0.0:8000
 `
+or 
+`
+localhost:8000
+`
 to view the site. You will be presented with this view.
 
 *show pics of a successful run*
@@ -55,7 +61,7 @@ to view the site. You will be presented with this view.
 
 SampleShare was created by:
 
-- **[Chris Pugliese](https://github.com/chrispugliese)**.
+- **[Chris Pugliese](https://github.com/chrispugliese)**
 - **[Saul Gonzalez](https://github.com/saul178)**
 - **[Matthew Bustamante](https://github.com/Matthew-Bustamante)**
 - **[Jacob Reed](https://github.com/BeachPeddler)**
