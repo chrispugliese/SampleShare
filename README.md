@@ -6,7 +6,9 @@ SampleShare is a social media web application that allows users to share samples
 
 
 In your chosen directory clone the project.
-```git clone git@github.com:SampleShare/SampleShare.git
-```
+`
+git clone git@github.com:SampleShare/SampleShare.git
+`
+
 
 
