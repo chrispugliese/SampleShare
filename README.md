@@ -28,9 +28,9 @@ git clone git@github.com:SampleShare/SampleShare.git
 ```
 cd SampleShare
 ```
-3. The project needs a .env file for correctly setting up the containers to run the webapplication and database. Run the create_en.py file auto generate one for you.
+3. The project needs a .env file for correctly setting up the containers to run the web application and database. Run the create_en.py file auto generate one for you.
 ```
-python3 run create_env.py
+python3 create_env.py
 ```
 >[!WARNING]
->This project is not ready for production so the auto generated .env file should not be used as it is just a baseline to get the project installed and running. 
+>This project is not ready for production so the auto generated .env file should not be used when deploying the project for production as it is just a baseline to get the project installed and running. Remember to alway read the contents of any script before running them blindly.
