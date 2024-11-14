@@ -80,6 +80,7 @@ const initWaveSurfer = (url, containerId) => {
 	wavesurfer.on('interaction', () => {
 		wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
 	});
+
 	document.addEventListener('keydown', (event) => {
 		if (event.key === 'ArrowLeft' && wavesurfer.isPlaying()) {
 			wavesurfer.seekTo(0)
