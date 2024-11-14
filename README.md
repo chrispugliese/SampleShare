@@ -73,4 +73,7 @@ SampleShare was created by:
 
 Thank you to all the contributors for their hard work and dedication to the project.
 
+credit wavesurfer, bootstrap, chatgpt, fontawesome, django guy
+chatgpt was used in cssing, javascripting, and wherever we lacked knowledge 
+
 
