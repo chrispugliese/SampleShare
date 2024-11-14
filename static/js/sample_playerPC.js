@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 		});
 	});
-    console.log("map of samples:", waveSurfersMapObject)
+	console.log("map of samples:", waveSurfersMapObject)
 });
 
 const initCommentWaveSurfer = (url, containerId) => {
@@ -32,7 +32,6 @@ const initCommentWaveSurfer = (url, containerId) => {
 	const wavesurfer = WaveSurfer.create({
 		container: `#comment-waveform`,
 		height: 50,
-		width: 800,
 		normalize: false,
 		waveColor: '#00FFCC',
 		progressColor: ' #6A1B9A',
