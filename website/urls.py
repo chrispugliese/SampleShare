@@ -1,4 +1,4 @@
-from .views import CreateCommentView, send_friend_request, accept_friend_request, decline_friend_request, remove_friend, private_chat_redirect
+from .views import CreateCommentView, send_friend_request, accept_friend_request, decline_friend_request, remove_friend, private_chat_redirect, get_received_requests_count
 from django.urls import path
 from . import views
 from django.http import Http404
@@ -45,6 +45,7 @@ urlpatterns = [
 	path('decline-friend-request/<int:request_id>/', decline_friend_request, name='decline_friend_request'),
 	path('remove-friend/<int:user_id>/', remove_friend, name='remove_friend'),  # URL for removing a friend
 
+    path('get_received_requests_count/', get_received_requests_count, name='get_received_requests_count'),
 
 	#Chat stuff here
 	path("chat/", views.recent_chat_redirect, name="recent_chat_redirect"),
