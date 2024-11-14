@@ -76,6 +76,10 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  width: 100%; /* Ensures the container takes the full width of its parent */
+  flex-grow: 1; /* Allows the content to grow and fill available space */
+  flex-shrink: 1; /* Allows the content to shrink if necessary */
+  flex-basis: auto; /* The initial size of the flex item before it grows/shrinks */
 }
 
 .sample-info {
@@ -83,6 +87,10 @@
   flex-direction: column;
   align-items: flex-start;
   padding-left: 25px;
+  width: 100%; /* Ensures the container takes the full width of its parent */
+  flex-grow: 1; /* Allows the content to grow and fill available space */
+  flex-shrink: 1; /* Allows the content to shrink if necessary */
+  flex-basis: auto; /* The initial size of the flex item before it grows/shrinks */
 }
 
 .sample-name {
@@ -114,7 +122,9 @@
 }
 
 .play-button i , .comment-play-button i{
-  transition: transform 0.2s;
+	width: 0.6em; /* Ensure icon size consistency */
+	height: 1em; /* Ensure icon size consistency */
+	transition: transform 0.2s;
 }
 
 .player-container, .comment-player-container {
@@ -122,12 +132,19 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  flex-grow: 1; /* Allows the content to grow and fill available space */
+  flex-shrink: 1; /* Allows the content to shrink if necessary */
+  flex-basis: auto; /* The initial size of the flex item before it grows/shrinks */
 }
 
 .waveform, .comment-waveform{
   height: 50px;
   margin-left: 10px;
   transition: box-shadow 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  flex-grow: 1; /* Allows the content to grow and fill available space */
+  flex-shrink: 1; /* Allows the content to shrink if necessary */
+  flex-basis: auto; /* The initial size of the flex item before it grows/shrinks */
 }
 
 .waveform:hover, .comment-waveform:hover {
