@@ -234,7 +234,7 @@
               {% for friend in sorted_friends %}
                 <li class="friend-item" style="display: flexbox; align-items: center; gap: 10px; margin-bottom: 10px;">
                   <a href="{% url 'profile' friend.user.username %}">
-                    <img src="{{ friend.userPhoto.url }}" alt="Profile Picture" class="profile-pic"> </a>
+                    <img src="{{ friend.userPhoto.url }}" alt="Profile Picture" class="friend-profile-pic"> </a>
                     <a href="{% url 'profile' friend.user.username %}">
                     {{ friend.user.username }}
                   </a>
