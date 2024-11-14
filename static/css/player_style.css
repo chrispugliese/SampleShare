@@ -75,13 +75,9 @@
         align-items: center;
         gap: 15px;
         width: 100%;
-        /* Ensures the container takes the full width of its parent */
         flex-grow: 1;
-        /* Allows the content to grow and fill available space */
         flex-shrink: 1;
-        /* Allows the content to shrink if necessary */
         flex-basis: auto;
-        /* The initial size of the flex item before it grows/shrinks */
 }
 
 .sample-info {
@@ -90,13 +86,9 @@
         align-items: flex-start;
         padding-left: 25px;
         width: 100%;
-        /* Ensures the container takes the full width of its parent */
         flex-grow: 1;
-        /* Allows the content to grow and fill available space */
         flex-shrink: 1;
-        /* Allows the content to shrink if necessary */
         flex-basis: auto;
-        /* The initial size of the flex item before it grows/shrinks */
 }
 
 .sample-name {
@@ -132,9 +124,7 @@
 .play-button i,
 .comment-play-button i {
         width: 0.6em;
-        /* Ensure icon size consistency */
         height: 1em;
-        /* Ensure icon size consistency */
         transition: transform 0.2s;
 }
 
@@ -145,11 +135,8 @@
         justify-content: left;
         width: 100%;
         flex-grow: 1;
-        /* Allows the content to grow and fill available space */
         flex-shrink: 1;
-        /* Allows the content to shrink if necessary */
         flex-basis: auto;
-        /* The initial size of the flex item before it grows/shrinks */
 }
 
 .waveform,
@@ -159,11 +146,8 @@
         transition: box-shadow 0.3s ease, transform 0.2s ease;
         width: 100%;
         flex-grow: 1;
-        /* Allows the content to grow and fill available space */
         flex-shrink: 1;
-        /* Allows the content to shrink if necessary */
         flex-basis: auto;
-        /* The initial size of the flex item before it grows/shrinks */
 }
 
 .waveform:hover,
