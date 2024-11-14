@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 		});
 	});
+
 });
 
 const initWaveSurfer = (url, containerId) => {
@@ -74,10 +75,16 @@ const initWaveSurfer = (url, containerId) => {
 			ctx.closePath()
 		},
 	});
+
 	wavesurfer.load(url);
 	wavesurfer.on('interaction', () => {
 		wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
 	});
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'ArrowLeft' && wavesurfer.isPlaying()) {
+			wavesurfer.seekTo(0)
+		}
+	})
 	return wavesurfer
 };
 

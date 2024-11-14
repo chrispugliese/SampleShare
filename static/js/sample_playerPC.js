@@ -30,7 +30,7 @@ const initCommentWaveSurfer = (url, containerId) => {
 	const wavesurfer = WaveSurfer.create({
 		container: `#comment-waveform`,
 		height: 50,
-		normalize: false,
+		normalize: true,
 		waveColor: '#00FFCC',
 		progressColor: ' #6A1B9A',
 		cursorColor: '#FFFFFF',
