@@ -28,9 +28,40 @@ git clone git@github.com:SampleShare/SampleShare.git
 ```
 cd SampleShare
 ```
-3. The project needs a .env file for correctly setting up the containers to run the web application and database. Run the create_en.py file auto generate one for you.
+3. The project needs a .env file for correctly setting up the containers to run the web application and database. Run the create_en.py file to auto generate one for you.
 ```
-python3 create_env.py
+python create_env.py
 ```
->[!WARNING]
->This project is not ready for production so the auto generated .env file should not be used when deploying the project for production as it is just a baseline to get the project installed and running. Remember to alway read the contents of any script before running them blindly.
+> [!caution] 
+> This project is not ready for production so the auto generated .env file should not be used when deploying the project for production as it is just a baseline to get the project installed and running. Remember to always read the contents of any script before running them blindly.
+
+4. In your chosen terminal/command prompt run this command inside the directory with the docker files to build and run the project.
+```
+docker compose up --build
+```
+> [!note] 
+> This will take some time depending on your internet speed and hardware.
+
+## **Post-Installation**
+upon a successful run, open up a browser and type in 
+`
+0.0.0.0:8000
+`
+to view the site. You will be presented with this view.
+
+*show pics of a successful run*
+
+## **Authors and Acknowledgment**
+
+SampleShare was created by:
+
+- **[Chris Pugliese](https://github.com/chrispugliese)**.
+- **[Saul Gonzalez](https://github.com/saul178)**
+- **[Matthew Bustamante](https://github.com/Matthew-Bustamante)**
+- **[Jacob Reed](https://github.com/BeachPeddler)**
+- **[Dylan Reed](https://github.com/DylanCReed)**
+- **[Gabriel Pantoja](https://github.com/Jeze2)**
+
+Thank you to all the contributors for their hard work and dedication to the project.
+
+
