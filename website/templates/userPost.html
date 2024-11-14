@@ -48,10 +48,11 @@
     <hr>
     </p>
    
+    {% for sample in post_samples %} 
+    <div class="sample-info">
     <div class="post-sample-text">
       {{ user_post.samples.sampleName }}
-      </div>
-    {% for sample in post_samples %} 
+      </div>   
     <div class="player-container"> 
         <!-- Player buttons -->
           <button class="play-button">
@@ -59,22 +60,25 @@
           </button>
         <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
         <input type="hidden" class="sample-url" value="{{ sample.samples.audioFile.url }}">
+        <div class="sample-options-container">
+          <div class="sample-download"> 
+            <a href="{% url 'download_sample' sample.id %}">
+              <i class="fa-solid fa-download"></i>
+            </a>
+          </div>
+        </div>
       <br/>
       </div>
+      </div>
       {% endfor %}
-    <!-- Download Code -->
-        <a href="{% url 'download_sample' user_post.samples.id %}" class="btn download-btn">
-          <i class="fa-solid fa-download"></i>
-        </a>
-     <!-- End of Download Code -->
 
 
 </div>
-</div>
-<br/>
-<div class="back-comment-like-buttons">
+<hr>
+<div class="back-comment-like-buttons" style="display: flex; justify-content: center; gap: 50px;">
 <a href="{% url 'home' %}" class="btn btn-secondary back-btn">Back</a>
 <a href="{% url 'create_comment' user_post.id %}" class="btn btn-primary make-comment-btn animated-border-btn"> Make A Comment</a>
+
 
 
 <!------------------- Like Code --------------------->
@@ -98,8 +102,11 @@
     </div>
   </div>
 </div>
-</div>
 </form>
+</div>
+<br/>
+
+</div>
 <!------------------- End of Like Code --------------------->
 <br/>
 <!-- COMMENT SECTION -->
@@ -112,11 +119,9 @@
 
    
     <!-- Comment Display Code -->
-    <ul class="list-group">
     {% if comments %}
     {% for comment in comments %}
-    
-    <li class="list-group-item">
+    <div class="card">
       <div class="card-header">
       <div class="comment-profile-info">
         <div class="comment-profile-pic">
@@ -144,43 +149,52 @@
     <!---------------------------------------------------->
     </div>
   </div>
-    
+    <div class="card-body">
         <p> {{ comment.commentMessage }}</p>
         {% if comment.samples != None %}
         <!--{{ comment_samples }}-->
-         <div class="comment-sample-text">
-          {{ comment.samples.sampleName }}
-        </div>
+        <div class="sample-info">
+         <div class="comment-sample-text"> {{ comment.samples.sampleName }} </div>
             
+          <div class="comment-player-container"> 
+        {% else %} 
+          <div class="comment-player-container" hidden="true"> 
         {% endif %}
-        <div class="comment-player-container"> 
-            <!-- Player buttons -->
-             {% if comment.samples == None %}
-              <button type="button" class="comment-play-button" hidden>
-                <i class="fa-solid fa-play"></i>
-              </button>
-            {% else %}
-            <button class="comment-play-button">
-                <i class="fa-solid fa-play"></i>
-              </button>
-            {% endif %}
-            <div id="comment-waveform-{{ forloop.counter }}" class="comment-waveform"></div>
-            <input type="hidden" class="comment-sample-url" value="{{ comment.samples.audioFile.url }}">
-            
-          <br/>
+              <!-- Player buttons -->
+              {% if comment.samples == None %}
+                <button type="button" class="comment-play-button" hidden>
+                  <i class="fa-solid fa-play"></i>
+                </button>
+              {% else %}
+              <button class="comment-play-button">
+                  <i class="fa-solid fa-play"></i>
+                </button>
+              {% endif %}
+              <div id="comment-waveform-{{ forloop.counter }}" class="comment-waveform"></div>
+              <input type="hidden" class="comment-sample-url" value="{{ comment.samples.audioFile.url }}">
+              <div class="sample-options-container">
+                {% if comment.samples != None %}
+                <!-- Download Code -->
+                <a href="{% url 'download_sample' comment.samples.id %}" class="btn download-btn-comment">
+                  <i class="fa-solid fa-download"></i>
+                </a> 
+                {% endif %}
+              </div>
+            <br/>
           </div>
-          {% if comment.samples != None %}
-            <!-- Download Code -->
-            <a href="{% url 'download_sample' comment.samples.id %}" class="btn download-btn-comment">
-              <i class="fa-solid fa-download"></i>
-            </a> 
-            {% endif %}     
-        <!-- End of Download Code --> 
-        
-    </li>
+        </div>
+        {% if comment.samples != None %}
+          </div>
+        {% endif %}
+  </div>
+<br>
+
+
     {% endfor %}
     {% endif %}
-</ul>
+    </div>
+    </div>
+    <br>
 </body>
 <!-- ----------End of Comment Section------------- -->
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script> -->

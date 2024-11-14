@@ -6,7 +6,6 @@
   margin-left: auto;
   margin-right: auto;
   border-radius: 15px;
-
 }
 
 .table th {
@@ -41,6 +40,7 @@
   border-radius: 50%;
   transition: box-shadow 0.3s ease, transform 0.2s ease;
   display: flex;
+  height: 82px;
   justify-content: center;
 }
 
@@ -48,7 +48,6 @@
   border-radius: 50%;
   width: 82px;
   height: 82px;
-  margin: auto;
   display: block;
 }
 
@@ -114,7 +113,9 @@
 }
 
 .play-button i , .comment-play-button i{
-  transition: transform 0.2s;
+	width: 0.8em; /* Ensure icon size consistency */
+	height: 1em; /* Ensure icon size consistency */
+	transition: transform 0.2s;
 }
 
 .player-container, .comment-player-container {
@@ -128,6 +129,7 @@
   height: 50px;
   margin-left: 10px;
   transition: box-shadow 0.3s ease, transform 0.2s ease;
+  width: 100%; 
 }
 
 .waveform:hover, .comment-waveform:hover {

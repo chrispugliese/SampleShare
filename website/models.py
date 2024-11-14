@@ -29,6 +29,10 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return str(self.user)
+    
+    def get_sorted_friends(self):
+        # Retrieve friends sorted by their username in alphabetical order
+        return self.friends.all().order_by('user__username')
 
 
 class FriendRequest(models.Model):
