@@ -1,5 +1,3 @@
-//NOTE: howler js library
-
 //NOTE: wavesurfers js library
 document.addEventListener('DOMContentLoaded', () => {
 	const sampleElements = document.querySelectorAll('.comment-sample-url');
