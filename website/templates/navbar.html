@@ -1,13 +1,12 @@
 {% load static %}
 <style>
-  /* Sidebar Styles */
   .sidebar {
     position: fixed;
     display: flex;
     flex-direction: column;
     height: 100vh;
     width: 18%;
-    background-color: #202830; /* Dark background */
+    background-color: #202830;
     color: silver;
     padding-top: 20px;
     padding-left: 15px;
@@ -16,7 +15,7 @@
   }
 
   .nav {
-    flex-grow: 1; /* Pushes items to top */
+    flex-grow: 1;
   }
 
   .sidebar .navbar-brand {
@@ -31,9 +30,8 @@
     text-align: left;
   }
 
-  /* Main Content Styling */
   .main-content {
-    margin-left: 18%; /* Space for sidebar */
+    margin-left: 18%;
     padding: 20px;
   }
 
@@ -51,14 +49,11 @@
     transition: all 0.3s ease;
   }
 
-    /* General Sidebar Nav Link Styles */
   .sidebar .nav-link {
     margin-top: 5px;
     margin-bottom: 5px;
-    /* Any unique styles specific to sidebar nav links */
   }
 
-  /* Sidebar Nav Link Hover */
   .sidebar .nav-link.sidebar-nav-link:hover {
     box-shadow: 0 0 10px #00FFCC;
     text-shadow: 0 0 10px white;
@@ -68,7 +63,6 @@
     border-radius: 50px;
   }
 
-  /* Sidebar Nav Link Active */
   .sidebar .nav-link.sidebar-nav-link:active {
     box-shadow: 0 0 10px #ff7f50;
     text-shadow: 0 0 10px #ff7f50;
@@ -221,7 +215,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link sidebar-nav-link" style="position: absolute; bottom: 0;" href="{% url 'logout' %}">
+          <a class="nav-link sidebar-nav-link" style="margin-top: 200px" href="{% url 'logout' %}">
             <span style="display: inline-block; width: 10px;"></span>
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-door-open" viewBox="-2 -2 20 20">
               <path d="M8.5 10c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
