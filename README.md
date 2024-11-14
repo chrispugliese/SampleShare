@@ -26,7 +26,7 @@ To install the project follow these steps.
 ```
 git clone git@github.com:SampleShare/SampleShare.git
 ```
-2. Go in to the project directory 
+2. Go in to the project directory. 
 ```
 cd SampleShare
 ```
@@ -56,6 +56,9 @@ localhost:8000
 to view the site. You will be presented with this view.
 
 *show pics of a successful run*
+
+## **What does it do?**
+*show pics of the project and its focus.*
 
 ## **Authors and Acknowledgment**
 
