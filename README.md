@@ -1,6 +1,9 @@
 ## **SampleShare**
 SampleShare is an audio sample sharing social media web application in development. 
 
+<img width="510" alt="ss-logo" src="https://github.com/user-attachments/assets/36bfaa1e-85f8-4bb6-a5b6-68188bf9a72c">
+
+
 ## **What is it?**
 SampleShare is a web application that uses Python's famous open-source Django web framework, MySQL for its backend database, and Docker for containerizing the project to simplify deployment and development. SampleShare facilitates an artistic community by enabling music enthusiasts to connect, collaborate, and share their collections of music samples. If you want to create or discover new sounds for your personal projects or showcase your developed samples, sign up with SampleShare today.
 
@@ -47,7 +50,7 @@ docker compose up --build
 
 ## **Post-Installation**
 Upon a successful run, your chosen terminal should look like this:
-*add image*
+![snapshot_2024-11-15_16-54-52](https://github.com/user-attachments/assets/46afe0ef-5a1d-400f-a116-682eb5e3fc80)
 
 Open up a browser and type in 
 `
@@ -58,8 +61,7 @@ or
 localhost:8000
 `
 to view the site. You will be presented with the view of the home page like this:
-
-*show pics of a successful homepage*
+![snapshot_2024-11-15_16-56-58](https://github.com/user-attachments/assets/48ac236b-6954-483e-af6a-878960376691)
 
 
 
