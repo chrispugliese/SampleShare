@@ -1,6 +1,5 @@
 ## **SampleShare**
 SampleShare is an audio sample sharing social media web application in development. 
-/home/saul178/school-work/sample-share-proj/test-songs/ss-logo.png
 
 ## **What is it?**
 SampleShare is a web application that uses Python's famous open-source Django web framework, MySQL for its backend database, and Docker for containerizing the project to simplify deployment and development. SampleShare facilitates an artistic community by enabling music enthusiasts to connect, collaborate, and share their collections of music samples. If you want to create or discover new sounds for your personal projects or showcase your developed samples, sign up with SampleShare today.
