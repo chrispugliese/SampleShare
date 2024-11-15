@@ -1,7 +1,17 @@
 <!-- Footer -->
+<style>
+  footer {
+    position: relative;
+    background-color: #171218;
+    min-height: 0%;
+    bottom: 0;
+    width: 100%;
+  }
+
+</style>
+
 <footer
   class="text-center text-lg-start text-white"
-  style="background-color: #171218; position: relative; bottom: 0; width: 100%;"
 >
   <!-- Copyright -->
   <div
@@ -15,3 +25,45 @@
   <!-- Copyright -->
 </footer>
 <!-- Footer -->
+
+
+<script>
+  function pageCanScroll() {
+    return document.documentElement.scrollHeight > document.documentElement.clientHeight;
+  }
+
+  // Create a style element dynamically
+  function insertStylesForFooter() {
+    const footer = document.querySelector("footer");
+
+    const style = document.createElement("style");
+    style.type = "text/css";
+      if (pageCanScroll()) {
+        style.innerHTML = `
+          footer {
+            background-color: #171218; 
+            position: relative; 
+            min-height: 0%; bottom: 0; 
+            width: 100%;
+          }
+        `;
+      }
+      
+      else {
+        style.innerHTML = `
+          footer {
+            background-color: #171218; 
+            position: absolute; 
+            min-height: 0%; 
+            bottom: 0; 
+            width: 100%;
+          }
+        `;
+      }
+      footer.appendChild(style);
+    }
+
+  // Run the function on page load and/or window resize
+  window.addEventListener('load', insertStylesForFooter);
+  window.addEventListener('resize', insertStylesForFooter);
+</script>
