@@ -1,13 +1,14 @@
 ## **SampleShare**
 SampleShare is an audio sample sharing social media web application in development. 
+/home/saul178/school-work/sample-share-proj/test-songs/ss-logo.png
 
 ## **What is it?**
-SampleShare is a web application that uses Pythons famous open-source Django web framework, MySQL for its backend database, and Docker for containerizing the project for easy deployement and development. 
+SampleShare is a web application that uses Python's famous open-source Django web framework, MySQL for its backend database, and Docker for containerizing the project to simplify deployment and development. SampleShare facilitates an artistic community by enabling music enthusiasts to connect, collaborate, and share their collections of music samples. If you want to create or discover new sounds for your personal projects or showcase your developed samples, sign up with SampleShare today.
 
 ## Prerequisites
 
 Before setting up the project, make sure you have the following installed on your respective system:
-- **Git**: required to clone the repository
+- **Git**: Required to clone the repository
 - **Python 3.x**: Required to run Django and install dependencies.
 - **Docker**: Used to containerize the web server and database.
 
@@ -36,17 +37,17 @@ cd SampleShare
 python create_env.py
 ```
 > [!caution] 
-> This project is not ready for production so the auto generated .env file should not be used when deploying the project for production as it is just a baseline to get the project installed and running. Remember to always read the contents of any script before running them blindly.
+> This project is not ready for production, so the auto generated .env file should not be used when deploying the project for production as it is just a baseline to get the project installed and running. Always read the contents of any script before running them blindly.
 
 4. In your chosen terminal/command prompt run this command inside the directory with the docker files to build and run the project.
 ```
 docker compose up --build
 ```
 > [!note] 
-> For Windows/Mac users make sure you have Docker Desktop installed and run it as an adminstrator before running the command. This will take some time depending on your internet speed and hardware.
+> For Windows/Mac users, make sure you have Docker Desktop installed and run it as an adminstrator before running the command. This will take some time depending on your internet speed and hardware.
 
 ## **Post-Installation**
-upon a successful run, your chosen terminal should look like this.
+Upon a successful run, your chosen terminal should look like this:
 *add image*
 
 Open up a browser and type in 
@@ -57,7 +58,7 @@ or
 `
 localhost:8000
 `
-to view the site. You will be presented with the view of the home page like this.
+to view the site. You will be presented with the view of the home page like this:
 
 *show pics of a successful homepage*
 
