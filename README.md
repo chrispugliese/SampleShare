@@ -41,11 +41,11 @@ python create_env.py
 > This project is not ready for production so the auto generated .env file should not be used when deploying the project for production as it is just a baseline to get the project installed and running. Remember to always read the contents of any script before running them blindly.
 
 4. In your chosen terminal/command prompt run this command inside the directory with the docker files to build and run the project.
-> [!note] 
-> For Windows/Mac users make sure you have docker desktop installed and run it as an adminstrator before running the command. This will take some time depending on your internet speed and hardware.
 ```
 docker compose up --build
 ```
+> [!note] 
+> For Windows/Mac users make sure you have docker desktop installed and run it as an adminstrator before running the command. This will take some time depending on your internet speed and hardware.
 
 ## **Post-Installation**
 upon a successful run, open up a browser and type in 
