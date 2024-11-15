@@ -4,14 +4,17 @@ SampleShare is an audio sample sharing social media web application in developme
 *maybe some pics?*
 
 ## **What is it?**
-SampleShare is a web application that uses Pythons famous open-source Django web framework, MySQL for its backend database, and Docker for containerizing the project for easy deployement. 
+SampleShare is a web application that uses Pythons famous open-source Django web framework, MySQL for its backend database, and Docker for containerizing the project for easy deployement and development. 
 
 ## Prerequisites
 
 Before setting up the project, make sure you have the following installed on your respective system:
-
+- **Git**: required to clone the repository
 - **Python 3.x**: Required to run Django and install dependencies.
 - **Docker**: Used to containerize the web server and database.
+
+### Installing Git
+To install Git, visit the [official Git website](https://git-scm.com/) and download the latest version for your operating system.
 
 ### Installing Python
 To install Python, visit the [official Python website](https://www.python.org/downloads/) and download the latest version for your operating system.
@@ -26,7 +29,7 @@ To install the project follow these steps.
 ```
 git clone git@github.com:SampleShare/SampleShare.git
 ```
-2. Go in to the project directory. 
+2. Go into the project directory. 
 ```
 cd SampleShare
 ```
@@ -38,11 +41,11 @@ python create_env.py
 > This project is not ready for production so the auto generated .env file should not be used when deploying the project for production as it is just a baseline to get the project installed and running. Remember to always read the contents of any script before running them blindly.
 
 4. In your chosen terminal/command prompt run this command inside the directory with the docker files to build and run the project.
+> [!note] 
+> For Windows/Mac users make sure you have docker desktop installed and run it as an adminstrator before running the command. This will take some time depending on your internet speed and hardware.
 ```
 docker compose up --build
 ```
-> [!note] 
-> This will take some time depending on your internet speed and hardware.
 
 ## **Post-Installation**
 upon a successful run, open up a browser and type in 
@@ -56,9 +59,6 @@ localhost:8000
 to view the site. You will be presented with this view.
 
 *show pics of a successful run*
-
-## **What does it do?**
-*show pics of the project and its focus.*
 
 ## **Authors and Acknowledgment**
 
@@ -75,5 +75,4 @@ Thank you to all the contributors for their hard work and dedication to the proj
 
 credit wavesurfer, bootstrap, chatgpt, fontawesome, django guy
 chatgpt was used in cssing, javascripting, and wherever we lacked knowledge 
-
 
