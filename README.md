@@ -1,8 +1,6 @@
 ## **SampleShare**
 SampleShare is an audio sample sharing social media web application in development. 
 
-*maybe some pics?*
-
 ## **What is it?**
 SampleShare is a web application that uses Pythons famous open-source Django web framework, MySQL for its backend database, and Docker for containerizing the project for easy deployement and development. 
 
@@ -45,7 +43,7 @@ python create_env.py
 docker compose up --build
 ```
 > [!note] 
-> For Windows/Mac users make sure you have docker desktop installed and run it as an adminstrator before running the command. This will take some time depending on your internet speed and hardware.
+> For Windows/Mac users make sure you have Docker Desktop installed and run it as an adminstrator before running the command. This will take some time depending on your internet speed and hardware.
 
 ## **Post-Installation**
 upon a successful run, your chosen terminal should look like this.
@@ -79,6 +77,12 @@ SampleShare was created by:
 
 Thank you to all the contributors for their hard work and dedication to the project.
 
-credit wavesurfer, bootstrap, chatgpt, fontawesome, django guy,
-chatgpt was used in cssing, javascripting, and wherever we lacked knowledge 
+## **Further credit towards** 
+- [Wavesurfer.js](https://wavesurfer.xyz/) for their amazing audio/waveform library.
+- [Matthew Ström](https://css-tricks.com/making-an-audio-waveform-visualizer-with-vanilla-javascript/) for his amazing article on waveforms and creating a unique looking waveform.
+- [Bootstrap](https://getbootstrap.com/) for their free amazing web framework.
+- [Django](https://www.djangoproject.com/) for their amazing python web framework
+- [FontAwesome](https://fontawesome.com/) for their amazing icons.
+- [Codemy.com](https://www.youtube.com/@Codemycom) for his amazing tutorials.
+- ChatGPT AI was used in CSS styling, JavaScript, and wherever we lacked knowledge.
 
