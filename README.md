@@ -48,7 +48,10 @@ docker compose up --build
 > For Windows/Mac users make sure you have docker desktop installed and run it as an adminstrator before running the command. This will take some time depending on your internet speed and hardware.
 
 ## **Post-Installation**
-upon a successful run, open up a browser and type in 
+upon a successful run, your chosen terminal should look like this.
+*add image*
+
+Open up a browser and type in 
 `
 0.0.0.0:8000
 `
@@ -56,9 +59,12 @@ or
 `
 localhost:8000
 `
-to view the site. You will be presented with this view.
+to view the site. You will be presented with the view of the home page like this.
 
-*show pics of a successful run*
+*show pics of a successful homepage*
+
+
+
 
 ## **Authors and Acknowledgment**
 
@@ -73,6 +79,6 @@ SampleShare was created by:
 
 Thank you to all the contributors for their hard work and dedication to the project.
 
-credit wavesurfer, bootstrap, chatgpt, fontawesome, django guy
+credit wavesurfer, bootstrap, chatgpt, fontawesome, django guy,
 chatgpt was used in cssing, javascripting, and wherever we lacked knowledge 
 
