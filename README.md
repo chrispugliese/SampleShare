@@ -1,7 +1,7 @@
 ## **SampleShare**
 SampleShare is an audio sample sharing social media web application in development. 
 
-<img width="510" alt="ss-logo" src="https://github.com/user-attachments/assets/36bfaa1e-85f8-4bb6-a5b6-68188bf9a72c">
+<img width="256" alt="ss-logo" src="https://github.com/user-attachments/assets/36bfaa1e-85f8-4bb6-a5b6-68188bf9a72c">
 
 
 ## **What is it?**
@@ -50,6 +50,7 @@ docker compose up --build
 
 ## **Post-Installation**
 Upon a successful run, your chosen terminal should look like this:
+
 ![snapshot_2024-11-15_16-54-52](https://github.com/user-attachments/assets/46afe0ef-5a1d-400f-a116-682eb5e3fc80)
 
 Open up a browser and type in 
@@ -61,7 +62,8 @@ or
 localhost:8000
 `
 to view the site. You will be presented with the view of the home page like this:
-![snapshot_2024-11-15_16-56-58](https://github.com/user-attachments/assets/48ac236b-6954-483e-af6a-878960376691)
+
+![snapshot_2024-11-15_17-00-22](https://github.com/user-attachments/assets/040e02d1-9f2b-4235-9f1d-a5b4fc66cb25)
 
 
 
