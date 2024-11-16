@@ -86,7 +86,7 @@ Thank you to all the contributors for their hard work and dedication to the proj
 - [Wavesurfer.js](https://wavesurfer.xyz/) for their amazing audio/waveform library.
 - [Matthew Ström](https://css-tricks.com/making-an-audio-waveform-visualizer-with-vanilla-javascript/) for his amazing article on waveforms and creating a unique looking waveform.
 - [Bootstrap](https://getbootstrap.com/) for their free amazing web framework.
-- [Django](https://www.djangoproject.com/) for their amazing python web framework
+- [Django](https://www.djangoproject.com/) for their amazing Python web framework
 - [FontAwesome](https://fontawesome.com/) for their amazing icons.
 - [Codemy.com](https://www.youtube.com/@Codemycom) for his amazing tutorials.
 - ChatGPT AI was used in CSS styling, JavaScript, and wherever we lacked knowledge.
