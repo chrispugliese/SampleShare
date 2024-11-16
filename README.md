@@ -67,7 +67,7 @@ to view the site. You will be presented with the view of the home page like this
 ![snapshot_2024-11-15_17-00-22](https://github.com/user-attachments/assets/040e02d1-9f2b-4235-9f1d-a5b4fc66cb25)
 
 
-
+If the results above is not what you got then retry the steps from the beginning.
 
 ## **Authors and Acknowledgment**
 
