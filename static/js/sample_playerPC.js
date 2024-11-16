@@ -1,5 +1,3 @@
-//NOTE: howler js library
-
 //NOTE: wavesurfers js library
 document.addEventListener('DOMContentLoaded', () => {
 	const sampleElements = document.querySelectorAll('.comment-sample-url');
@@ -24,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 		});
 	});
-    console.log("map of samples:", waveSurfersMapObject)
 });
 
 const initCommentWaveSurfer = (url, containerId) => {
@@ -32,8 +29,7 @@ const initCommentWaveSurfer = (url, containerId) => {
 	const wavesurfer = WaveSurfer.create({
 		container: `#comment-waveform`,
 		height: 50,
-		width: 800,
-		normalize: false,
+		normalize: true,
 		waveColor: '#00FFCC',
 		progressColor: ' #6A1B9A',
 		cursorColor: '#FFFFFF',
@@ -78,6 +74,7 @@ const initCommentWaveSurfer = (url, containerId) => {
 			ctx.closePath()
 		},
 	});
+
 	wavesurfer.load(url);
 	wavesurfer.on('interaction', () => {
 		wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();

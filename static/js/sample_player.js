@@ -1,28 +1,3 @@
-//NOTE: howler js library
-const playerControls = {
-	playBtn: document.getElementById('playBtn'),
-};
-
-let sound = null;
-let currentUrl = ''
-
-const playPause = (url) => {
-	if (url !== currentUrl) {
-		if (sound) {
-			sound.stop();
-		}
-		sound = new Howl({
-			src: [url],
-			autoplay: false,
-			loop: false,
-			html5: true,
-			format: ['mp3', 'wav'],
-		});
-		currentUrl = url;
-	}
-	sound.playing() ? sound.pause() : sound.play();
-};
-
 //NOTE: wavesurfers js library
 document.addEventListener('DOMContentLoaded', () => {
 	const sampleElements = document.querySelectorAll('.sample-url');
@@ -47,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 		});
 	});
+
 });
 
 const initWaveSurfer = (url, containerId) => {
@@ -54,10 +30,9 @@ const initWaveSurfer = (url, containerId) => {
 	const wavesurfer = WaveSurfer.create({
 		container: `#${containerId}`,
 		height: 50,
-		width: 800,
-		normalize: false,
+		normalize: true,
 		waveColor: '#00FFCC',
-		progressColor: ' #6A1B9A',
+		progressColor: '#6A1B9A',
 		cursorColor: '#FFFFFF',
 		barWidth: NaN,
 		barGap: NaN,
@@ -100,9 +75,16 @@ const initWaveSurfer = (url, containerId) => {
 			ctx.closePath()
 		},
 	});
+
 	wavesurfer.load(url);
 	wavesurfer.on('interaction', () => {
 		wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'ArrowLeft' && wavesurfer.isPlaying()) {
+			wavesurfer.seekTo(0);
+		}
 	});
 	return wavesurfer
 };
