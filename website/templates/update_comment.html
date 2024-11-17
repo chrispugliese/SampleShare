@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/custom_style.css' %}"/>
 <div class="col-md-6 offset-md-3">
 <h1>Update Comment</h1>
 <br/>
@@ -11,7 +12,8 @@
 	{{ form.as_p }}
 
 <br/>
-  <button type="submit" class="btn btn-secondary">Update Comment</button>
+  <button type="submit" class="btn animated-border-btn">Update Comment</button>
+  <a href ="{% url 'user_post' current_post %}" class="btn btn-secondary">back</a>
 
 </form>
 

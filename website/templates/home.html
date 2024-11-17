@@ -2,36 +2,87 @@
 {% load static %}
 {% block content%}
 
-<div class="col-md-6 offset-md-3">      
-    <h1>WELCOME TO SAMPLE SHARE</h1>
-    </div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="{% static 'css/custom_style.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/player_style.css' %}"/>
+
+<style>
+  .home-profile-container{
+        display: flex;
+        color:#00FFCC;
+        gap:5px;
+        align-items: center;
+    }
+
+    .home-user-name a{
+        text-decoration: none;
+        color: #ffffff;
+        font-weight: bold;
+    }
+    .home-user-name a:hover{
+        color:#00FFCC;
+    }
+    .view-post-btn{
+    float: right;
+  }
+  .post-sample-text{
+        font-weight: bold;
+        font-size: 20px;
+        margin-bottom: 10px;
+        margin-left: 20px;
+    }
+</style>
+
+    <h1 style="text-align: center;">WELCOME TO SAMPLESHARE</h1>
+
 
 
 {% if userPosts %}
     {% for post in userPosts %}
     <ul class="list-group">
-        <li class="list-group-item">
+        <li class="list-group-item" style="display: flex; justify-content: space-between;">
+          <div class="home-profile-container">
+            <div class ="home-profile-pic">
+              <a href ="{% url 'profile' post.userProfiles.user.username %}">
+              <img src="{{ post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
+             </a>
+            </div>
+              <div class="home-user-name">
             <a href ="{% url 'profile' post.userProfiles.user.username %}">
-            <img src="{{ post.userProfiles.userPhoto.url }}" alt="Profile Photo" style="width:30px; height:30px; border-radius: 50%;">
-           {{ post.userProfiles.user.username }} </a>
-
-        </li>
-        <li class="list-group-item">{{ post.postText }}</li>
+              {{ post.userProfiles.user.username }}
+            </a>
+            </div>
+        </div>
+        <div class="view-post-btn">
+        <a href="{%url 'user_post' post.id%}" class="btn btn-primary view-post-btn animated-border-btn"> View Post </a>
+          </div>
+          </li>
+        <li class="list-group-item" style="word-wrap:break-word;">{{ post.postText }}</li>
         <li class="list-group-item">
-            <strong>Sample:</strong>
+          <div class="sample-info">
+          <div class="post-sample-text">
             {{ post.samples.sampleName }} 
+            </div>
             <div class="player-container"> 
-            <button onclick="playPause('{{ post.samples.audioFile.url }}')" id="playBtn" class="btn btn-primary"> Play </button>
-          </div></li>
+                <!-- Player buttons -->
+                  <button class="play-button">
+                    <i class="fa-solid fa-play"></i>
+                  </button>
+                <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
+                <input type="hidden" class="sample-url" value="{{ post.samples.audioFile.url }}">
+            </div>
+          </div>
+          <br>
+        </li>
         
     </ul>
-    <a href="{%url 'user_post' post.id%}" class="btn btn-secondary"> View Post </a>
     <br/>
     {% endfor %}
 {% endif %}
 <br/>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script src="{% static 'js/sample_player.js' %}"></script>
 
 {% endblock %}

@@ -1,142 +1,263 @@
 /* Style the body */
 body {
-    background-image: linear-gradient(45deg, #1e232e , #362d4b ); /* Dark blue gradient */
-    background-repeat: no-repeat;
-    background-size: cover; /* Ensures the gradient covers the entire page */
-    min-height: 100vh; /* Ensures gradient covers the full viewport height */
-    color: #e0e0e0; /* Light text color */
-  }
-  
-  /* Style the profile card */
-  .profile-card {
-    background-color: #202830; /* Brighter background compared to the page */
-    padding: 20px;
-    border-radius: 15px; /* Rounded corners */
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3); /* Slight shadow for depth */
-    color: #e0e0e0; /* Text color */
-    margin-top: 20px; /* Space from the top */
-  }
-  
-  /* Profile Info container: Flexbox for left alignment */
-  .profile-info {
-    display: flex; /* Aligns image and details side by side */
-    align-items: flex-start; /* Aligns items to the top of the card */
-    gap: 20px; /* Adds space between the image and the text */
-  }
-  
-  /* Style the image */
-  .profile-photo {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    border: 2px solid #00ffcc; /* Cyan border for profile picture */
-  }
-  
-  /* Style the heading */
-  h2 {
-    color: rgb(255, 255, 255);
-  }
-  
-  /* Custom button styles (overrides Bootstrap) */
-  .btn-primary {
-    background-color: purple;
-    color: white;
-    border: none;
-  }
+  background-image: linear-gradient(45deg, #1e232e, #362d4b);
+  /* Dark blue gradient */
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* Ensures the gradient covers the entire page */
+  min-height: 100vh;
+  /* Ensures gradient covers the full viewport height */
+  color: #e0e0e0;
+  /* Light text color */
+}
 
-  .btn-primary:active {
-    background-color: #6a1b9a !important;
-  }
-  
-  .btn-primary:hover {
-    background-color: darkviolet;
-  }
-  /* Basic button styling for wave fx*/
+/* Style the profile card */
+.profile-card {
+  background-color: #202830;
+  /* Brighter background compared to the page */
+  padding: 20px;
+  border-radius: 15px;
+  /* Rounded corners */
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+  /* Slight shadow for depth */
+  color: #e0e0e0;
+  /* Text color */
+  margin-top: 20px;
+  margin-bottom: 20px;
+  /* Space from the top */
+  align-items: center;
+  justify-content: center;
+}
+
+/* Profile Info container: Flexbox for left alignment */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  /* Aligns image and details side by side */
+  align-items: center;
+  text-align: center;
+  /* Aligns items to the top of the card */
+  gap: 1px;
+  /* Adds space between the image and the text */
+}
+
+/* Style the image */
+.profile-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid #00ffcc;
+  /* Cyan border for profile picture */
+}
+
+/* Style the heading */
+h2 {
+  color: rgb(255, 255, 255);
+}
+
+/* Custom button styles (overrides Bootstrap) */
+.btn-primary {
+  background-color: purple;
+  color: white;
+  border: none;
+}
+
+.btn-primary:active {
+  background-color: #6a1b9a !important;
+}
+
+.btn-primary:hover {
+  background-color: darkviolet;
+}
+
+/* Basic button styling for wave fx*/
 .wave-btn {
-    background-color: #6a1b9a; /* Starting color */
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease; /* Fallback transition */
-  }
-  
-  /* Define the keyframes for the color wave */
-  @keyframes waveColor {
-    0% {
-      background-color: #6a1b9a; /* Dark purple */
-    }
-    25% {
-      background-color: #9575cd; /* Light dull purple */
-    }
-    50% {
-      background-color: #c0ace3; /* Cyan */
-    }
-    75% {
-      background-color: #8e24aa; /* Medium purple */
-    }
-    100% {
-      background-color: #6a1b9a; /* Back to the original */
-    }
-  }
-  
-  /* Apply the animation on hover */
-  .wave-btn:hover {
-    animation: waveColor 2s linear infinite; /* 2-second color wave, looping infinitely */
-  }
-      
+  background-color: #6a1b9a;
+  /* Starting color */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  /* Fallback transition */
+}
 
-  /* Base button styling */
+/* Define the keyframes for the color wave */
+@keyframes waveColor {
+  0% {
+    background-color: #6a1b9a;
+    /* Dark purple */
+  }
+
+  25% {
+    background-color: #9575cd;
+    /* Light dull purple */
+  }
+
+  50% {
+    background-color: #c0ace3;
+    /* Cyan */
+  }
+
+  75% {
+    background-color: #8e24aa;
+    /* Medium purple */
+  }
+
+  100% {
+    background-color: #6a1b9a;
+    /* Back to the original */
+  }
+}
+
+/* Apply the animation on hover */
+.wave-btn:hover {
+  animation: waveColor 2s linear infinite;
+  /* 2-second color wave, looping infinitely */
+}
+
+
+/* Base button styling */
 .animated-border-btn-purple {
-    background-color: #492d5e; /* Dark purple background */
-    color: e0e0e0;
-    padding: 10px 20px;
-    border: 4px solid #2D5E49; /* Start with a transparent border */
-    border-radius: 6px;
-    text-transform: uppercase;
-    transition: all 0.4s ease; /* Smooth transition for background and padding */
-    position: relative;
-    display: inline-block;
-    z-index: 1;
-    overflow: hidden; /* To prevent the border from going outside the button */
-    cursor: pointer;
-  }
-   /* Hover state with changes to border radius and border color */
-   .animated-border-btn-purple:hover {
-    box-shadow: 0 0 10px #bd59fb;
-    text-shadow: 0 0 10px #bd59fb;
-    color: #e0e0e0;
-    border-color: #2D5E49;
-    border-radius: 50px; /* Border radius expands to make the button more circular */
-    background-color: #643E80; /* Keep the background white */
-    transition: all 0.3s ease; /* Smooth transition */
-  }
-  
-  
+  background-color: #492d5e;
+  /* Dark purple background */
+  color: e0e0e0;
+  padding: 10px 20px;
+  border: 4px solid #2D5E49;
+  /* Start with a transparent border */
+  border-radius: 6px;
+  text-transform: uppercase;
+  transition: all 0.4s ease;
+  /* Smooth transition for background and padding */
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+  overflow: hidden;
+  /* To prevent the border from going outside the button */
+  cursor: pointer;
+}
+
+/* Hover state with changes to border radius and border color */
+.animated-border-btn-purple:hover {
+  box-shadow: 0 0 10px #bd59fb;
+  text-shadow: 0 0 10px #bd59fb;
+  color: #e0e0e0;
+  border-color: #2D5E49;
+  border-radius: 50px;
+  /* Border radius expands to make the button more circular */
+  background-color: #643E80;
+  /* Keep the background white */
+  transition: all 0.3s ease;
+  /* Smooth transition */
+}
+
+
 /* Base button styling */
 .animated-border-btn {
-    color: #128347; /* Initial text color */
-    background-color: #ffffff; /* White background */
-    padding: 10px 15px;
-    border: 4px solid #128347; /* Green border */
-    border-radius: 6px; /* Initial border-radius */
-    text-transform: uppercase;
-    display: inline-block;
-    font-size: 12px;
-    transition: all 0.3s ease; /* Smooth transition for all properties */
-    cursor: pointer;
-  }
-  
-  /* Hover state with changes to border radius and border color */
-  .animated-border-btn:hover {
-    color: #6a1b9a; /* Text color changes to dark grey */
-    border-color: #494949; /* Border changes to dark grey */
-    border-radius: 50px; /* Border radius expands to make the button more circular */
-    background-color: #ffffff; /* Keep the background white */
-    transition: all 0.3s ease; /* Smooth transition */
-  }
-  
-  
-  
+  color: #128347;
+  /* Initial text color */
+  background-color: #ffffff;
+  /* White background */
+  padding: 10px 15px;
+  border: 4px solid #128347;
+  /* Green border */
+  border-radius: 6px;
+  /* Initial border-radius */
+  text-transform: uppercase;
+  display: inline-block;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  /* Smooth transition for all properties */
+  cursor: pointer;
+}
+
+/* Hover state with changes to border radius and border color */
+.animated-border-btn:hover {
+  color: #6a1b9a;
+  /* Text color changes to dark grey */
+  border-color: #494949;
+  /* Border changes to dark grey */
+  border-radius: 50px;
+  /* Border radius expands to make the button more circular */
+  background-color: #ffffff;
+  /* Keep the background white */
+  transition: all 0.3s ease;
+  /* Smooth transition */
+}
+
+/* Base styling for danger button */
+.danger-btn {
+  color: #ffffff; /* White text color */
+  background-color: #d32f2f; /* Red background color */
+  padding: 10px 15px;
+  border: 4px solid #b71c1c; /* Darker red border */
+  border-radius: 6px;
+  text-transform: uppercase;
+  display: inline-block;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Hover state with slight expansion and deeper color */
+.danger-btn:hover {
+  color: #ffffff; /* Keep text color white */
+  background-color: #b71c1c; /* Darker red background on hover */
+  border-color: #9e1b1b; /* Darker shade for the border */
+  border-radius: 50px; /* Rounded appearance on hover */
+  transition: all 0.3s ease;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-wrap {
+  flex: 1;
+}
+
+.friend-list {
+  display: flex;
+  gap: 20px; /* Space between the items */
+}
+
+.friend-list li {
+  flex: 0 0 calc(50% - 10px);  /* Two items per row */
+  box-sizing: border-box;
+  list-style-type: none;
+}
+
+.friend-item {
+  display: flex;  /* Align items side-by-side */
+  align-items: left;  /* Vertically center the items */
+  gap: 10px;  /* Space between avatar and username */
+  justify-content: center;
+}
+
+.friend-profile-pic-container {
+  display: flex;  /* Flex container for the avatar */
+  justify-content: center;  /* Center the avatar */
+}
+
+.friend-profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;  /* Make the avatar circular */
+}
+
+.friend-username {
+  font-size: 16px;
+  display: inline-block;  /* Keep the username in one line */
+}
+
+.nav-tabs .nav-link{
+  color:rgb(159, 27, 161) !important;
+}
+
+.nav-tabs .nav-link.active{
+  color:aquamarine !important;
+}

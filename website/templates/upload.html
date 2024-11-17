@@ -5,18 +5,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Sample</title>
+    <title style=color:silver;>Upload Sample</title>
     <style>
         #drop-zone {
             width: 70%;
             height: 300px;
-            border: 2px dashed #00FFFF;
+            border: 2px solid #00FFCC;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
             color: #000000;
         }
+
         .file-item {
             margin: 10px 0;
         }
@@ -42,32 +43,70 @@
             padding: 8px;
             margin: 4px 0; /* Spacing between suggestions */
             color: #e0e0e0; /* Light text color */
-            background-color: #202830; /* Dark background */
+            background-color: #202830;
             cursor: pointer; /* Change cursor to indicate interactivity */
-            transition: background-color 0.3s; /* Smooth background color change */
-            width: 150px; /* Set a fixed width for narrowness */
-            text-align: center; /* Center the text within the suggestion */
+            transition: background-color 0.3s; 
+            width: 150px; 
+            text-align: center;
         }
 
         .suggestion-item {
-            display: block; /* Each suggestion takes a full line */
-            width: 100%; /* Full width */
-            text-align: left; /* Align text to the left */
-            padding: 10px; /* Padding for better clickability */
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 10px;
         }
 
         .suggestion-item:hover {
-            background-color: #362d4b; /* Light background on hover */
+            background-color: #362d4b;
         }
+
+        .file-browser {
+            color: white;
+            background-color: #32273B;
+            border: 2px solid black;
+            border-radius: 8px;
+            padding: 8px 16px; 
+            transition: all 0.3s ease; 
+            font-weight: bold;
+        }
+
+        #add-genre-btn {
+            margin-left: -28px;
+            border: 2px solid silver;
+            padding: 0 7px;
+            font-size: 18px;
+            color: silver;
+            border: none;
+        }
+
+        #id_genres {
+            width: 150px; 
+            padding-right: 24px;
+        }
+
+        
+        /* Genre tag colors */
+        .genre-tag:nth-child(1) { background-color: #005500; }
+        .genre-tag:nth-child(2) { background-color: #390039; }
+        .genre-tag:nth-child(3) { background-color: #683566; }
+        .genre-tag:nth-child(4) { background-color: #024a4f; }
+        .genre-tag:nth-child(5) { background-color: #35085f; }
+        .genre-tag:nth-child(6) { background-color: #003e1e; }
+        .genre-tag:nth-child(7) { background-color: #57380c; }
+        .genre-tag:nth-child(8) { background-color: #4c0505; }
+        .genre-tag:nth-child(9) { background-color: #355417; }
+        .genre-tag:nth-child(10) { background-color: #616814; }
+        .genre-tag:nth-child(n+11) { background-color: #520736; }
     </style>
 </head>
 <body>
 
     <h1>Upload Samples</h1>
 
-    <div id="drop-zone">Drag and drop files here</div>
+    <div id="drop-zone" style="color: silver;">Drag and drop files here</div>
     <ul id="file-list"></ul>
-    <input type="file" id="file-browse" multiple accept="audio/*" style="margin-bottom: 20px;">
+    <input type="file" id="file-browse" class="file-browse" multiple accept="audio/*" style="margin-bottom: 0px;">
 
     <form id="SampleUploadForm" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -76,8 +115,8 @@
         <div style="display: flex; align-items: center; margin-top: 16px;">
             <label for="id_genres" style="margin-right: 8px;">Tags:</label>
             <div style="display: flex; align-items: center;">
-                <input type="text" id="id_genres" placeholder="Search genres..." style="width: 150px; padding-right: 24px;">
-                <button type="button" id="add-genre-btn" style="margin-left: -28px; padding: 0 8px; font-size: 18px;">+</button>
+                <input type="text" id="id_genres" placeholder="Search genres...">
+                <button type="button" id="add-genre-btn">+</button>
             </div>
             <!-- Container for displaying selected genres inline -->
             <div id="selected-genres-inline" class="selected-genres" style="display: flex; align-items: center; margin-left: 8px;"></div>
@@ -85,8 +124,8 @@
         <!-- Suggestions for genres -->
         <div id="genre-suggestions" class="suggestions-box"></div>
         <br>
-        <button type="button" id="submit-btn">Upload</button>
-        <button type="button" onclick="window.location.href='/'">Cancel</button>
+        <button type="button" id="submit-btn" class="btn btn-primary animated-border-btn">Upload</button>
+        <button type="button" id="cancel-btn" class="btn btn-danger danger-btn" onclick="window.location.href='/'">Cancel</button>
     </form>
 
     <script>
@@ -178,7 +217,7 @@
             fileItem.className = 'file-item';
             fileItem.innerHTML = `
                 <span>${file.name}</span>
-                <input type="text" name="sampleName_${file.name}" placeholder="Rename">
+                <input type="text" maxlength="50" name="sampleName_${file.name}" placeholder="Rename">
                 <label>Public? <input type="checkbox" name="isPublic_${file.name}"></label>
                 <button type="button" onclick="removeFile('${file.name}', this)">Remove</button>
             `;

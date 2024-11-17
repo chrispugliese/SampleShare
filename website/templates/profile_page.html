@@ -1,97 +1,352 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
+<!-- 
+  waveform lib + the call to the sample player had to change the js library for waveforms etc
+-->
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
+<script src="{% static 'js/sample_player.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="{% static 'css/custom_style.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/player_style.css' %}"/>
+<style>
+  .home-profile-container{
+        display: flex;
+        color:#00FFCC;
+        gap:5px;
+    }
+
+    .home-user-name a{
+        text-decoration: none;
+        color: #fff;
+        font-weight: bold;
+    }
+    .home-user-name a:hover{
+        color:#00FFCC;
+    }
+    .view-post-btn{
+    float: right;
+  }
+  .post-sample-text{
+        font-weight: bold;
+        font-size: 20px;
+        margin-bottom: 10px;
+        margin-left: 20px;
+    }
+</style>
+
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md-8">
       <!-- Card container for the profile -->
       <div class="profile-card">
-        <!-- Left-align the profile picture and information -->
-        <div class="profile-info">
+        <div class="profile-info" style="text-align: center;">
+          <h2>{{ profile_user.username }}</h2>
           <div style="display: flex; align-items: center; gap: 20px;">
               <!-- Display the uploaded profile photo -->
-              <img src="{{ profile_user.userprofile.userPhoto.url }}" alt="Profile Photo" style="width:150px; height:150px; border-radius: 50%;">
-            <h2>{{ profile_user.username }}</h2>
+              <img src="{{ profile_user.userprofile.userPhoto.url }}" alt="Profile Photo" style="width:200px; height:200px; border-radius: 50%;">
           </div>
           <div class="profile-details">
             <p>Email: {{ profile_user.email }}</p>
             <p>Bio: {{ profile_user.userprofile.bio }}</p>
-            <!-- Link to Edit Profile -->
-            <a href="{% url 'edit_profile' %}" class="btn btn-primary animated-border-btn">Edit Profile</a>
-            <a href="{% url 'edit_samples' %}" class="btn btn-primary animated-border-btn">Edit Samples</a>
           </div>
-        </div>
-        <!-- Friend request section -->
-        {% if is_owner %}
-        <div>
-          <h2> Friend Requests: </h2>
-          {% if received_requests %}
-          <ul>
-            {% for frequest in received_requests %}
-                <li style="display: flex; align-items: center; gap: 20px; margin-bottom: 10px;">
-                <a href="{% url 'profile' frequest.from_user.user.username %}">
-                <!-- Display sender's profile picture -->
-                <img src="{{ frequest.from_user.userPhoto.url }}" alt="Profile Picture" style="width:50px; height:50px; border-radius: 50%;">
-                <!-- Display sender's username -->
-                <span>{{ frequest.from_user.user.username }}</span>
-                </a>
-                <!-- Display how long ago the request was sent -->
-                <span>{{ frequest.created_at|timesince }} ago</span>
 
-                <!-- Accept and Decline buttons -->
-                <form action="{% url 'accept_friend_request' frequest.id %}" method="POST">
+            <!-- Link to Edit Profile -->
+            {% if is_owner %}
+            <div style="display: flex; justify-content: center; gap: 20px;">
+              <a href="{% url 'edit_profile' %}" class="btn btn-primary animated-border-btn">Edit Profile</a>
+              <a href="{% url 'edit_samples' %}" class="btn btn-primary animated-border-btn">Edit Samples</a>
+            </div>
+            {% else %}
+              {% if is_friend %}    <!-- User is a friend -->
+              <!-- Creates/Routes to chat -->
+              <a href="{% url 'private_chat_redirect' profile.user.id %}" class="btn btn-primary animated-border-btn">Message</a>
+              <div style="display: flex; justify-content: flex-end; width: 100%;">
+                <form action="{% url 'remove_friend' profile.user.id %}" method="POST" style="margin: 0;">
                   {% csrf_token %}
-                  <button type="submit" class="btn btn-success">Accept</button>
+                  <button type="submit" class="danger-btn">Remove Friend</button>
                 </form>
-                
-                <form action="{% url 'decline_friend_request' frequest.id %}" method="POST" style="margin-left: 10px;">
+              </div>
+              {% elif sent_request %}
+                <!-- Friend request is already sent -->
+                <b>Friend request sent.</b>
+              {% elif received_request %}
+                <!-- Friend request can be accepted or declined -->
+                <h3>Wants to be your friend!</h3>
+                <div style="display: flex; justify-content: center; gap: 20px;">
+                  <form action="{% url 'accept_friend_request' received_request.id %}" method="POST" style="display:inline;">
                   {% csrf_token %}
-                  <button type="submit" class="btn btn-danger">Decline</button>
+                  <button type="submit" class="btn btn-success accept-btn">Accept</button>
                 </form>
-              </li>
-            {% endfor %}
-          </ul>
-          {% else %}
-            <p>No friend requests at this time.</p>
-          {% endif %}
+                <form action="{% url 'decline_friend_request' received_request.id %}" method="POST" style="margin-left: 10px;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger decline-btn">Decline</button>
+                </form>
+                </div>
+              {% else %}
+                <!-- Send a friend request -->
+                <form action="{% url 'send_friend_request' profile.user.id %}" method="POST">
+                  {% csrf_token %}
+                  <button type="submit" class="animated-border-btn-purple">Send Friend Request</button>
+                </form>
+              {% endif %}
+            {% endif %}
         </div>
-        {% else %}
-        <div>
-          {% if is_friend %}
-            <!-- User is a friend -->
-            <!-- Creates/Routes to chat -->
-            <a href="{% url 'private_chat_redirect' profile.user.id %}" class="btn btn-primary">Message</a>
-
-            <form action="{% url 'remove_friend' profile.user.id %}" method="POST">
-              {% csrf_token %}
-              <button type="submit">Remove Friend</button>
-            </form>
-          {% elif sent_request %}
-            <!-- Friend request is already sent -->
-            <p>Friend request sent.</p>
-          {% elif received_request %}
-            <!-- Friend request can be accepted or declined -->
-            <h3>Wants to be your friend!</h3>
-            <form action="{% url 'accept_friend_request' received_request.id %}" method="POST" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit">Accept</button>
-            </form>
-            <form action="{% url 'decline_friend_request' received_request.id %}" method="POST" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit">Decline</button>
-            </form>
-          {% else %}
-            <!-- Send a friend request -->
-            <form action="{% url 'send_friend_request' profile.user.id %}" method="POST">
-              {% csrf_token %}
-              <button type="submit">Send Friend Request</button>
-            </form>
-          {% endif %}
-        </div>
-        {% endif %}
       </div>
     </div>
+  </div>
 
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<link rel="stylesheet" href="{% static 'css/player_style.css' %}">
+
+
+<div class="card" style="background-color: #202830;">
+  <!-- Card header for tabs -->
+  <div class="card-header">
+    <ul class="nav nav-tabs card-header-tabs" id="profileTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="samples-tab" data-bs-toggle="tab" href="#samples" role="tab" aria-controls="samples" aria-selected="true">Samples</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="posts-tab" data-bs-toggle="tab" href="#posts" role="tab" aria-controls="posts" aria-selected="false">Posts</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="friends-tab" data-bs-toggle="tab" href="#friends" role="tab" aria-controls="friends" aria-selected="false">Friends
+        {% if is_owner and received_requests %}
+        <span class="badge bg-danger" style="color: rgb(94, 4, 4)">{{ received_requests|length }}</span>
+        {% endif %}
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Card body for tab content -->
+  <div class="card-body">
+    <div class="tab-content" id="profileTabsContent">
+
+
+      <!-- Samples tab content -->
+      <div class="tab-pane fade show active" id="samples" role="tabpanel" aria-labelledby="samples-tab">
+        {% if query_all_sample %}
+          {% for sample in query_all_sample %}
+            <div class="sample-card mb-3 p-3 border rounded d-flex justify-content-center">
+            <div class="sample-details">
+              <!-- Sample name and player -->
+              <div class="sample-info">
+                <div class="toprow" style="display: flex; justify-content: space-between; width: 100%;">
+                <div class="sample-name">{{ sample.sampleName }}</div>
+                {% if user.userprofile.id == sample.userProfiles.user.id %}
+                    <div class="sample-edit" style="padding: 8px 7px"> 
+                      <a href="{% url 'edit_samples' %}"> 
+                        <i class="fa-regular fa-pen-to-square"></i>
+                      </a>
+                    </div>
+                  {% endif %}
+                  </div>
+                <div class="player-container"> 
+                  <!-- Player buttons -->
+                  <button class="play-button">
+                    <i class="fa-solid fa-play"></i>
+                  </button>
+                  <div id="waveform-{{ forloop.counter }}" class="waveform"></div>
+                  <input type="hidden" class="sample-url" value="{{ sample.audioFile.url }}">
+                  <div class="sample-options-container">
+                    <div class="sample-download"> 
+                      <a href="{% url 'download_sample' sample.id %}">
+                        <i class="fa-solid fa-download"></i>
+                      </a>
+                    </div>
+                    <!-- edit sample button here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+        <p>No Samples Uploaded!</p>
+        {% endif %}
+      </div>
+
+      <!-- Posts tab content -->
+      <div class="tab-pane fade" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+        {% if userPosts %}
+          {% for post in userPosts %}
+          <ul class="list-group">
+              <li class="list-group-item">
+                <div class="view-post-btn">
+                  <a href="{%url 'user_post' post.id%}" class="btn btn-primary view-post-btn animated-border-btn"> View Post </a>
+                </div>
+              </li>
+              <li class="list-group-item" style="word-wrap:break-word;">{{ post.postText }}</li>
+              <li class="list-group-item">
+                <div class="sample-details">
+                <div class="sample-info">
+                  <div class="post-sample-text">
+                    {{ post.samples.sampleName }} 
+                  </div>
+                  <div class="comment-player-container"> 
+                  <!-- Player buttons -->
+                    <button class="comment-play-button">
+                      <i class="fa-solid fa-play"></i>
+                    </button>
+                    <div id="comment-waveform-{{ forloop.counter }}" class="comment-waveform"></div>
+                    <input type="hidden" class="comment-sample-url" value="{{ post.samples.audioFile.url }}">
+                  </div>
+                </div>
+                <br>
+                </div>
+              </li>
+          </ul>
+          <br/>
+          {% endfor %}
+        {% else %}
+          <p>No posts available.</p>
+        {% endif %}
+      </div>
+
+      <!-- Friends tab content -->
+      <div class="tab-pane fade" id="friends" role="tabpanel" aria-labelledby="friends-tab">
+        {% if is_owner %}
+        <!-- Subtabs navigation -->
+        <ul class="nav nav-tabs" id="friendsSubTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="friends-list-tab" data-bs-toggle="tab" href="#friends-list" role="tab" aria-controls="friends-list" aria-selected="true">Friends List</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="friend-requests-tab" data-bs-toggle="tab" href="#friend-requests" role="tab" aria-controls="friend-requests" aria-selected="false">Friend Requests
+              {% if received_requests %}
+                <span class="badge bg-danger" style="color: rgb(94, 4, 4)">{{ received_requests|length }}</span>
+              {% endif %}
+            </a>
+          </li>
+        </ul>
+        <!-- Friends List content -->
+         {% endif %}
+        <div class="tab-content" id="friendsSubTabsContent">
+          <div class="tab-pane fade show active" id="friends-list" role="tabpanel" aria-labelledby="friends-list-tab">
+            {% if is_owner or is_friend %}
+            <br>
+            <ul class="friend-list">
+              {% for friend in sorted_friends %}
+                <li class="friend-item" style="display: flexbox; align-items: center; gap: 10px; margin-bottom: 10px;">
+                  <a href="{% url 'profile' friend.user.username %}">
+                    <img src="{{ friend.userPhoto.url }}" alt="Profile Picture" class="friend-profile-pic"> </a>
+                    <a href="{% url 'profile' friend.user.username %}">
+                    {{ friend.user.username }}
+                  </a>
+                  {% if request.user.userprofile in friend.friends.all %}
+                  <a href="{% url 'private_chat_redirect' friend.user.id %}" class="btn btn-primary animated-border-btn">Message</a>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+                              
+            {% else %}
+            <p>Only friends can view each others' Friends List</p>
+            {% endif %}
+          </div>
+          <div class="tab-pane fade" id="friend-requests" role="tabpanel" aria-labelledby="friend-requests-tab">
+            <br>
+            <!-- Friend request section -->
+            {% if is_owner %}
+            <div>
+              {% if received_requests %}
+              <ul>
+                {% for frequest in received_requests %}
+                    <li style="display: flex; align-items: center; gap: 20px; margin-bottom: 10px;">
+                    <a href="{% url 'profile' frequest.from_user.user.username %}">
+                    <!-- Display sender's profile picture -->
+                    <img src="{{ frequest.from_user.userPhoto.url }}" alt="Profile Picture" style="width:50px; height:50px; border-radius: 50%;">
+                    <!-- Display sender's username -->
+                    <span>{{ frequest.from_user.user.username }}</span>
+                    </a>
+                    <!-- Display how long ago the request was sent -->
+                    <span>{{ frequest.created_at|timesince }} ago</span>
+
+                    <!-- Accept and Decline buttons -->
+                    <form action="{% url 'accept_friend_request' frequest.id %}" method="POST" class="friend-request-form">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-success accept-btn">Accept</button>
+                    </form>
+                    
+                    <form action="{% url 'decline_friend_request' frequest.id %}" method="POST" class="friend-request-form" style="margin-left: 10px;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger decline-btn">Decline</button>
+                    </form>
+                  </li>
+                  <hr>
+                {% endfor %}
+              </ul>
+              {% else %}
+                <p>No friend requests at this time.</p>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+          <!-- End of friend requests section -->
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+<br>
+</div>
+
+
+<script>
+  $(document).ready(function() {
+    // Handle friend request forms
+    $('.friend-request-form').on('submit', function(event) {
+      event.preventDefault();
+      var $form = $(this);
+
+      $.ajax({
+        url: $form.attr('action'),
+        data: $form.serialize(),
+        success: function(response) {
+          // Optionally, update the UI based on the response
+          if ($form.find('button').hasClass('accept-btn')) {
+            $form.closest('li').html('<span>Friend request accepted</span>');
+          } else if ($form.find('button').hasClass('decline-btn')) {
+            $form.closest('li').remove();
+          }
+          updateFriendRequestBadge();
+        },
+        error: function(response) {
+          // Handle error response
+          alert('An error occurred.');
+        }
+      });
+    });
+
+    function updateFriendRequestBadge() {
+      $.ajax({
+        url: '{% url "get_received_requests_count" %}', // URL to get the count of received requests
+        success: function(data) {
+          var count = data.count;
+          var $badge = $('#friends-tab .badge');
+          var $subBadge = $('#friend-requests-tab .badge');
+          if (count > 0) {
+            $badge.text(count);
+            $subBadge.text(count);
+          } else {
+            $badge.remove();
+            $subBadge.remove();
+          }
+        },
+        error: function(response) {
+          // Handle error response
+          console.error('Failed to update friend request badge.');
+        }
+      });
+    }
+  });
+</script>
+<script src="{% static 'js/sample_player.js' %}"></script>
+<script src="{% static 'js/sample_playerPC.js' %}"></script>
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
 {% endblock %}

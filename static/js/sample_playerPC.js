@@ -1,13 +1,13 @@
 //NOTE: wavesurfers js library
 document.addEventListener('DOMContentLoaded', () => {
-	const sampleElements = document.querySelectorAll('.sample-url');
-	const playButtons = document.querySelectorAll('.play-button');
+	const sampleElements = document.querySelectorAll('.comment-sample-url');
+	const playButtons = document.querySelectorAll('.comment-play-button');
 
 	const waveSurfersMapObject = {};
 
 	sampleElements.forEach((sampleEle, index) => {
 		const sampleUrl = sampleEle.value;
-		const containerId = `waveform-${index + 1}`;
+		const containerId = `comment-waveform-${index + 1}`;
 		const wavesurfer = initWaveSurfer(sampleUrl, containerId);
 
 		waveSurfersMapObject[index] = wavesurfer
@@ -22,17 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 		});
 	});
-
 });
 
-const initWaveSurfer = (url, containerId) => {
+const initCommentWaveSurfer = (url, containerId) => {
 	//some of the options for waveforms, more here: https://wavesurfer.xyz/examples/?all-options.js
 	const wavesurfer = WaveSurfer.create({
-		container: `#${containerId}`,
+		container: `#comment-waveform`,
 		height: 50,
 		normalize: true,
 		waveColor: '#00FFCC',
-		progressColor: '#6A1B9A',
+		progressColor: ' #6A1B9A',
 		cursorColor: '#FFFFFF',
 		barWidth: NaN,
 		barGap: NaN,
@@ -79,12 +78,6 @@ const initWaveSurfer = (url, containerId) => {
 	wavesurfer.load(url);
 	wavesurfer.on('interaction', () => {
 		wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
-	});
-
-	document.addEventListener('keydown', (event) => {
-		if (event.key === 'ArrowLeft' && wavesurfer.isPlaying()) {
-			wavesurfer.seekTo(0);
-		}
 	});
 	return wavesurfer
 };
