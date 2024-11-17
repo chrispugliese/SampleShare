@@ -64,50 +64,54 @@ def page_not_found(request):
 
 
 def profile_page(request, username):
-    profile_user = get_object_or_404(User, username=username)
-    is_owner = request.user == profile_user
-    profile = get_object_or_404(
-        UserProfile, user=profile_user
-    )  # Query UserProfile by ID
-    # Check if the logged-in user is a friend
-    is_friend = (
-        request.user.userprofile.friends.filter(id=profile.id).exists()
-        if request.user.is_authenticated
-        else False
-    )
-    # Check if there's a request already sent to viewed profile
-    sent_request = (
-        request.user.userprofile.sent_requests.filter(to_user=profile).first()
-        if request.user.is_authenticated
-        else None
-    )
+    if request.user.is_authenticated:
+        profile_user = get_object_or_404(User, username=username)
+        is_owner = request.user == profile_user
+        profile = get_object_or_404(
+            UserProfile, user=profile_user
+        )  # Query UserProfile by ID
+        # Check if the logged-in user is a friend
+        is_friend = (
+            request.user.userprofile.friends.filter(id=profile.id).exists()
+            if request.user.is_authenticated
+            else False
+        )
+        # Check if there's a request already sent to viewed profile
+        sent_request = (
+            request.user.userprofile.sent_requests.filter(to_user=profile).first()
+            if request.user.is_authenticated
+            else None
+        )
 
-    # Check if there's a friend request already sent from the viewed profile.
-    received_request = (
-        request.user.userprofile.received_requests.filter(from_user=profile).first()
-        if request.user.is_authenticated
-        else None
-    )
-    received_requests = FriendRequest.objects.filter(to_user=request.user.userprofile)
+        # Check if there's a friend request already sent from the viewed profile.
+        received_request = (
+            request.user.userprofile.received_requests.filter(from_user=profile).first()
+            if request.user.is_authenticated
+            else None
+        )
+        received_requests = FriendRequest.objects.filter(to_user=request.user.userprofile)
 
-    query_all_sample = Sample.objects.filter(userProfiles=profile)
-    sorted_friends = profile.get_sorted_friends()
+        query_all_sample = Sample.objects.filter(userProfiles=profile)
+        sorted_friends = profile.get_sorted_friends()
 
-    userPosts = Post.objects.filter(userProfiles=profile).order_by('-postTimeStamp')
+        userPosts = Post.objects.filter(userProfiles=profile).order_by('-postTimeStamp')
 
-    context = {
-        "profile": profile,
-        "is_owner": is_owner,
-        "is_friend": is_friend,
-        "sent_request": sent_request,
-        "received_request": received_request,
-        "profile_user": profile_user,
-        "received_requests": received_requests,
-        "query_all_sample": query_all_sample,
-        'sorted_friends': sorted_friends,
-        'userPosts': userPosts,
-    }
-    return render(request, "profile_page.html", context)
+        context = {
+            "profile": profile,
+            "is_owner": is_owner,
+            "is_friend": is_friend,
+            "sent_request": sent_request,
+            "received_request": received_request,
+            "profile_user": profile_user,
+            "received_requests": received_requests,
+            "query_all_sample": query_all_sample,
+            'sorted_friends': sorted_friends,
+            'userPosts': userPosts,
+        }
+        return render(request, "profile_page.html", context)
+    else:
+        messages.success(request, "Your Must Be Logged In...")
+        return redirect("home")
 
 
 
