@@ -2,6 +2,15 @@ from django.test import TestCase, Client
 from .models import *
 from django.urls import reverse
 
+
+#------------------ Data Model & Database Testing-------------------------#
+# This section contains a series of tests that tests our data model and database
+# to make sure that data is being stored in the database the way its suppose to be
+# and to make sure that the data being store can be retrieved/accessed
+#
+#
+#
+
 #This is testing that the samples table in the DB is able to store samples and retreive them
 class SampleTableTestCase(TestCase):
     def setUp(self):
@@ -93,5 +102,65 @@ class ChatTableTestCase(TestCase):
         # checks to see if that chat being created can be retrieved
         self.assertEqual(chat, self.testChat)
 
+class MessageTableTestCase(TestCase):
+    def setUp(self):
+        self.testUser = User.objects.create(username="Test User", password = "password123")
+        self.testChat = Chat.objects.create(chatName= "Test Chat")
+        self.testMessage = Message.objects.create(content= "Test Message", user= self.testUser, chat = self.testChat)
+    
+    def test_message_creation(self):
+
+        # tests to make sure the message being created is in the db
+        self.assertEqual(self.testMessage.content, "Test Message")
+
+        # tests to make sure the message being created is tied to the user
+        self.assertEqual(self.testMessage.user.username, "Test User")
+
+        # tests to make sure that the message being created is tied to the chat assigned to it
+        self.assertEqual(self.testMessage.user.username, "Test User")
+    
+    def test_message_retrieval(self):
+        message = Message.objects.get(content = "Test Message", user= self.testUser, chat = self.testChat)
+        # testing to make sure that the message created can be retrieved from the db
+        self.assertEqual(message, self.testMessage)
+
+
+class TestFriendRequestTableTestCase(TestCase):
+    def setUp(self):
+        self.testUserOne = User.objects.create(username="Test User One", password = "password123")
+        self.testUserTwo = User.objects.create(username="Test User Two", password = "password123")
+        self.testUserProfileOne = UserProfile.objects.create(user = self.testUserOne, dateOfBirth = "2020-10-10", bio ="", numberOfFollowers = 0)
+        self.testUserProfileTwo = UserProfile.objects.create(user = self.testUserTwo, dateOfBirth = "2020-10-10", bio ="", numberOfFollowers = 0)
+
+        self.testFriendReq = FriendRequest.objects.create(from_user = self.testUserProfileOne, to_user = self.testUserProfileTwo)
+    
+    def test_friend_request_creation(self):
+        # Testing to see if the friend request created above is storing the first user correctly
+        self.assertEqual(self.testUserProfileOne.user.username, "Test User One")
+
+        # Testing to see if the friend request created above is storing the second user correctly
+        self.assertEqual(self.testUserProfileTwo.user.username, "Test User Two")
+    
+    def test_friend_request_retrieval(self):
+        friendRequest = FriendRequest.objects.get(from_user = self.testUserProfileOne, to_user = self.testUserProfileTwo)
+
+        # Testing to see if the friend request created above can be retrieved from the DB
+        self.assertEqual(friendRequest, self.testFriendReq)
+
+class TestGenreTableTestCase(TestCase):
+    def setUp(self):
+        self.testGenre = Genre.objects.create(genreName = "Test Genre")
+    
+    def test_genre_creation(self):
+        # Testing to see if the genre created above is acutally being created in the db
+        self.assertEqual(self.testGenre.genreName, "Test Genre")
+    
+    def test_genre_retrieval(self):
+        genre = Genre.objects.get(genreName = "Test Genre")
+        # Tests to see if the genre created above can be retrieved from the database
+        self.assertEqual(genre, self.testGenre)
+
+
+#---------------------------------------------------------------------------------------
 
     
